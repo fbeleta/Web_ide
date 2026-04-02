@@ -1,0 +1,12 @@
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/bin/Debug/net10.0/WebIde.Model.deps.json
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/bin/Debug/net10.0/WebIde.Model.dll
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/bin/Debug/net10.0/WebIde.Model.pdb
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.GeneratedMSBuildEditorConfig.editorconfig
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.AssemblyInfoInputs.cache
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.AssemblyInfo.cs
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.csproj.CoreCompileInputs.cache
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.sourcelink.json
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.dll
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/refint/WebIde.Model.dll
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/WebIde.Model.pdb
+/Users/fbeleta/Documents/Web-ide/Web_ide/WebIde.Model/obj/Debug/net10.0/ref/WebIde.Model.dll
