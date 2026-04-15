@@ -1,0 +1,62 @@
+# UX Sub-agent Invocation Log — Lab 2
+# WebIde.Web — Competitive Brutalism Design System
+
+[2026-04-15T18:30:00Z] AGENT SPAWNED: ux-designer
+  Task: Generate shared Razor layout (_Layout.cshtml, _Sidebar.cshtml, site.css)
+        applying "Competitive Brutalism" design system from stitch_sharp_logic_arena/monoraw_hyper/DESIGN.md
+  Skill invoked: frontend-design (Anthropic built-in)
+  Style overrides applied:
+    - Zero border-radius (DEFAULT: 0px, lg: 0px, xl: 0px)
+    - Hard offset shadows: box-shadow 4px 4px 0px 0px #000
+    - Prohibit 1px borders → minimum 2px solid black
+    - No gradients, no glassmorphism, no soft shadows
+    - Space Grotesk (headlines/labels) + Inter (body)
+    - ALL-CAPS navigation and labels
+    - Color tokens: primary #2752c7, secondary #b60055, tertiary #106b00, background #f6f6f6
+  Views generated:
+    - WebIde.Web/Views/Shared/_Layout.cshtml (top nav, Tailwind CDN config, footer)
+    - WebIde.Web/Views/Shared/_Sidebar.cshtml (left sidebar for inner pages)
+    - WebIde.Web/Views/Shared/_ViewImports.cshtml
+    - WebIde.Web/Views/Shared/_ViewStart.cshtml
+    - WebIde.Web/wwwroot/css/site.css (Competitive Brutalism utility classes)
+  Output: Layout faithfully matches stitch_sharp_logic_arena/problems_list/code.html nav+sidebar structure.
+          All structural elements use 4px black borders and 4px hard offset shadows.
+
+[2026-04-15T18:45:00Z] AGENT SPAWNED: ux-designer
+  Task: Generate Home/Index.cshtml — port of stitch_sharp_logic_arena/homepage/code.html
+        with dynamic @Model data (stats, leaderboard top-3, problem cards)
+  Skill invoked: frontend-design (Anthropic built-in)
+  Views generated:
+    - WebIde.Web/Views/Home/Index.cshtml (hero section, bento grid, CTA)
+  Output: Hero "COMPETE. CODE. CONQUER." + bento grid with real problem/user/submission counts.
+
+[2026-04-15T19:00:00Z] AGENT SPAWNED: ux-designer
+  Task: Generate Problem/Index.cshtml and Problem/Details.cshtml
+        ports of problems_list/code.html and solve_workspace/code.html
+  Skill invoked: frontend-design (Anthropic built-in)
+  Views generated:
+    - WebIde.Web/Views/Problem/Index.cshtml (sidebar, stats cards, filter panel, problems table)
+    - WebIde.Web/Views/Problem/Details.cshtml (split workspace: description left, console/results right)
+  Output: Problems table with difficulty badges, acceptance %, status icons.
+          Details split-pane with dark editor area and tabbed console.
+
+[2026-04-15T19:15:00Z] AGENT SPAWNED: ux-designer
+  Task: Generate Leaderboard/Index.cshtml — port of stitch_sharp_logic_arena/leaderboard/code.html
+        with ranked user data from UserRepository
+  Skill invoked: frontend-design (Anthropic built-in)
+  Views generated:
+    - WebIde.Web/Views/Leaderboard/Index.cshtml (podium top-3, ranked table, platform stats)
+  Output: Asymmetric bento podium (lime #1, blue #2, pink #3) + full ranked user table.
+
+[2026-04-15T19:30:00Z] AGENT SPAWNED: ux-designer
+  Task: Generate remaining entity views (User, Organization, ProblemSet, Submission, Tag)
+        Index + Details for each, following Competitive Brutalism table/card patterns
+  Skill invoked: frontend-design (Anthropic built-in)
+  Views generated:
+    - User/Index.cshtml, User/Details.cshtml
+    - Organization/Index.cshtml, Organization/Details.cshtml
+    - ProblemSet/Index.cshtml, ProblemSet/Details.cshtml
+    - Submission/Index.cshtml, Submission/Details.cshtml
+    - Tag/Index.cshtml, Tag/Details.cshtml
+  Output: All views follow zero-radius, hard-border, hard-shadow rules.
+          Status chips color-coded: tertiary=Accepted, error=WrongAnswer/CompileError, primary=TLE/MLE.

@@ -1,0 +1,91 @@
+@model List<WebIde.Model.User>
+@{
+    ViewData["Title"] = "USERS";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">USERS</h1>
+            <div class="h-2 w-24 bg-primary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">USERS</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">USER</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ROLE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACCEPTED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">REGISTERED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        int accepted = user.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-black border-2 border-black flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white font-black text-sm" style="font-family: 'Space Grotesk', sans-serif;">
+                                            @user.DisplayName.Substring(0, 1).ToUpper()
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <a asp-controller="User" asp-action="Details" asp-route-id="@user.Id"
+                                           class="font-bold text-base hover:text-primary no-underline block"
+                                           style="font-family: 'Space Grotesk', sans-serif;">@user.DisplayName</a>
+                                        <span class="text-xs text-outline">@@user.Username</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                @switch (user.Role)
+                                {
+                                    case UserRole.Admin:
+                                        <span class="role-admin border-2 border-black px-2 py-1 text-xs font-black uppercase"
+                                              style="font-family: 'Space Grotesk', sans-serif;">ADMIN</span> break;
+                                    case UserRole.Instructor:
+                                        <span class="role-instructor border-2 border-black px-2 py-1 text-xs font-black uppercase"
+                                              style="font-family: 'Space Grotesk', sans-serif;">INSTRUCTOR</span> break;
+                                    case UserRole.Student:
+                                        <span class="role-student border-2 border-black px-2 py-1 text-xs font-black uppercase"
+                                              style="font-family: 'Space Grotesk', sans-serif;">STUDENT</span> break;
+                                }
+                            </td>
+                            <td class="p-4">
+                                <span class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@user.Submissions.Count</span>
+                            </td>
+                            <td class="p-4">
+                                <span class="font-black text-xl text-tertiary" style="font-family: 'Space Grotesk', sans-serif;">@accepted</span>
+                            </td>
+                            <td class="p-4">
+                                <span class="text-sm font-bold" style="font-family: 'Space Grotesk', sans-serif;">@user.RegisteredAt.ToString("yyyy-MM-dd")</span>
+                            </td>
+                            <td class="p-4">
+                                <a asp-controller="User" asp-action="Details" asp-route-id="@user.Id"
+                                   class="bg-primary text-white border-2 border-black px-4 py-2 font-bold uppercase text-xs
+                                          shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
+                                          hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">PROFILE</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>

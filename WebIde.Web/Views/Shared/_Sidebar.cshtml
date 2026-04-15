@@ -1,0 +1,68 @@
+@* Left sidebar partial — inject on inner pages with @await Html.PartialAsync("_Sidebar") *@
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#f6f6f6] border-r-4 border-black pt-24 hidden lg:flex flex-col z-40">
+
+    <!-- User identity block -->
+    <div class="px-6 pb-6 mb-2 border-b-2 border-black/10">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-black border-2 border-black flex items-center justify-center flex-shrink-0">
+                <span class="text-white font-black text-lg" style="font-family: 'Space Grotesk', sans-serif;">R</span>
+            </div>
+            <div>
+                <p class="font-black text-black text-sm leading-none" style="font-family: 'Space Grotesk', sans-serif;">ROOT_USER</p>
+                <p class="text-xs font-bold text-primary mt-1" style="font-family: 'Space Grotesk', sans-serif;">RANK: #1</p>
+            </div>
+        </div>
+        <a asp-controller="User" asp-action="Index"
+           class="block w-full text-center bg-secondary text-white font-bold uppercase py-2 border-2 border-black
+                  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                  hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                  transition-all text-xs no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">UPGRADE_PRO</a>
+    </div>
+
+    <!-- Navigation items -->
+    <nav class="flex-1 px-4 space-y-1">
+        <a asp-controller="Home" asp-action="Index"
+           class="flex items-center gap-4 px-4 py-3 font-bold uppercase text-black border-b-2 border-black/10
+                  hover:bg-secondary hover:text-white transition-none text-sm no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">
+            <span class="material-symbols-outlined text-base">grid_view</span>
+            DASHBOARD
+        </a>
+        <a asp-controller="Problem" asp-action="Index"
+           class="flex items-center gap-4 px-4 py-3 font-bold uppercase text-black border-b-2 border-black/10
+                  hover:bg-secondary hover:text-white transition-none text-sm no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">
+            <span class="material-symbols-outlined text-base">code</span>
+            PRACTICE
+        </a>
+        <a asp-controller="Leaderboard" asp-action="Index"
+           class="flex items-center gap-4 px-4 py-3 font-bold uppercase text-black border-b-2 border-black/10
+                  hover:bg-secondary hover:text-white transition-none text-sm no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">
+            <span class="material-symbols-outlined text-base">military_tech</span>
+            COMPETE
+        </a>
+        <a asp-controller="Submission" asp-action="Index"
+           class="flex items-center gap-4 px-4 py-3 font-bold uppercase text-black border-b-2 border-black/10
+                  hover:bg-secondary hover:text-white transition-none text-sm no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">
+            <span class="material-symbols-outlined text-base">bar_chart</span>
+            STATS
+        </a>
+        <a asp-controller="Organization" asp-action="Index"
+           class="flex items-center gap-4 px-4 py-3 font-bold uppercase text-black border-b-2 border-black/10
+                  hover:bg-secondary hover:text-white transition-none text-sm no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">
+            <span class="material-symbols-outlined text-base">group</span>
+            ORGS
+        </a>
+        <a asp-controller="Tag" asp-action="Index"
+           class="flex items-center gap-4 px-4 py-3 font-bold uppercase text-black border-b-2 border-black/10
+                  hover:bg-secondary hover:text-white transition-none text-sm no-underline"
+           style="font-family: 'Space Grotesk', sans-serif;">
+            <span class="material-symbols-outlined text-base">label</span>
+            TAGS
+        </a>
+    </nav>
+</aside>

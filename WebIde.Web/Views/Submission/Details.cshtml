@@ -1,0 +1,134 @@
+@model WebIde.Model.Submission
+@{
+    ViewData["Title"] = "SUBMISSION #" + Model.Id;
+    var result = Model.ExecutionResult;
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+        <nav class="text-xs font-bold uppercase mb-8" style="font-family: 'Space Grotesk', sans-serif;">
+            <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+            <span class="mx-2 text-outline">/</span>
+            <a asp-controller="Submission" asp-action="Index" class="text-primary hover:underline no-underline">SUBMISSIONS</a>
+            <span class="mx-2 text-outline">/</span>
+            <span class="text-on-surface-variant">#@Model.Id</span>
+        </nav>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
+            <div class="flex justify-between items-start mb-6">
+                <h1 class="text-4xl font-black uppercase tracking-tighter"
+                    style="font-family: 'Space Grotesk', sans-serif;">SUBMISSION_#@Model.Id</h1>
+                @switch (Model.Status)
+                {
+                    case WebIde.Model.Enums.SubmissionStatus.Accepted:
+                        <span class="status-accepted text-base px-4 py-2">ACCEPTED</span> break;
+                    case WebIde.Model.Enums.SubmissionStatus.WrongAnswer:
+                        <span class="status-wrong text-base px-4 py-2">WRONG_ANSWER</span> break;
+                    case WebIde.Model.Enums.SubmissionStatus.TimeLimitExceeded:
+                        <span class="status-tle text-base px-4 py-2">TIME_LIMIT_EXCEEDED</span> break;
+                    case WebIde.Model.Enums.SubmissionStatus.CompileError:
+                        <span class="status-error text-base px-4 py-2">COMPILE_ERROR</span> break;
+                    default:
+                        <span class="status-error text-base px-4 py-2">@Model.Status.ToString().ToUpper()</span> break;
+                }
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="border-2 border-black p-4">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">PROBLEM</p>
+                    <a asp-controller="Problem" asp-action="Details" asp-route-id="@Model.Problem.Id"
+                       class="font-black text-sm hover:text-primary no-underline"
+                       style="font-family: 'Space Grotesk', sans-serif;">@Model.Problem.Title</a>
+                </div>
+                <div class="border-2 border-black p-4">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">USER</p>
+                    <a asp-controller="User" asp-action="Details" asp-route-id="@Model.User.Id"
+                       class="font-black text-sm hover:text-primary no-underline"
+                       style="font-family: 'Space Grotesk', sans-serif;">@Model.User.Username</a>
+                </div>
+                <div class="border-2 border-black p-4">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">SCORE</p>
+                    <p class="font-black text-2xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.Score</p>
+                </div>
+                <div class="border-2 border-black p-4">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">LANGUAGE</p>
+                    <p class="font-black text-sm" style="font-family: 'Space Grotesk', sans-serif;">@Model.Language.ToString().ToUpper()</p>
+                </div>
+                <div class="border-2 border-black p-4">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">WALL_TIME</p>
+                    <p class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.WallTimeMs ms</p>
+                </div>
+                <div class="border-2 border-black p-4">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">MEMORY</p>
+                    <p class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.PeakMemoryKb KB</p>
+                </div>
+                <div class="border-2 border-black p-4 col-span-2">
+                    <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">SUBMITTED</p>
+                    <p class="font-black text-sm" style="font-family: 'Space Grotesk', sans-serif;">@Model.SubmittedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">SOURCE_CODE</h2>
+        <div class="border-4 border-black mb-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div class="bg-[#1a1a2e] px-4 py-2 flex items-center gap-2 border-b-2 border-black">
+                <span class="w-3 h-3 rounded-full bg-[#ff5f57] border border-black/30"></span>
+                <span class="w-3 h-3 rounded-full bg-[#febc2e] border border-black/30"></span>
+                <span class="w-3 h-3 rounded-full bg-[#28c840] border border-black/30"></span>
+                <span class="ml-4 text-xs font-bold text-[#888] uppercase" style="font-family: 'Space Grotesk', sans-serif;">solution.@Model.Language.ToString().ToLower()</span>
+            </div>
+            <pre class="code-block p-6 overflow-x-auto text-sm leading-relaxed">@Model.SourceCode</pre>
+        </div>
+
+        @if (result != null)
+        {
+            <h2 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">EXECUTION_RESULT</h2>
+            <div class="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
+
+                <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black">
+                    <div class="p-4 border-r-2 border-black">
+                        <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">EXIT_CODE</p>
+                        <p class="font-black text-xl @(result.ExitCode == 0 ? "text-[#106b00]" : "text-[#b60055]")"
+                           style="font-family: 'Space Grotesk', sans-serif;">@result.ExitCode</p>
+                    </div>
+                    <div class="p-4 border-r-2 border-black">
+                        <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">TIMED_OUT</p>
+                        <p class="font-black text-xl @(result.TimedOut ? "text-[#b60055]" : "text-[#106b00]")"
+                           style="font-family: 'Space Grotesk', sans-serif;">@(result.TimedOut ? "YES" : "NO")</p>
+                    </div>
+                    <div class="p-4 border-r-2 border-black">
+                        <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">MEM_EXCEEDED</p>
+                        <p class="font-black text-xl @(result.MemoryExceeded ? "text-[#b60055]" : "text-[#106b00]")"
+                           style="font-family: 'Space Grotesk', sans-serif;">@(result.MemoryExceeded ? "YES" : "NO")</p>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">WALL_TIME</p>
+                        <p class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.WallTimeMs ms</p>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(result.Stdout))
+                {
+                    <div class="border-b-2 border-black">
+                        <p class="px-4 py-2 text-xs font-black uppercase bg-surface-container border-b border-black/10"
+                           style="font-family: 'Space Grotesk', sans-serif;">STDOUT</p>
+                        <pre class="code-block p-4 text-xs leading-relaxed overflow-x-auto">@result.Stdout</pre>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(result.Stderr))
+                {
+                    <div>
+                        <p class="px-4 py-2 text-xs font-black uppercase bg-surface-container border-b border-black/10"
+                           style="font-family: 'Space Grotesk', sans-serif;">STDERR</p>
+                        <pre class="code-block p-4 text-xs leading-relaxed overflow-x-auto text-[#ff6b6b]">@result.Stderr</pre>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</main>

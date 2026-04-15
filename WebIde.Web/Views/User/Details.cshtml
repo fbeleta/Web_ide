@@ -1,0 +1,138 @@
+@model WebIde.Model.User
+@{
+    ViewData["Title"] = Model.Username.ToUpper();
+    int accepted = Model.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
+    double solveRate = Model.Submissions.Count == 0 ? 0 : Math.Round((double)accepted / Model.Submissions.Count * 100, 1);
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+        <nav class="text-xs font-bold uppercase mb-8" style="font-family: 'Space Grotesk', sans-serif;">
+            <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+            <span class="mx-2 text-outline">/</span>
+            <a asp-controller="User" asp-action="Index" class="text-primary hover:underline no-underline">USERS</a>
+            <span class="mx-2 text-outline">/</span>
+            <span class="text-on-surface-variant">@Model.Username.ToUpper()</span>
+        </nav>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
+            <div class="md:col-span-4 border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div class="w-24 h-24 bg-black border-4 border-black flex items-center justify-center mb-6">
+                    <span class="text-white text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">
+                        @Model.DisplayName.Substring(0, 1).ToUpper()
+                    </span>
+                </div>
+                <h2 class="text-3xl font-black uppercase mb-1" style="font-family: 'Space Grotesk', sans-serif;">@Model.DisplayName</h2>
+                <p class="text-sm text-outline mb-4">@@@Model.Username</p>
+                @switch (Model.Role)
+                {
+                    case UserRole.Admin:
+                        <span class="role-admin border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                              style="font-family: 'Space Grotesk', sans-serif;">ADMIN</span> break;
+                    case UserRole.Instructor:
+                        <span class="role-instructor border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                              style="font-family: 'Space Grotesk', sans-serif;">INSTRUCTOR</span> break;
+                    case UserRole.Student:
+                        <span class="role-student border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                              style="font-family: 'Space Grotesk', sans-serif;">STUDENT</span> break;
+                }
+                <div class="mt-6 pt-6 border-t-2 border-black/10 space-y-2 text-sm font-bold">
+                    <p style="font-family: 'Space Grotesk', sans-serif;">EMAIL: @Model.Email</p>
+                    <p style="font-family: 'Space Grotesk', sans-serif;">JOINED: @Model.RegisteredAt.ToString("yyyy-MM-dd")</p>
+                </div>
+            </div>
+
+            <div class="md:col-span-8 grid grid-cols-3 gap-4 content-start">
+                <div class="border-4 border-black bg-primary text-on-primary p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <p class="font-bold uppercase text-xs opacity-80 mb-1" style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</p>
+                    <p class="text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@Model.Submissions.Count</p>
+                </div>
+                <div class="border-4 border-black bg-tertiary text-on-tertiary p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <p class="font-bold uppercase text-xs opacity-80 mb-1" style="font-family: 'Space Grotesk', sans-serif;">ACCEPTED</p>
+                    <p class="text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@accepted</p>
+                </div>
+                <div class="border-4 border-black bg-secondary text-on-secondary p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <p class="font-bold uppercase text-xs opacity-80 mb-1" style="font-family: 'Space Grotesk', sans-serif;">SOLVE_RATE</p>
+                    <p class="text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@solveRate%</p>
+                </div>
+                <div class="col-span-3 border-4 border-black bg-white p-6">
+                    <p class="font-bold uppercase text-xs mb-2" style="font-family: 'Space Grotesk', sans-serif;">ORGANIZATIONS</p>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var org in Model.Organizations)
+                        {
+                            <a asp-controller="Organization" asp-action="Details" asp-route-id="@org.Id"
+                               class="border-2 border-black px-3 py-1 text-xs font-black uppercase
+                                      hover:bg-black hover:text-white transition-none no-underline"
+                               style="font-family: 'Space Grotesk', sans-serif;">@org.Name</a>
+                        }
+                        @if (!Model.Organizations.Any())
+                        {
+                            <span class="text-xs text-outline font-bold" style="font-family: 'Space Grotesk', sans-serif;">NO_ORGS</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">SUBMISSION_HISTORY</h3>
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">PROBLEM</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">STATUS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SCORE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TIME</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SUBMITTED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">DETAIL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sub in Model.Submissions.OrderByDescending(s => s.SubmittedAt))
+                    {
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4">
+                                <a asp-controller="Problem" asp-action="Details" asp-route-id="@sub.Problem.Id"
+                                   class="font-bold hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@sub.Problem.Title</a>
+                            </td>
+                            <td class="p-4">
+                                @switch (sub.Status)
+                                {
+                                    case WebIde.Model.Enums.SubmissionStatus.Accepted:
+                                        <span class="status-accepted">ACCEPTED</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.WrongAnswer:
+                                        <span class="status-wrong">WRONG</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.TimeLimitExceeded:
+                                        <span class="status-tle">TLE</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.CompileError:
+                                        <span class="status-error">CE</span> break;
+                                    default:
+                                        <span class="status-error">@sub.Status.ToString().ToUpper()</span> break;
+                                }
+                            </td>
+                            <td class="p-4 font-black" style="font-family: 'Space Grotesk', sans-serif;">@sub.Score</td>
+                            <td class="p-4 font-bold" style="font-family: 'Space Grotesk', sans-serif;">@sub.WallTimeMs ms</td>
+                            <td class="p-4 text-sm text-outline" style="font-family: 'Space Grotesk', sans-serif;">@sub.SubmittedAt.ToString("HH:mm:ss")</td>
+                            <td class="p-4">
+                                <a asp-controller="Submission" asp-action="Details" asp-route-id="@sub.Id"
+                                   class="border-2 border-black px-3 py-1 text-xs font-bold uppercase
+                                          hover:bg-black hover:text-white transition-none no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">VIEW</a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Submissions.Any())
+                    {
+                        <tr><td colspan="6" class="p-8 text-center text-outline font-bold uppercase text-sm"
+                                style="font-family: 'Space Grotesk', sans-serif;">NO_SUBMISSIONS_YET</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>

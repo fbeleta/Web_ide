@@ -1,4 +1,4 @@
-# Build output
+# Build outputs
 bin/
 obj/
 
@@ -20,3 +20,8 @@ obj/
 # OS
 .DS_Store
 Thumbs.db
+__MACOSX/
+
+# Stitch design kit (source assets, not part of submitted code)
+stitch_sharp_logic_arena/
+stitch_sharp_logic_arena.zip
