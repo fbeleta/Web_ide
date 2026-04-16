@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MONOLITH_OS | Problem Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#000000",
+                        "secondary-fixed": "#c8c6c5",
+                        "background": "#131313",
+                        "surface-container": "#201f1f",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary": "#1c1b1b",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#000000",
+                        "tertiary-container": "#929090",
+                        "tertiary-fixed": "#5f5e5e",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary": "#1c1b1b",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-variant": "#353534",
+                        "tertiary": "#e5e2e1",
+                        "on-primary-fixed": "#ffffff",
+                        "on-surface": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "on-error": "#690005",
+                        "outline-variant": "#474747",
+                        "primary": "#ffffff",
+                        "surface": "#131313",
+                        "primary-container": "#5fedb0",
+                        "secondary-fixed-dim": "#adabaa",
+                        "on-secondary-fixed-variant": "#3c3b3b",
+                        "on-background": "#e5e2e1",
+                        "surface-tint": "#4edea3",
+                        "surface-container-lowest": "#0e0e0e",
+                        "inverse-primary": "#006c4a",
+                        "on-primary": "#002114",
+                        "primary-fixed-dim": "#005236",
+                        "on-tertiary-fixed-variant": "#e5e2e1",
+                        "outline": "#919191",
+                        "surface-bright": "#3a3939",
+                        "on-tertiary-fixed": "#ffffff",
+                        "on-secondary-container": "#e5e2e1",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#c8c6c5",
+                        "tertiary-fixed-dim": "#474646",
+                        "primary-fixed": "#006c4a",
+                        "secondary-container": "#474746",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#6ffbbe",
+                        "on-surface-variant": "#c6c6c6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Space Grotesk"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Space Grotesk', sans-serif; background-color: #000000; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ghost-border { border: 1px solid rgba(71, 71, 71, 0.4); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-on-surface selection:bg-surface-tint selection:text-on-primary overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-[#000000] text-[#4edea3] font-['Space_Grotesk'] tracking-tighter border-b border-[#1A1A1A] flex justify-between items-center w-full px-4 h-12 z-50 fixed top-0">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-[#4edea3] tracking-widest">MONOLITH_OS</span>
+<div class="hidden md:flex gap-6 text-[12px] uppercase tracking-widest items-center h-full">
+<span class="text-[#4edea3] font-bold cursor-pointer transition-opacity active:opacity-80">Explorer</span>
+<span class="text-[#474747] hover:text-[#4edea3] transition-colors cursor-pointer transition-opacity active:opacity-80">Search</span>
+<span class="text-[#474747] hover:text-[#4edea3] transition-colors cursor-pointer transition-opacity active:opacity-80">Source Control</span>
+<span class="text-[#474747] hover:text-[#4edea3] transition-colors cursor-pointer transition-opacity active:opacity-80">Run and Debug</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[20px] cursor-pointer hover:text-[#4edea3] transition-colors">settings</span>
+<span class="material-symbols-outlined text-[20px] cursor-pointer hover:text-[#4edea3] transition-colors">notifications</span>
+<span class="material-symbols-outlined text-[20px] cursor-pointer hover:text-[#4edea3] transition-colors">account_circle</span>
+</div>
+</header>
+<!-- Shell Layout -->
+<div class="flex flex-1 pt-12 pb-6 overflow-hidden">
+<!-- SideNavBar (Left) -->
+<nav class="fixed left-0 top-12 bottom-6 w-16 flex flex-col items-center bg-[#050505] border-r border-[#1A1A1A] z-40">
+<div class="flex flex-col w-full">
+<!-- Explorer (Active) -->
+<div class="border-l-2 border-[#4edea3] text-[#4edea3] bg-[#131313] flex flex-col items-center py-4 cursor-pointer duration-150 ease-in-out">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-['Space_Grotesk'] text-[11px] uppercase tracking-widest mt-1">Expl</span>
+</div>
+<!-- Search -->
+<div class="text-[#474747] flex flex-col items-center py-4 cursor-pointer hover:bg-[#1c1b1b] hover:text-[#ffffff] duration-150 ease-in-out">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Space_Grotesk'] text-[11px] uppercase tracking-widest mt-1">Srch</span>
+</div>
+<!-- Source Control -->
+<div class="text-[#474747] flex flex-col items-center py-4 cursor-pointer hover:bg-[#1c1b1b] hover:text-[#ffffff] duration-150 ease-in-out">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-['Space_Grotesk'] text-[11px] uppercase tracking-widest mt-1">Git</span>
+</div>
+<!-- Run and Debug -->
+<div class="text-[#474747] flex flex-col items-center py-4 cursor-pointer hover:bg-[#1c1b1b] hover:text-[#ffffff] duration-150 ease-in-out">
+<span class="material-symbols-outlined">play_arrow</span>
+<span class="font-['Space_Grotesk'] text-[11px] uppercase tracking-widest mt-1">Run</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-16 w-full flex overflow-hidden">
+<!-- Filters Sidebar (Sub-navigation) -->
+<aside class="w-64 bg-[#0A0A0A] border-r border-[#1A1A1A] flex-shrink-0 flex flex-col p-6 gap-8 overflow-y-auto hide-scrollbar">
+<div>
+<h3 class="text-[10px] uppercase tracking-[0.2em] text-[#474747] mb-4 font-bold">Difficulty</h3>
+<div class="flex flex-col gap-2">
+<button class="flex items-center justify-between px-3 py-2 bg-[#131313] border-l-2 border-[#4edea3] text-[#4edea3] text-sm">
+<span>Easy</span>
+<span class="text-[10px] opacity-60">412</span>
+</button>
+<button class="flex items-center justify-between px-3 py-2 hover:bg-[#1c1b1b] text-[#e5e2e1] text-sm transition-colors">
+<span>Medium</span>
+<span class="text-[10px] opacity-60">728</span>
+</button>
+<button class="flex items-center justify-between px-3 py-2 hover:bg-[#1c1b1b] text-[#e5e2e1] text-sm transition-colors">
+<span>Hard</span>
+<span class="text-[10px] opacity-60">144</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="text-[10px] uppercase tracking-[0.2em] text-[#474747] mb-4 font-bold">Categories</h3>
+<div class="flex flex-col gap-1">
+<label class="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#1c1b1b] group transition-colors">
+<div class="w-4 h-4 border border-[#474747] group-hover:border-[#4edea3] flex items-center justify-center">
+<div class="w-2 h-2 bg-[#4edea3]"></div>
+</div>
+<span class="text-sm">Arrays &amp; Hashing</span>
+</label>
+<label class="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#1c1b1b] group transition-colors">
+<div class="w-4 h-4 border border-[#474747] group-hover:border-[#4edea3] flex items-center justify-center"></div>
+<span class="text-sm">Binary Search</span>
+</label>
+<label class="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#1c1b1b] group transition-colors">
+<div class="w-4 h-4 border border-[#474747] group-hover:border-[#4edea3] flex items-center justify-center"></div>
+<span class="text-sm">Trees</span>
+</label>
+<label class="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#1c1b1b] group transition-colors">
+<div class="w-4 h-4 border border-[#474747] group-hover:border-[#4edea3] flex items-center justify-center"></div>
+<span class="text-sm">Dynamic Programming</span>
+</label>
+<label class="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#1c1b1b] group transition-colors">
+<div class="w-4 h-4 border border-[#474747] group-hover:border-[#4edea3] flex items-center justify-center"></div>
+<span class="text-sm">Graphs</span>
+</label>
+</div>
+</div>
+<div class="mt-auto border border-[#4edea3]/20 p-4 bg-[#4edea3]/5">
+<p class="text-[10px] text-[#4edea3] uppercase tracking-widest mb-1">Current Session</p>
+<p class="text-xl font-bold mb-3 tracking-tight">42:15:08</p>
+<button class="w-full py-2 bg-[#5fedb0] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#4edea3] transition-colors">
+                        Resume Streak
+                    </button>
+</div>
+</aside>
+<!-- Dashboard Body -->
+<div class="flex-1 overflow-y-auto bg-[#000000] p-8 hide-scrollbar">
+<!-- Header Stats -->
+<div class="mb-12 flex justify-between items-end">
+<div>
+<h1 class="text-5xl font-black text-[#4edea3] tracking-tighter mb-2 font-headline uppercase">SYSTEM_OVERVIEW</h1>
+<p class="text-[11px] uppercase tracking-[0.3em] text-[#474747]">Kernel version 4.12.0-STABLE / Core Intelligence v2.1</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-[#0A0A0A] p-4 min-w-[140px] border-l-2 border-[#4edea3]">
+<p class="text-[10px] uppercase tracking-widest text-[#474747] mb-1">Solved</p>
+<p class="text-2xl font-bold text-white">1,284</p>
+</div>
+<div class="bg-[#0A0A0A] p-4 min-w-[140px] border-l-2 border-white">
+<p class="text-[10px] uppercase tracking-widest text-[#474747] mb-1">Global Rank</p>
+<p class="text-2xl font-bold text-white">#412</p>
+</div>
+</div>
+</div>
+<!-- Problem List Container -->
+<div class="bg-[#050505] overflow-hidden border border-[#1A1A1A]">
+<div class="grid grid-cols-12 gap-4 px-6 py-4 bg-[#0A0A0A] border-b border-[#1A1A1A] text-[10px] uppercase font-bold tracking-widest text-[#474747]">
+<div class="col-span-1">Status</div>
+<div class="col-span-6">Problem Name</div>
+<div class="col-span-2">Difficulty</div>
+<div class="col-span-2">Success Rate</div>
+<div class="col-span-1 text-right">Run</div>
+</div>
+<!-- List Rows -->
+<div class="divide-y divide-[#1A1A1A]">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-[#131313] group transition-colors cursor-pointer">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-[#4edea3] text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="col-span-6">
+<h4 class="text-sm font-medium text-white group-hover:text-[#4edea3] transition-colors">4Sum II: Sub-grid Complexity Analysis</h4>
+<p class="text-[10px] text-[#474747] uppercase tracking-wider mt-0.5">Matrix / Hash-map / Optimized O(N^2)</p>
+</div>
+<div class="col-span-2">
+<span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-[#4edea3] text-black">Easy</span>
+</div>
+<div class="col-span-2 text-[12px] font-mono text-[#e5e2e1]">84.2%</div>
+<div class="col-span-1 text-right">
+<span class="material-symbols-outlined text-[#474747] group-hover:text-[#4edea3]">terminal</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-[#131313] group transition-colors cursor-pointer">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-[#474747] text-lg">circle</span>
+</div>
+<div class="col-span-6">
+<h4 class="text-sm font-medium text-white group-hover:text-[#4edea3] transition-colors">Longest Valid Parentheses (Strict Depth)</h4>
+<p class="text-[10px] text-[#474747] uppercase tracking-wider mt-0.5">Stacks / Dynamic Programming</p>
+</div>
+<div class="col-span-2">
+<span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border border-white text-white">Medium</span>
+</div>
+<div class="col-span-2 text-[12px] font-mono text-[#e5e2e1]">42.7%</div>
+<div class="col-span-1 text-right">
+<span class="material-symbols-outlined text-[#474747] group-hover:text-[#4edea3]">terminal</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-[#131313] group transition-colors cursor-pointer">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-[#4edea3] text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="col-span-6">
+<h4 class="text-sm font-medium text-white group-hover:text-[#4edea3] transition-colors">Alien Dictionary: Topo-sort Validation</h4>
+<p class="text-[10px] text-[#474747] uppercase tracking-wider mt-0.5">Graphs / BFS / DFS</p>
+</div>
+<div class="col-span-2">
+<span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border border-white text-white">Medium</span>
+</div>
+<div class="col-span-2 text-[12px] font-mono text-[#e5e2e1]">38.1%</div>
+<div class="col-span-1 text-right">
+<span class="material-symbols-outlined text-[#474747] group-hover:text-[#4edea3]">terminal</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-[#131313] group transition-colors cursor-pointer">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-[#474747] text-lg">circle</span>
+</div>
+<div class="col-span-6">
+<h4 class="text-sm font-medium text-white group-hover:text-[#4edea3] transition-colors">Trapping Rain Water (Volume Optimization)</h4>
+<p class="text-[10px] text-[#474747] uppercase tracking-wider mt-0.5">Two Pointers / Monotonic Stack</p>
+</div>
+<div class="col-span-2">
+<span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-white text-black">Hard</span>
+</div>
+<div class="col-span-2 text-[12px] font-mono text-[#e5e2e1]">12.4%</div>
+<div class="col-span-1 text-right">
+<span class="material-symbols-outlined text-[#474747] group-hover:text-[#4edea3]">terminal</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-[#131313] group transition-colors cursor-pointer">
+<div class="col-span-1">
+<span class="material-symbols-outlined text-white/20 text-lg">history</span>
+</div>
+<div class="col-span-6">
+<h4 class="text-sm font-medium text-white group-hover:text-[#4edea3] transition-colors">Binary Tree Maximum Path Sum</h4>
+<p class="text-[10px] text-[#474747] uppercase tracking-wider mt-0.5">Recursion / DFS</p>
+</div>
+<div class="col-span-2">
+<span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-white text-black">Hard</span>
+</div>
+<div class="col-span-2 text-[12px] font-mono text-[#e5e2e1]">21.9%</div>
+<div class="col-span-1 text-right">
+<span class="material-symbols-outlined text-[#474747] group-hover:text-[#4edea3]">terminal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Style Secondary Stats -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="col-span-2 bg-[#0A0A0A] p-6 border border-[#1A1A1A] relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-tr from-[#4edea3]/5 to-transparent pointer-events-none"></div>
+<h5 class="text-[10px] uppercase tracking-widest text-[#474747] mb-6 font-bold">Activity_Graph</h5>
+<div class="flex items-end gap-1 h-32">
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/20 transition-colors" style="height: 40%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/40 transition-colors" style="height: 65%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/20 transition-colors" style="height: 45%"></div>
+<div class="flex-1 bg-[#4edea3] transition-colors" style="height: 90%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/30 transition-colors" style="height: 55%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/60 transition-colors" style="height: 75%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/10 transition-colors" style="height: 30%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/40 transition-colors" style="height: 60%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/80 transition-colors" style="height: 95%"></div>
+<div class="flex-1 bg-[#1A1A1A] group-hover:bg-[#4edea3]/20 transition-colors" style="height: 45%"></div>
+</div>
+</div>
+<div class="bg-[#0A0A0A] p-6 border border-[#1A1A1A] flex flex-col justify-between">
+<div>
+<h5 class="text-[10px] uppercase tracking-widest text-[#474747] mb-2 font-bold">Mastery_Index</h5>
+<p class="text-4xl font-bold tracking-tighter text-white">92.4<span class="text-[#4edea3]">%</span></p>
+</div>
+<div class="mt-4">
+<div class="w-full h-1 bg-[#1A1A1A]">
+<div class="h-full bg-[#4edea3]" style="width: 92.4%"></div>
+</div>
+<p class="text-[9px] uppercase tracking-widest text-[#474747] mt-2">Exceeds 98.4% of users</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full z-50 flex justify-between items-center px-3 h-[24px] bg-[#4edea3] text-[#000000] font-['Space_Grotesk'] text-[10px] font-bold uppercase">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">cloud_done</span> SYSTEM_READY</span>
+<span class="opacity-50">|</span>
+<span class="hover:bg-[#5fedb0] cursor-default px-1 transition-colors">main*</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="hover:bg-[#5fedb0] cursor-default px-1 transition-colors">LN 42, COL 1</span>
+<span class="hover:bg-[#5fedb0] cursor-default px-1 transition-colors">UTF-8</span>
+<span class="hover:bg-[#5fedb0] cursor-default px-1 transition-colors flex items-center gap-1">TypeScript <span class="material-symbols-outlined text-[12px]">code</span></span>
+</div>
+</footer>
+</body></html>

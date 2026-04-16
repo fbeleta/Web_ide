@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MONOLITH_IDE | GUEST_ACCESS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#474747",
+                        "tertiary-container": "#929090",
+                        "primary-container": "#5fedb0",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary": "#c8c6c5",
+                        "primary-fixed": "#006c4a",
+                        "on-surface-variant": "#c6c6c6",
+                        "on-primary-fixed": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#3c3b3b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-low": "#1c1b1b",
+                        "on-primary": "#002114",
+                        "error-container": "#93000a",
+                        "inverse-on-surface": "#313030",
+                        "on-primary-fixed-variant": "#6ffbbe",
+                        "inverse-surface": "#e5e2e1",
+                        "primary": "#ffffff",
+                        "on-secondary": "#1c1b1b",
+                        "on-primary-container": "#000000",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#4edea3",
+                        "on-secondary-container": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "surface-bright": "#3a3939",
+                        "surface": "#131313",
+                        "primary-fixed-dim": "#005236",
+                        "secondary-fixed-dim": "#adabaa",
+                        "tertiary-fixed-dim": "#474746",
+                        "inverse-primary": "#006c4a",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#e4e2e1",
+                        "on-tertiary-container": "#000000",
+                        "secondary-fixed": "#c8c6c5",
+                        "on-background": "#e5e2e1",
+                        "on-error": "#690005",
+                        "background": "#131313",
+                        "on-tertiary": "#1b1c1c",
+                        "surface-variant": "#353534",
+                        "surface-container": "#201f1f",
+                        "tertiary-fixed": "#5f5e5e",
+                        "secondary-container": "#474746",
+                        "on-tertiary-fixed": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "outline": "#919191",
+                        "surface-container-highest": "#353534",
+                        "tertiary": "#e4e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0rem",
+                        "lg": "0rem",
+                        "xl": "0rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Space Grotesk"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .hard-edge-button {
+            transition: all 0.2s ease-in-out;
+            background: linear-gradient(135deg, #4edea3 0%, #006c4a 100%);
+        }
+        .hard-edge-button:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+        input, select {
+            background-color: #1c1b1b !important;
+            border: 1px solid #353534 !important;
+            color: #ffffff !important;
+            border-radius: 0 !important;
+        }
+        input:focus, select:focus {
+            border-color: #4edea3 !important;
+            ring: none !important;
+            outline: none !important;
+            --tw-ring-offset-width: 0px !important;
+            --tw-ring-width: 0px !important;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between px-6 h-16 w-full bg-[#131313] dark:bg-[#131313] border-b border-[#2a2a2a] docked full-width top-0 z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white" data-icon="terminal">terminal</span>
+<h1 class="text-xl font-bold tracking-tighter text-white font-['Space_Grotesk']">MONOLITH_IDE</h1>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-[#4edea3] font-['Space_Grotesk'] tracking-tighter text-sm" href="#">GUEST_ACCESS</a>
+<a class="text-[#c6c6c6] hover:bg-[#2a2a2a] transition-colors px-3 py-1 font-['Space_Grotesk'] tracking-tighter text-sm" href="#">RESOURCES</a>
+<a class="text-[#c6c6c6] hover:bg-[#2a2a2a] transition-colors px-3 py-1 font-['Space_Grotesk'] tracking-tighter text-sm" href="#">TERMINAL</a>
+</nav>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[#c6c6c6] cursor-pointer hover:bg-[#2a2a2a] p-2" data-icon="more_vert">more_vert</span>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center p-6 space-y-10">
+<!-- Hero Header -->
+<div class="text-center space-y-3">
+<h2 class="text-4xl md:text-6xl font-bold tracking-[-0.04em] text-white uppercase max-w-2xl">WELCOME TO THE MONOLITH</h2>
+<div class="h-1 w-24 bg-surface-tint mx-auto"></div>
+<p class="text-on-surface-variant text-sm tracking-widest uppercase font-medium pt-2">
+                Initialize your temporary node to begin.
+            </p>
+</div>
+<!-- Form Interface -->
+<div class="relative w-full max-w-md space-y-6">
+<!-- Ghost Borders -->
+<div class="absolute -inset-4 border border-outline-variant/30 pointer-events-none"></div>
+<div class="absolute -top-4 -left-4 w-4 h-4 border-t-2 border-l-2 border-surface-tint"></div>
+<div class="absolute -bottom-4 -right-4 w-4 h-4 border-b-2 border-r-2 border-surface-tint"></div>
+<div class="bg-surface-container p-6 space-y-6">
+<div class="space-y-2">
+<label class="text-[10px] text-outline uppercase tracking-widest block" for="display_name">Display_Name</label>
+<input class="w-full px-4 py-3 font-mono text-sm uppercase tracking-tight" id="display_name" placeholder="ENTER_IDENTIFIER" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] text-outline uppercase tracking-widest block" for="language">Primary_Language</label>
+<select class="w-full px-4 py-3 font-mono text-sm uppercase tracking-tight appearance-none" id="language">
+<option value="python">PYTHON</option>
+<option value="cpp">C++</option>
+<option value="typescript">TYPESCRIPT</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Action Logic -->
+<div class="space-y-6 text-center w-full max-w-md">
+<div class="space-y-4">
+<button class="hard-edge-button w-full py-5 text-on-primary font-bold text-lg tracking-tighter uppercase transition-all duration-300">
+                    INITIALIZE_SESSION
+                </button>
+<div class="flex items-center justify-center gap-2">
+<div class="w-2 h-2 rounded-full bg-surface-tint animate-pulse"></div>
+<p class="text-on-surface-variant text-[10px] tracking-widest uppercase font-medium">
+                        STATUS: UPLINK_ESTABLISHED
+                    </p>
+</div>
+</div>
+</div>
+<!-- Technical metadata -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-outline-variant/20 w-full max-w-4xl">
+<div class="space-y-1">
+<p class="text-[10px] text-outline uppercase tracking-widest">Protocol</p>
+<p class="text-xs font-mono text-white">TLS_1.3_AES_256</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-outline uppercase tracking-widest">Node_ID</p>
+<p class="text-xs font-mono text-white">MNLTH-8821-X</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-outline uppercase tracking-widest">Latency</p>
+<p class="text-xs font-mono text-white">12.4ms</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-outline uppercase tracking-widest">Encryption</p>
+<p class="text-xs font-mono text-white">SHA-512_HYBRID</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<footer class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-16 bg-[#131313]/80 backdrop-blur-xl border-t border-[#2a2a2a] docked full-width bottom-0 rounded-none">
+<div class="flex flex-col items-center justify-center text-[#474747] transition-all duration-300 ease-in-out hover:text-white">
+<span class="material-symbols-outlined" data-icon="login">login</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#4edea3] scale-110 transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#474747] transition-all duration-300 ease-in-out hover:text-white">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+</footer>
+</body></html>
