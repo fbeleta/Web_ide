@@ -1,0 +1,27 @@
+# Build outputs
+bin/
+obj/
+
+# VS / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# dotnet
+*.dll
+*.exe
+*.pdb
+*.nupkg
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Stitch design kit (source assets, not part of submitted code)
+stitch_sharp_logic_arena/
+stitch_sharp_logic_arena.zip

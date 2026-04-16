@@ -1,0 +1,78 @@
+@model List<WebIde.Model.ProblemSet>
+@{
+    ViewData["Title"] = "PROBLEM SETS";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">PROBLEM_SETS</h1>
+            <div class="h-2 w-32 bg-tertiary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">PROBLEM SETS</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TITLE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ORGANIZATION</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">VISIBILITY</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">PROBLEMS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">CREATED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ps in Model)
+                    {
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4">
+                                <a asp-controller="ProblemSet" asp-action="Details" asp-route-id="@ps.Id"
+                                   class="font-bold text-base hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@ps.Title</a>
+                            </td>
+                            <td class="p-4">
+                                <a asp-controller="Organization" asp-action="Details" asp-route-id="@ps.Organization.Id"
+                                   class="text-sm font-bold text-primary hover:underline no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@ps.Organization.Name</a>
+                            </td>
+                            <td class="p-4">
+                                @if (ps.IsPublic)
+                                {
+                                    <span class="bg-tertiary-container text-on-tertiary-container border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                                          style="font-family: 'Space Grotesk', sans-serif;">PUBLIC</span>
+                                }
+                                else
+                                {
+                                    <span class="bg-surface-container-highest border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                                          style="font-family: 'Space Grotesk', sans-serif;">PRIVATE</span>
+                                }
+                            </td>
+                            <td class="p-4">
+                                <span class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@ps.Problems.Count</span>
+                            </td>
+                            <td class="p-4 text-sm font-bold" style="font-family: 'Space Grotesk', sans-serif;">@ps.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            <td class="p-4">
+                                <a asp-controller="ProblemSet" asp-action="Details" asp-route-id="@ps.Id"
+                                   class="bg-primary text-white border-2 border-black px-4 py-2 font-bold uppercase text-xs
+                                          shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
+                                          hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">VIEW</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>

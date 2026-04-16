@@ -1,0 +1,87 @@
+@model List<WebIde.Model.Submission>
+@{
+    ViewData["Title"] = "SUBMISSIONS";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</h1>
+            <div class="h-2 w-32 bg-primary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">SUBMISSIONS</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">USER</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">PROBLEM</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">LANG</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">STATUS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SCORE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TIME</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">MEMORY</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SUBMITTED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">DETAIL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sub in Model.OrderByDescending(s => s.SubmittedAt))
+                    {
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4">
+                                <a asp-controller="User" asp-action="Details" asp-route-id="@sub.User.Id"
+                                   class="font-bold text-sm hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@sub.User.Username</a>
+                            </td>
+                            <td class="p-4">
+                                <a asp-controller="Problem" asp-action="Details" asp-route-id="@sub.Problem.Id"
+                                   class="font-bold hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@sub.Problem.Title</a>
+                            </td>
+                            <td class="p-4">
+                                <span class="border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase"
+                                      style="font-family: 'Space Grotesk', sans-serif;">@sub.Language.ToString().ToUpper()</span>
+                            </td>
+                            <td class="p-4">
+                                @switch (sub.Status)
+                                {
+                                    case WebIde.Model.Enums.SubmissionStatus.Accepted:
+                                        <span class="status-accepted">ACCEPTED</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.WrongAnswer:
+                                        <span class="status-wrong">WRONG</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.TimeLimitExceeded:
+                                        <span class="status-tle">TLE</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.CompileError:
+                                        <span class="status-error">CE</span> break;
+                                    default:
+                                        <span class="status-error">@sub.Status.ToString().ToUpper()</span> break;
+                                }
+                            </td>
+                            <td class="p-4 font-black" style="font-family: 'Space Grotesk', sans-serif;">@sub.Score</td>
+                            <td class="p-4 font-bold" style="font-family: 'Space Grotesk', sans-serif;">@sub.WallTimeMs ms</td>
+                            <td class="p-4 font-bold" style="font-family: 'Space Grotesk', sans-serif;">@sub.PeakMemoryKb KB</td>
+                            <td class="p-4 text-sm text-outline" style="font-family: 'Space Grotesk', sans-serif;">@sub.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="p-4">
+                                <a asp-controller="Submission" asp-action="Details" asp-route-id="@sub.Id"
+                                   class="border-2 border-black px-3 py-1 text-xs font-bold uppercase
+                                          hover:bg-black hover:text-white transition-none no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">VIEW</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>

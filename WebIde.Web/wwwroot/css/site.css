@@ -1,0 +1,218 @@
+/* Competitive Brutalism — WebIde Design System
+   "The Raw Compiler" — zero radius, hard shadows, bold typography */
+
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f6f6f6;
+    color: #2f2f2f;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6,
+.font-headline {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ── Brutal Utility Classes ───────────────────────────────────────── */
+.brutal-border {
+    border: 2px solid #000;
+}
+
+.brutal-border-heavy {
+    border: 4px solid #000;
+}
+
+.hard-shadow {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.hard-shadow-lg {
+    box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.hard-shadow-hover {
+    transition: transform 0.0s, box-shadow 0.0s;
+}
+.hard-shadow-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+}
+.hard-shadow-hover:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+/* ── Material Symbols ─────────────────────────────────────────────── */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+/* ── Difficulty Badge Pills ───────────────────────────────────────── */
+.badge-easy {
+    background-color: #32ff00;
+    color: #0c5c00;
+    border: 2px solid #000;
+    padding: 2px 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.badge-medium {
+    background-color: #7f9bff;
+    color: #001c5f;
+    border: 2px solid #000;
+    padding: 2px 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.badge-hard {
+    background-color: #ffc1ce;
+    color: #900042;
+    border: 2px solid #000;
+    padding: 2px 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* ── Submission Status Chips ──────────────────────────────────────── */
+.status-accepted {
+    background-color: #32ff00;
+    color: #0c5c00;
+    border: 2px solid #000;
+    padding: 1px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-wrong {
+    background-color: #f74b6d;
+    color: #510017;
+    border: 2px solid #000;
+    padding: 1px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-tle, .status-mle {
+    background-color: #7f9bff;
+    color: #001c5f;
+    border: 2px solid #000;
+    padding: 1px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-error {
+    background-color: #dddddd;
+    color: #2f2f2f;
+    border: 2px solid #000;
+    padding: 1px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* ── Code Block ───────────────────────────────────────────────────── */
+.code-block {
+    background-color: #0e0e0e;
+    color: #f1f2ff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 1rem;
+    border: 4px solid #000;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* ── Brutal Table ─────────────────────────────────────────────────── */
+.brutal-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.brutal-table thead tr {
+    background-color: #000;
+    color: #fff;
+}
+
+.brutal-table thead th {
+    padding: 14px 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-align: left;
+    border: none;
+}
+
+.brutal-table tbody tr {
+    border-bottom: 2px solid #000;
+    transition: none;
+}
+
+.brutal-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.brutal-table tbody td {
+    padding: 14px 16px;
+    border: none;
+}
+
+/* ── Brutal Card ──────────────────────────────────────────────────── */
+.brutal-card {
+    background-color: #ffffff;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+    padding: 1.5rem;
+}
+
+/* ── No scrollbar utility ─────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Role Badge ───────────────────────────────────────────────────── */
+.role-admin      { background-color: #000; color: #fff; }
+.role-instructor { background-color: #2752c7; color: #f1f2ff; }
+.role-student    { background-color: #e8e8e8; color: #2f2f2f; }

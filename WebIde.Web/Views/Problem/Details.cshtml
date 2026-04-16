@@ -1,0 +1,222 @@
+@model WebIde.Model.Problem
+@{
+    ViewData["Title"] = Model.Title.ToUpper();
+    var sampleCases = Model.TestCases.Where(tc => tc.IsSample).OrderBy(tc => tc.OrderIndex).ToList();
+    // Most recent submission for the console tab
+    var lastSub = Model.Submissions.OrderByDescending(s => s.SubmittedAt).FirstOrDefault();
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<div class="lg:ml-64 flex h-[calc(100vh-80px)] w-full overflow-hidden">
+
+    <section class="w-full md:w-[40%] flex flex-col bg-surface-container-low border-r-4 border-black h-full overflow-y-auto no-scrollbar">
+
+        <div class="p-6 bg-white border-b-4 border-black">
+            <nav class="text-xs font-bold uppercase mb-3" style="font-family: 'Space Grotesk', sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <a asp-controller="Problem" asp-action="Index" class="text-primary hover:underline no-underline">PROBLEMS</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">@Model.Title.ToUpper().Replace(" ", "_")</span>
+            </nav>
+            <div class="flex items-center gap-2 mb-2">
+                @switch (Model.Difficulty)
+                {
+                    case DifficultyLevel.Easy:   <span class="badge-easy">EASY</span>   break;
+                    case DifficultyLevel.Medium: <span class="badge-medium">MEDIUM</span> break;
+                    case DifficultyLevel.Hard:   <span class="badge-hard">HARD</span>   break;
+                }
+                <span class="font-bold text-xs text-outline" style="font-family: 'Space Grotesk', sans-serif;">
+                    TASK_ID: @Model.Id
+                </span>
+            </div>
+            <h2 class="text-3xl font-black uppercase leading-tight mb-4"
+                style="font-family: 'Space Grotesk', sans-serif;">@Model.Title.ToUpper().Replace(" ", "_")</h2>
+            <div class="flex gap-4 text-xs font-bold">
+                <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">schedule</span>
+                    <span>@(Model.TimeLimitMs / 1000.0)s</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">memory</span>
+                    <span>@(Model.MemoryLimitKb / 1024)MB</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">person</span>
+                    <span>@Model.AuthorUsername</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6 text-sm leading-relaxed">
+            <div>
+                <h3 class="font-black uppercase mb-2 border-b-2 border-black inline-block"
+                    style="font-family: 'Space Grotesk', sans-serif;">DESCRIPTION</h3>
+                <p>@Model.Description</p>
+            </div>
+
+            @if (sampleCases.Any())
+            {
+                <div>
+                    <h3 class="font-black uppercase mb-3 border-b-2 border-black inline-block"
+                        style="font-family: 'Space Grotesk', sans-serif;">SAMPLE_TEST_CASES</h3>
+                    @foreach (var tc in sampleCases)
+                    {
+                        <div class="bg-surface-container-highest p-4 brutal-border mb-3">
+                            <h4 class="font-bold text-xs uppercase mb-2 text-primary"
+                                style="font-family: 'Space Grotesk', sans-serif;">EXAMPLE_@tc.OrderIndex</h4>
+                            <div class="font-mono text-xs space-y-1">
+                                <p><span class="opacity-50">INPUT:  </span>@tc.InputArgs</p>
+                                <p><span class="opacity-50">OUTPUT: </span>@tc.ExpectedOutput</p>
+                                <p><span class="opacity-40 text-[10px]">POINTS: @tc.Points</span></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div>
+                <h3 class="font-black uppercase mb-3 border-b-2 border-black inline-block"
+                    style="font-family: 'Space Grotesk', sans-serif;">TAGS</h3>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <a asp-controller="Tag" asp-action="Details" asp-route-id="@tag.Id"
+                           class="border-2 border-black px-2 py-1 text-[10px] font-black uppercase
+                                  hover:bg-black hover:text-white transition-none no-underline"
+                           style="font-family: 'Space Grotesk', sans-serif;">@tag.Name</a>
+                    }
+                </div>
+            </div>
+
+            <div class="pt-6 border-t-2 border-black/10">
+                <p class="text-[10px] font-bold text-outline mb-2"
+                   style="font-family: 'Space Grotesk', sans-serif;">TOP_SOLVERS:</p>
+                <div class="space-y-1">
+                    @foreach (var sub in Model.Submissions.Where(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted).OrderBy(s => s.WallTimeMs).Take(3))
+                    {
+                        <div class="flex justify-between text-xs font-bold">
+                            <a asp-controller="User" asp-action="Details" asp-route-id="@sub.User.Id"
+                               class="text-primary hover:underline no-underline"
+                               style="font-family: 'Space Grotesk', sans-serif;">@sub.User.DisplayName</a>
+                            <span class="text-outline">@sub.WallTimeMs ms</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="flex-1 flex flex-col overflow-hidden h-full">
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <div class="h-12 bg-surface-container-highest border-b-4 border-black flex items-center px-4 justify-between">
+                <div class="flex gap-2">
+                    <span class="px-4 py-1 bg-white brutal-border font-black text-xs uppercase"
+                          style="font-family: 'Space Grotesk', sans-serif;">solution.cpp</span>
+                </div>
+                <span class="text-xs font-bold text-outline uppercase"
+                      style="font-family: 'Space Grotesk', sans-serif;">C++_17</span>
+            </div>
+
+            <div class="flex-1 overflow-auto bg-[#0e0e0e] text-white p-4 font-mono text-sm leading-relaxed no-scrollbar">
+                @if (lastSub != null)
+                {
+                    <div class="flex">
+                        <div class="w-8 text-outline text-right pr-4 select-none opacity-30 text-xs leading-relaxed">
+                            @for (int i = 1; i <= lastSub.SourceCode.Split('\n').Length; i++)
+                            {
+                                @i<br />
+                            }
+                        </div>
+                        <pre class="flex-1 text-[#f1f2ff] whitespace-pre-wrap">@lastSub.SourceCode</pre>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-outline text-xs uppercase font-bold"
+                         style="font-family: 'Space Grotesk', sans-serif;">// NO_SUBMISSIONS_YET</div>
+                }
+            </div>
+        </div>
+
+        <div class="h-2/5 min-h-[220px] bg-[#f6f6f6] border-t-4 border-black flex flex-col">
+            <div class="h-10 bg-surface-container-highest border-b-2 border-black flex items-center px-4 gap-4">
+                <span class="font-black text-[10px] uppercase text-primary border-b-2 border-primary h-full flex items-center"
+                      style="font-family: 'Space Grotesk', sans-serif;">CONSOLE</span>
+                <span class="font-black text-[10px] uppercase text-outline h-full flex items-center"
+                      style="font-family: 'Space Grotesk', sans-serif;">TEST_CASES (@Model.TestCases.Count)</span>
+                <span class="font-black text-[10px] uppercase text-outline h-full flex items-center"
+                      style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS (@Model.Submissions.Count)</span>
+            </div>
+
+            <div class="flex-1 p-4 font-mono text-xs overflow-y-auto bg-white no-scrollbar">
+                @if (lastSub != null)
+                {
+                    <p class="font-bold mb-2" style="color: #106b00; font-family: 'Space Grotesk', sans-serif;">
+                        &gt;&gt;&gt; LAST_SUBMISSION — <span class="status-@lastSub.Status.ToString().ToLower()">@lastSub.Status.ToString().ToUpper()</span>
+                    </p>
+                    @if (lastSub.ExecutionResult != null)
+                    {
+                        <div class="space-y-1">
+                            <p><span class="opacity-50">STDOUT: </span>@(string.IsNullOrEmpty(lastSub.ExecutionResult.Stdout) ? "(empty)" : lastSub.ExecutionResult.Stdout)</p>
+                            <p><span class="opacity-50">EXIT:   </span>@lastSub.ExecutionResult.ExitCode</p>
+                            <p><span class="opacity-50">TIME:   </span>@lastSub.WallTimeMs ms</p>
+                            <p><span class="opacity-50">MEM:    </span>@lastSub.PeakMemoryKb KB</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-outline font-bold" style="font-family: 'Space Grotesk', sans-serif;">
+                        &gt;&gt;&gt; NO_SUBMISSIONS_YET. Submit a solution to see results here.
+                    </p>
+                }
+
+                <div class="mt-4 pt-4 border-t-2 border-black/10">
+                    <p class="text-outline mb-2 text-[10px] uppercase font-bold"
+                       style="font-family: 'Space Grotesk', sans-serif;">ALL_SUBMISSIONS:</p>
+                    @foreach (var sub in Model.Submissions.OrderByDescending(s => s.SubmittedAt))
+                    {
+                        <div class="flex justify-between items-center py-1 border-b border-black/10">
+                            <a asp-controller="User" asp-action="Details" asp-route-id="@sub.User.Id"
+                               class="text-primary font-bold no-underline hover:underline text-[10px]"
+                               style="font-family: 'Space Grotesk', sans-serif;">@sub.User.Username</a>
+                            <a asp-controller="Submission" asp-action="Details" asp-route-id="@sub.Id"
+                               class="no-underline">
+                                @switch (sub.Status)
+                                {
+                                    case WebIde.Model.Enums.SubmissionStatus.Accepted:
+                                        <span class="status-accepted">ACCEPTED</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.WrongAnswer:
+                                        <span class="status-wrong">WRONG_ANSWER</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.TimeLimitExceeded:
+                                        <span class="status-tle">TLE</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.CompileError:
+                                        <span class="status-error">COMPILE_ERROR</span> break;
+                                    default:
+                                        <span class="status-error">@sub.Status.ToString().ToUpper()</span> break;
+                                }
+                            </a>
+                            <span class="text-outline text-[10px]">@sub.WallTimeMs ms</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="p-3 border-t-2 border-black flex justify-between items-center bg-white">
+                <a asp-controller="Problem" asp-action="Index"
+                   class="px-4 py-2 brutal-border bg-surface-container-highest font-black uppercase text-xs
+                          hover:bg-black hover:text-white no-underline transition-none"
+                   style="font-family: 'Space Grotesk', sans-serif;">← BACK</a>
+                <span class="text-[10px] font-bold text-outline uppercase"
+                      style="font-family: 'Space Grotesk', sans-serif;">
+                    @Model.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted) ACCEPTED
+                </span>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,103 @@
+@model WebIde.Model.ProblemSet
+@{
+    ViewData["Title"] = Model.Title.ToUpper();
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+        <nav class="text-xs font-bold uppercase mb-8" style="font-family: 'Space Grotesk', sans-serif;">
+            <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+            <span class="mx-2 text-outline">/</span>
+            <a asp-controller="ProblemSet" asp-action="Index" class="text-primary hover:underline no-underline">PROBLEM SETS</a>
+            <span class="mx-2 text-outline">/</span>
+            <span class="text-on-surface-variant">@Model.Title.ToUpper().Replace(" ", "_")</span>
+        </nav>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
+            <div class="flex justify-between items-start mb-4">
+                <h1 class="text-4xl font-black uppercase tracking-tighter"
+                    style="font-family: 'Space Grotesk', sans-serif;">@Model.Title.ToUpper().Replace(" ", "_")</h1>
+                @if (Model.IsPublic)
+                {
+                    <span class="bg-tertiary-container text-on-tertiary-container border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                          style="font-family: 'Space Grotesk', sans-serif;">PUBLIC</span>
+                }
+                else
+                {
+                    <span class="bg-surface-container-highest border-2 border-black px-3 py-1 text-xs font-black uppercase"
+                          style="font-family: 'Space Grotesk', sans-serif;">PRIVATE</span>
+                }
+            </div>
+            <p class="text-base leading-relaxed mb-6">@Model.Description</p>
+            <div class="flex gap-4 flex-wrap text-sm font-bold" style="font-family: 'Space Grotesk', sans-serif;">
+                <span>CREATED: @Model.CreatedAt.ToString("yyyy-MM-dd")</span>
+                <span>·</span>
+                <span>ORG:
+                    <a asp-controller="Organization" asp-action="Details" asp-route-id="@Model.Organization.Id"
+                       class="text-primary hover:underline no-underline">@Model.Organization.Name</a>
+                </span>
+                <span>·</span>
+                <span>ORDER: #@Model.OrderIndex</span>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">
+            PROBLEMS (@Model.Problems.Count)
+        </h2>
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">#</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TITLE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TAGS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 1; }
+                    @foreach (var p in Model.Problems)
+                    {
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4 font-black text-outline" style="font-family: 'Space Grotesk', sans-serif;">@(idx++)</td>
+                            <td class="p-4">
+                                <a asp-controller="Problem" asp-action="Details" asp-route-id="@p.Id"
+                                   class="font-bold hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@p.Title</a>
+                            </td>
+                            <td class="p-4">
+                                @switch (p.Difficulty)
+                                {
+                                    case DifficultyLevel.Easy:   <span class="badge-easy">EASY</span>   break;
+                                    case DifficultyLevel.Medium: <span class="badge-medium">MEDIUM</span> break;
+                                    case DifficultyLevel.Hard:   <span class="badge-hard">HARD</span>   break;
+                                }
+                            </td>
+                            <td class="p-4">
+                                <div class="flex gap-1 flex-wrap">
+                                    @foreach (var tag in p.Tags)
+                                    {
+                                        <a asp-controller="Tag" asp-action="Details" asp-route-id="@tag.Id"
+                                           class="text-[10px] text-primary font-black uppercase no-underline hover:underline"
+                                           style="font-family: 'Space Grotesk', sans-serif;">#@tag.Name.Replace(" ", "_")</a>
+                                    }
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <a asp-controller="Problem" asp-action="Details" asp-route-id="@p.Id"
+                                   class="border-2 border-black px-3 py-1 text-xs font-bold uppercase
+                                          hover:bg-black hover:text-white transition-none no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">SOLVE</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
