@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import ProblemLibrary from './pages/ProblemLibrary';
 import CodeEditor from './pages/CodeEditor';
+import SubmissionsList from './pages/SubmissionsList';
 import SubmissionResults from './pages/SubmissionResults';
 import UserProfile from './pages/UserProfile';
 
@@ -13,7 +14,8 @@ export default function App() {
           <Route index element={<Navigate to="/library" replace />} />
           <Route path="/library" element={<ProblemLibrary />} />
           <Route path="/editor" element={<CodeEditor />} />
-          <Route path="/submissions" element={<SubmissionResults />} />
+          <Route path="/submissions" element={<SubmissionsList />} />
+          <Route path="/submissions/:id" element={<SubmissionResults />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="*" element={<Navigate to="/library" replace />} />
         </Route>

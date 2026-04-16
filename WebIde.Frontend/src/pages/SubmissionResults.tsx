@@ -28,7 +28,7 @@ export default function SubmissionResults() {
   const navigate = useNavigate();
 
   return (
-    <div className="p-6 md:p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 pb-20 md:pb-8 max-w-6xl mx-auto space-y-8">
       {/* Status Header */}
       <header className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 bg-surface-container p-8 rounded-xl border border-primary/10 flex items-center gap-4">

@@ -21,7 +21,7 @@ export default function MobileNav() {
           }
         >
           <span className="material-symbols-outlined">{item.icon}</span>
-          <span className="text-[0.6rem] uppercase tracking-widest font-bold">{item.label}</span>
+          <span className="text-xs uppercase tracking-widest font-bold">{item.label}</span>
         </NavLink>
       ))}
     </nav>

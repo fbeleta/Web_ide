@@ -3,13 +3,13 @@ import { NavLink } from 'react-router-dom';
 const navItems = [
   { icon: 'list_alt', label: 'Library', to: '/library' },
   { icon: 'history_edu', label: 'Submissions', to: '/submissions' },
-  { icon: 'corporate_fare', label: 'Organizations', to: '/profile' },
+  { icon: 'person', label: 'Profile', to: '/profile' },
   { icon: 'settings', label: 'Settings', to: '/settings' },
 ];
 
 export default function SideNav() {
   return (
-    <aside className="hidden md:flex flex-col w-64 fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-surface-container z-40">
+    <aside className="hidden md:flex flex-col w-64 fixed left-0 top-0 h-screen bg-surface-container z-40">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-1">
           <div className="w-8 h-8 bg-surface-container-highest rounded-lg flex items-center justify-center border border-primary/20">

@@ -58,7 +58,7 @@ export default function ProblemLibrary() {
               </div>
               <div className="pt-4">
                 <button
-                  onClick={() => navigate('/editor')}
+                  onClick={() => navigate('/editor?tab=Description')}
                   className="bg-gradient-to-r from-primary to-on-primary-container text-on-primary font-bold py-3 px-8 rounded-xl flex items-center gap-3 hover:opacity-90 transition-opacity shadow-lg shadow-primary/10"
                 >
                   Start Solving
@@ -101,7 +101,7 @@ export default function ProblemLibrary() {
         {problems.map((problem) => (
           <div
             key={problem.id}
-            onClick={() => navigate('/editor')}
+            onClick={() => navigate(`/editor?tab=Description`)}
             className="bg-surface-container rounded-xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-transparent hover:border-primary/20 hover:bg-surface-container-high transition-all group cursor-pointer"
           >
             <div className="flex items-center gap-4 flex-1">
