@@ -25,3 +25,11 @@ __MACOSX/
 # Stitch design kit (source assets, not part of submitted code)
 stitch_sharp_logic_arena/
 stitch_sharp_logic_arena.zip
+
+# Node / Vite frontend build artifacts
+node_modules/
+dist/
+.vite/
+
+# Lab sandbox execution outputs
+lab-2/

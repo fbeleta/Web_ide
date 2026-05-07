@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#474747",
+                        "tertiary-container": "#929090",
+                        "primary-container": "#5fedb0",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary": "#c8c6c5",
+                        "primary-fixed": "#006c4a",
+                        "on-surface-variant": "#c6c6c6",
+                        "on-primary-fixed": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#3c3b3b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-low": "#1c1b1b",
+                        "on-primary": "#002114",
+                        "error-container": "#93000a",
+                        "inverse-on-surface": "#313030",
+                        "on-primary-fixed-variant": "#6ffbbe",
+                        "inverse-surface": "#e5e2e1",
+                        "primary": "#ffffff",
+                        "on-secondary": "#1c1b1b",
+                        "on-primary-container": "#000000",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#4edea3",
+                        "on-secondary-container": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "surface-bright": "#3a3939",
+                        "surface": "#131313",
+                        "primary-fixed-dim": "#005236",
+                        "secondary-fixed-dim": "#adabaa",
+                        "tertiary-fixed-dim": "#474746",
+                        "inverse-primary": "#006c4a",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#e4e2e1",
+                        "on-tertiary-container": "#000000",
+                        "secondary-fixed": "#c8c6c5",
+                        "on-background": "#e5e2e1",
+                        "on-error": "#690005",
+                        "background": "#131313",
+                        "on-tertiary": "#1b1c1c",
+                        "surface-variant": "#353534",
+                        "surface-container": "#201f1f",
+                        "tertiary-fixed": "#5f5e5e",
+                        "secondary-container": "#474746",
+                        "on-tertiary-fixed": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "outline": "#919191",
+                        "surface-container-highest": "#353534",
+                        "tertiary": "#e4e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Space Grotesk"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .signal-gradient {
+            background: linear-gradient(135deg, #4edea3 0%, #006c4a 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-background min-h-screen flex flex-col items-center justify-center p-6 sm:p-12 overflow-x-hidden">
+<!-- Brand Header (Simplified TopAppBar Concept for Focused Task) -->
+<header class="fixed top-0 left-0 w-full flex items-center justify-between px-8 h-20 border-b border-surface-container-high bg-black/50 backdrop-blur-md z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-surface-tint" data-icon="terminal">terminal</span>
+<h1 class="text-xl font-bold tracking-tighter text-white font-headline">MONOLITH_IDE</h1>
+</div>
+<div class="hidden md:flex gap-8 text-sm font-medium">
+<span class="text-on-surface-variant hover:text-white transition-colors cursor-pointer tracking-widest">SYSTEM_STATUS</span>
+<span class="text-on-surface-variant hover:text-white transition-colors cursor-pointer tracking-widest">DOCUMENTATION</span>
+</div>
+</header>
+<main class="w-full max-w-xl mt-20 mb-20">
+<!-- Structural Monolith Header -->
+<div class="mb-12 border-l-2 border-surface-tint pl-8 py-2">
+<h2 class="text-6xl font-bold tracking-tighter text-white mb-2 leading-none">REGISTER</h2>
+<p class="text-on-surface-variant tracking-widest uppercase text-xs">Access the Obsidian Core Ledger</p>
+</div>
+<!-- Registration Form Shell -->
+<section class="space-y-12">
+<form class="space-y-8">
+<!-- Username Field -->
+<div class="group border-b border-surface-container-high focus-within:border-surface-tint transition-all duration-500">
+<label class="block text-[10px] tracking-[0.3em] text-on-surface-variant group-focus-within:text-surface-tint mb-1">USER_NAME</label>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-outline-variant mr-4 text-sm" data-icon="person">person</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-surface-container-high py-3 font-body" placeholder="ENTR_USERNAME" type="text"/>
+</div>
+</div>
+<!-- Email Field -->
+<div class="group border-b border-surface-container-high focus-within:border-surface-tint transition-all duration-500">
+<label class="block text-[10px] tracking-[0.3em] text-on-surface-variant group-focus-within:text-surface-tint mb-1">IDENTITY_EMAIL</label>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-outline-variant mr-4 text-sm" data-icon="alternate_email">alternate_email</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-surface-container-high py-3 font-body" placeholder="ENTR_EMAIL_ADDRESS" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="group border-b border-surface-container-high focus-within:border-surface-tint transition-all duration-500">
+<label class="block text-[10px] tracking-[0.3em] text-on-surface-variant group-focus-within:text-surface-tint mb-1">ENCRYPTION_KEY</label>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-outline-variant mr-4 text-sm" data-icon="key">key</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-surface-container-high py-3 font-body" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+<!-- Confirm Password Field -->
+<div class="group border-b border-surface-container-high focus-within:border-surface-tint transition-all duration-500">
+<label class="block text-[10px] tracking-[0.3em] text-on-surface-variant group-focus-within:text-surface-tint mb-1">VALIDATE_KEY</label>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-outline-variant mr-4 text-sm" data-icon="lock">lock</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-surface-container-high py-3 font-body" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+<!-- CTA Section -->
+<div class="pt-8 flex flex-col items-start gap-8">
+<button class="w-full h-16 signal-gradient text-on-primary font-bold tracking-[0.2em] text-sm flex items-center justify-center gap-4 hover:opacity-90 active:scale-[0.98] transition-all" type="submit">
+                        CREATE_ACCOUNT
+                        <span class="material-symbols-outlined text-xl" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Terms and Conditions Metadata -->
+<div class="bg-surface-container-lowest p-6 border-l border-surface-container-high">
+<p class="text-[10px] leading-relaxed text-on-surface-variant uppercase tracking-widest">
+                            By initializing the account sequence, you acknowledge the <span class="text-white hover:text-surface-tint cursor-pointer transition-colors">Digital Autonomy Protocols</span> and accept the <span class="text-white hover:text-surface-tint cursor-pointer transition-colors">Obsidian Terms of Service</span>. Your data is encrypted at the monolith layer.
+                        </p>
+</div>
+</div>
+</form>
+<!-- Bottom Redirection -->
+<div class="flex items-center justify-between pt-12 border-t border-surface-container-high">
+<div class="text-[10px] tracking-widest text-on-surface-variant uppercase">Already mapped?</div>
+<button class="text-surface-tint font-bold text-xs tracking-widest flex items-center gap-2 hover:gap-4 transition-all">
+                    RESUME_SESSION <span class="material-symbols-outlined text-sm" data-icon="login">login</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Contextual Graphic Background (Subtle brutalist texture) -->
+<div class="fixed inset-0 pointer-events-none -z-10 opacity-20">
+<div class="absolute top-0 right-0 w-1/3 h-full border-l border-outline-variant/30"></div>
+<div class="absolute bottom-0 left-0 w-full h-1/4 border-t border-outline-variant/30"></div>
+<div class="absolute top-1/4 left-1/4 w-px h-1/2 bg-gradient-to-b from-transparent via-outline-variant/40 to-transparent"></div>
+</div>
+<!-- BottomNavBar (Hidden on Mobile per user context of a focused task, but kept as reference for system hierarchy) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-16 bg-[#131313]/80 backdrop-blur-xl border-t border-[#2a2a2a]">
+<div class="flex flex-col items-center justify-center text-[#4edea3] scale-110">
+<span class="material-symbols-outlined" data-icon="login">login</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#474747]">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#474747]">
+<span class="material-symbols-outlined" data-icon="qr_code_scanner">qr_code_scanner</span>
+</div>
+</nav>
+</body></html>

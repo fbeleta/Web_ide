@@ -1,16 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WebIde.Model;
 
 public class Organization
 {
+    [Key]
     public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public List<User> Members { get; set; }
-    public List<ProblemSet> ProblemSets { get; set; }
-
-    public Organization()
-    {
-        Members = new List<User>();
-        ProblemSets = new List<ProblemSet>();
-    }
+    public virtual ICollection<User> Members { get; set; } = new List<User>();
+    public virtual ICollection<ProblemSet> ProblemSets { get; set; } = new List<ProblemSet>();
 }
