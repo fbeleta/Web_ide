@@ -13,6 +13,9 @@
 <main class="lg:ml-64 pt-20">
     <div class="max-w-7xl mx-auto p-6 md:p-10">
 
+        @{
+            string lbSort = ViewData["sort"]?.ToString() ?? "solved";
+        }
         <div class="mb-12 border-l-8 border-primary pl-6">
             <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-2"
                 style="font-family: 'Space Grotesk', sans-serif;">LEADERBOARD</h1>
@@ -23,6 +26,14 @@
                 <span class="mx-2 text-outline">/</span>
                 <span class="text-on-surface-variant">LEADERBOARD</span>
             </nav>
+            <div class="flex gap-3 mt-4">
+                <a asp-action="Index" asp-route-sort="solved"
+                   class="border-2 border-black px-4 py-2 font-black text-xs uppercase no-underline @(lbSort == "solved" ? "bg-black text-white" : "bg-white hover:bg-surface-container-low")"
+                   style="font-family: 'Space Grotesk', sans-serif;">SORT:_SOLVED</a>
+                <a asp-action="Index" asp-route-sort="score"
+                   class="border-2 border-black px-4 py-2 font-black text-xs uppercase no-underline @(lbSort == "score" ? "bg-black text-white" : "bg-white hover:bg-surface-container-low")"
+                   style="font-family: 'Space Grotesk', sans-serif;">SORT:_SCORE</a>
+            </div>
         </div>
 
         @if (top3.Any())

@@ -4,9 +4,34 @@
 
 WebIde is a self-hosted competitive coding platform. Users write code in a browser-based editor, submit it, and get results streamed back in real time. The system separates concerns into distinct layers: presentation, business logic, and code execution.
 
-## Current State
+## Current State (Lab 3)
 
-The domain model layer (`WebIde.Model`) is implemented as a .NET class library. A console app (`WebIde.Console`) exercises the model with LINQ queries and async patterns. No web layer exists yet.
+All three layers are implemented:
+
+- **`WebIde.Model`** — domain entity classes with EF Core annotations (`[Key]`, `[ForeignKey]`, `virtual ICollection<T>`)
+- **`WebIde.DAL`** — `WebIdeDbContext` with `DbSet<T>` for all entities; handles N-N join tables via `OnModelCreating`; migrations stored here
+- **`WebIde.Frontend`** — ASP.NET MVC (.NET 10) with EF-backed repositories, custom attribute routing, and sortable list views; connected to PostgreSQL via Npgsql
+
+A console app (`WebIde.Console`) also exercises the domain model with LINQ queries and async patterns (Lab 1 artifact).
+
+## Current Layer Diagram
+
+```
+Browser
+  └── ASP.NET MVC Views (Razor / Tailwind CSS)
+        │
+        │ Controller actions
+        ▼
+  WebIde.Frontend                  ← controllers, EF repositories, views
+        │
+        │ EF Core + Npgsql
+        ▼
+  WebIde.DAL (WebIdeDbContext)
+        │
+        │ TCP 5432
+        ▼
+  PostgreSQL
+```
 
 ## Target Architecture
 

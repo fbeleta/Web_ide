@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WebIde.Model;
 
 public class ExecutionResult
 {
+    [Key]
     public int Id { get; set; }
     public required string Stdout { get; set; }
     public required string Stderr { get; set; }

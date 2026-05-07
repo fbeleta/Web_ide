@@ -19,6 +19,11 @@
             </nav>
         </div>
 
+        @{
+            string currentSort = ViewData["sort"]?.ToString() ?? "date-desc";
+            string NextDateSort() => currentSort == "date-desc" ? "date-asc" : "date-desc";
+            string NextScoreSort() => currentSort == "score-desc" ? "score-asc" : "score-desc";
+        }
         <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -26,16 +31,22 @@
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">USER</th>
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">PROBLEM</th>
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">LANG</th>
-                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">STATUS</th>
-                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SCORE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">
+                            <a asp-action="Index" asp-route-sort="status" class="text-white hover:text-primary no-underline">STATUS@(currentSort == "status" ? " ▲" : "")</a>
+                        </th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">
+                            <a asp-action="Index" asp-route-sort="@NextScoreSort()" class="text-white hover:text-primary no-underline">SCORE@(currentSort == "score-desc" ? " ▼" : currentSort == "score-asc" ? " ▲" : "")</a>
+                        </th>
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TIME</th>
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">MEMORY</th>
-                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SUBMITTED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">
+                            <a asp-action="Index" asp-route-sort="@NextDateSort()" class="text-white hover:text-primary no-underline">SUBMITTED@(currentSort == "date-desc" ? " ▼" : currentSort == "date-asc" ? " ▲" : "")</a>
+                        </th>
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">DETAIL</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var sub in Model.OrderByDescending(s => s.SubmittedAt))
+                    @foreach (var sub in Model)
                     {
                         <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
                             <td class="p-4">

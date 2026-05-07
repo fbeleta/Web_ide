@@ -3,18 +3,21 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
+[Route("orgs")]
 public class OrganizationController : Controller
 {
     private readonly OrganizationRepository _repo;
 
     public OrganizationController(OrganizationRepository repo) => _repo = repo;
 
+    [Route("")]
     public IActionResult Index()
     {
         ViewData["Title"] = "ORGANIZATIONS";
         return View(_repo.GetAll());
     }
 
+    [Route("{id:int}")]
     public IActionResult Details(int id)
     {
         var org = _repo.GetById(id);

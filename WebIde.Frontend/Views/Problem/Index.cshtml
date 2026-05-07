@@ -90,16 +90,30 @@
             <div class="xl:col-span-3">
                 <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                     <table class="w-full text-left border-collapse">
+                        @{
+                            string currentSort = ViewData["sort"]?.ToString() ?? "";
+                            string NextSort(string asc, string desc) => currentSort == asc ? desc : asc;
+                            string SortArrow(string asc, string desc) => currentSort == asc ? " ▲" : currentSort == desc ? " ▼" : "";
+                        }
                         <thead>
                             <tr class="bg-black text-white border-b-4 border-black">
                                 <th class="p-4 font-black uppercase text-xs tracking-widest"
                                     style="font-family: 'Space Grotesk', sans-serif;">STATUS</th>
                                 <th class="p-4 font-black uppercase text-xs tracking-widest"
-                                    style="font-family: 'Space Grotesk', sans-serif;">PROBLEM_NAME</th>
+                                    style="font-family: 'Space Grotesk', sans-serif;">
+                                    <a asp-action="Index" asp-route-sort="title"
+                                       class="text-white hover:text-primary no-underline">PROBLEM_NAME@SortArrow("title","title")</a>
+                                </th>
                                 <th class="p-4 font-black uppercase text-xs tracking-widest"
-                                    style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</th>
+                                    style="font-family: 'Space Grotesk', sans-serif;">
+                                    <a asp-action="Index" asp-route-sort="@NextSort("difficulty-asc","difficulty-desc")"
+                                       class="text-white hover:text-primary no-underline">DIFFICULTY@SortArrow("difficulty-asc","difficulty-desc")</a>
+                                </th>
                                 <th class="p-4 font-black uppercase text-xs tracking-widest"
-                                    style="font-family: 'Space Grotesk', sans-serif;">ACCEPTANCE</th>
+                                    style="font-family: 'Space Grotesk', sans-serif;">
+                                    <a asp-action="Index" asp-route-sort="@NextSort("acceptance-desc","acceptance-asc")"
+                                       class="text-white hover:text-primary no-underline">ACCEPTANCE@SortArrow("acceptance-asc","acceptance-desc")</a>
+                                </th>
                                 <th class="p-4 font-black uppercase text-xs tracking-widest"
                                     style="font-family: 'Space Grotesk', sans-serif;">ACTION</th>
                             </tr>
