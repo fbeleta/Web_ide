@@ -3,6 +3,7 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
+[Route("problems")]
 public class ProblemController : Controller
 {
     private readonly ProblemRepository _repo;
@@ -14,12 +15,14 @@ public class ProblemController : Controller
         _submissions = submissions;
     }
 
+    [Route("")]
     public IActionResult Index()
     {
         ViewData["Title"] = "PROBLEMS";
         return View(_repo.GetAll());
     }
 
+    [Route("{id:int}")]
     public IActionResult Details(int id)
     {
         var problem = _repo.GetById(id);
