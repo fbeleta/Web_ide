@@ -10,7 +10,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<WebIdeDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("WebIdeDb"),
+        builder.Configuration.GetConnectionString("WebIdeDbContext"),
         o => o.MigrationsAssembly("WebIde.DAL")));
 
 builder.Services.AddScoped<ProblemRepository>();
