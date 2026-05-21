@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MONOLITH_OS | IDE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #131313;
+            color: #e5e2e1;
+            margin: 0;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1A1A1A;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4edea3;
+        }
+        .syntax-keyword { color: #4edea3; }
+        .syntax-comment { color: #888888; }
+        .syntax-text { color: #FFFFFF; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#313030",
+                      "error": "#ffb4ab",
+                      "on-tertiary-container": "#000000",
+                      "secondary-fixed": "#c8c6c5",
+                      "background": "#131313",
+                      "surface-container": "#201f1f",
+                      "surface-container-high": "#2a2a2a",
+                      "on-secondary": "#1c1b1b",
+                      "error-container": "#93000a",
+                      "on-primary-container": "#000000",
+                      "tertiary-container": "#929090",
+                      "tertiary-fixed": "#5f5e5e",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary": "#1c1b1b",
+                      "surface-container-low": "#1c1b1b",
+                      "surface-variant": "#353534",
+                      "tertiary": "#e5e2e1",
+                      "on-primary-fixed": "#ffffff",
+                      "on-surface": "#e5e2e1",
+                      "surface-dim": "#131313",
+                      "on-error": "#690005",
+                      "outline-variant": "#474747",
+                      "primary": "#ffffff",
+                      "surface": "#131313",
+                      "primary-container": "#5fedb0",
+                      "secondary-fixed-dim": "#adabaa",
+                      "on-secondary-fixed-variant": "#3c3b3b",
+                      "on-background": "#e5e2e1",
+                      "surface-tint": "#4edea3",
+                      "surface-container-lowest": "#0e0e0e",
+                      "inverse-primary": "#006c4a",
+                      "on-primary": "#002114",
+                      "primary-fixed-dim": "#005236",
+                      "on-tertiary-fixed-variant": "#e5e2e1",
+                      "outline": "#919191",
+                      "surface-bright": "#3a3939",
+                      "on-tertiary-fixed": "#ffffff",
+                      "on-secondary-container": "#e5e2e1",
+                      "inverse-surface": "#e5e2e1",
+                      "secondary": "#c8c6c5",
+                      "tertiary-fixed-dim": "#474646",
+                      "primary-fixed": "#006c4a",
+                      "secondary-container": "#474746",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "surface-container-highest": "#353534",
+                      "on-primary-fixed-variant": "#6ffbbe",
+                      "on-surface-variant": "#c6c6c6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0px",
+                      "lg": "0px",
+                      "xl": "0px",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Space Grotesk"],
+                      "body": ["Space Grotesk"],
+                      "label": ["Space Grotesk"]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-[#000000] text-[#4edea3] font-['Space_Grotesk'] tracking-tighter docked full-width top-0 border-b border-[#1A1A1A] flex justify-between items-center w-full px-4 h-12 z-50">
+<div class="flex items-center gap-6">
+<span class="text-xl font-bold text-[#4edea3] tracking-widest">MONOLITH_OS</span>
+<div class="hidden md:flex items-center bg-[#0e0e0e] border border-[#1A1A1A] px-3 py-1 gap-2">
+<span class="material-symbols-outlined text-sm text-[#474747]">search</span>
+<input class="bg-transparent border-none text-[11px] focus:ring-0 text-[#e5e2e1] w-48 uppercase tracking-widest" placeholder="SEARCH_CORE..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-[#131313] border border-[#1A1A1A]">
+<span class="text-[10px] font-bold text-[#4edea3]">STATUS:</span>
+<span class="text-[10px] font-bold text-white uppercase tracking-widest">ACTIVE_NODE_01</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined cursor-pointer transition-opacity active:opacity-80 hover:text-[#4edea3] transition-colors" data-icon="settings">settings</span>
+<span class="material-symbols-outlined cursor-pointer transition-opacity active:opacity-80 hover:text-[#4edea3] transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer transition-opacity active:opacity-80 hover:text-[#4edea3] transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-[#050505] text-[#4edea3] font-['Space_Grotesk'] text-[11px] uppercase tracking-widest docked h-full left-0 w-16 border-r border-[#1A1A1A] duration-150 ease-in-out flex flex-col items-center py-4 z-40">
+<div class="mb-8 flex flex-col items-center opacity-40">
+<span class="text-[8px] font-bold">PRJ</span>
+<div class="w-6 h-[1px] bg-[#4edea3] my-1"></div>
+</div>
+<nav class="flex flex-col w-full gap-2">
+<!-- Explorer (Active) -->
+<div class="border-l-2 border-[#4edea3] text-[#4edea3] bg-[#131313] flex flex-col items-center py-4 cursor-pointer duration-150 ease-in-out">
+<span class="material-symbols-outlined mb-1" data-icon="folder_open">folder_open</span>
+<span class="scale-75 origin-top">Explorer</span>
+</div>
+<!-- Search -->
+<div class="text-[#474747] flex flex-col items-center py-4 cursor-pointer duration-150 ease-in-out hover:bg-[#1c1b1b] hover:text-[#ffffff]">
+<span class="material-symbols-outlined mb-1" data-icon="search">search</span>
+<span class="scale-75 origin-top">Search</span>
+</div>
+<!-- Source Control -->
+<div class="text-[#474747] flex flex-col items-center py-4 cursor-pointer duration-150 ease-in-out hover:bg-[#1c1b1b] hover:text-[#ffffff]">
+<span class="material-symbols-outlined mb-1" data-icon="account_tree">account_tree</span>
+<span class="scale-75 origin-top">Source</span>
+</div>
+<!-- Run and Debug -->
+<div class="text-[#474747] flex flex-col items-center py-4 cursor-pointer duration-150 ease-in-out hover:bg-[#1c1b1b] hover:text-[#ffffff]">
+<span class="material-symbols-outlined mb-1" data-icon="play_arrow">play_arrow</span>
+<span class="scale-75 origin-top">Debug</span>
+</div>
+</nav>
+</aside>
+<!-- Main IDE Content Area -->
+<main class="flex-1 flex flex-col bg-[#000000] overflow-hidden">
+<!-- Secondary Header / Tabs Area -->
+<div class="h-10 bg-[#0e0e0e] border-b border-[#1A1A1A] flex items-center px-4 justify-between">
+<div class="flex h-full items-center">
+<div class="h-full border-r border-[#1A1A1A] px-4 flex items-center gap-2 bg-[#000000] border-t border-t-[#4edea3]">
+<span class="material-symbols-outlined text-[14px] text-[#4edea3]">description</span>
+<span class="text-[10px] font-bold tracking-widest text-white">PROBLEM_STMT.MD</span>
+</div>
+<div class="h-full border-r border-[#1A1A1A] px-4 flex items-center gap-2 hover:bg-[#131313] cursor-pointer">
+<span class="material-symbols-outlined text-[14px] text-[#474747]">code</span>
+<span class="text-[10px] font-bold tracking-widest text-[#474747]">MAIN.TS</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="bg-transparent border border-[#4edea3] text-[#4edea3] px-3 py-1 text-[10px] font-bold tracking-widest hover:bg-[#4edea3]/10 transition-colors">RUN_TESTS</button>
+<button class="bg-[#4edea3] text-black px-4 py-1 text-[10px] font-bold tracking-widest hover:bg-[#5fedb0] transition-colors">SUBMIT_CORE</button>
+</div>
+</div>
+<!-- Split Editor -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Pane: Problem Description -->
+<section class="w-1/2 bg-[#000000] border-r border-[#1A1A1A] overflow-y-auto custom-scrollbar p-8">
+<div class="max-w-2xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="bg-[#4edea3]/10 text-[#4edea3] px-2 py-0.5 text-[9px] font-bold tracking-tighter uppercase">Level_04</span>
+<h1 class="text-3xl font-bold tracking-tighter text-white uppercase">Neural_Link_Optimizer</h1>
+</div>
+<div class="space-y-8">
+<div>
+<h3 class="text-[#4edea3] text-[11px] font-bold uppercase tracking-[0.2em] mb-3">Objective_Context</h3>
+<p class="text-white text-[14px] leading-relaxed font-light">
+                                    Analyze the incoming data stream from the cortical interface. You are tasked with developing an algorithm that identifies the shortest path for signal transmission between neural nodes while minimizing synaptic latency. 
+                                    The monolith requires an efficiency rating of &gt;98.4% to maintain system stability.
+                                </p>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="bg-[#0e0e0e] p-4 border-l border-[#4edea3]">
+<h4 class="text-[#4edea3] text-[10px] font-bold uppercase mb-2">Constraint_Alpha</h4>
+<p class="text-white text-[12px] opacity-80">Nodes must not exceed 256 connections.</p>
+</div>
+<div class="bg-[#0e0e0e] p-4 border-l border-[#4edea3]">
+<h4 class="text-[#4edea3] text-[10px] font-bold uppercase mb-2">Constraint_Beta</h4>
+<p class="text-white text-[12px] opacity-80">Temporal drift &lt; 0.02ms.</p>
+</div>
+</div>
+<div>
+<h3 class="text-[#4edea3] text-[11px] font-bold uppercase tracking-[0.2em] mb-3">Input_Format</h3>
+<div class="bg-[#0a0a0a] p-4 border border-[#1a1a1a] font-mono text-[12px] text-white/70">
+                                    [ <br/>
+                                      { "id": "node_0x1", "weight": 0.42 }, <br/>
+                                      { "id": "node_0x2", "weight": 0.88 } <br/>
+                                    ]
+                                </div>
+</div>
+<div class="pt-6 border-t border-[#1a1a1a]">
+<div class="flex flex-wrap gap-2">
+<span class="border border-[#1a1a1a] px-3 py-1 text-[9px] text-[#888888] uppercase tracking-widest">Graph_Theory</span>
+<span class="border border-[#1a1a1a] px-3 py-1 text-[9px] text-[#888888] uppercase tracking-widest">Optimization</span>
+<span class="border border-[#1a1a1a] px-3 py-1 text-[9px] text-[#888888] uppercase tracking-widest">Neural_Architecture</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Pane: Code Editor -->
+<section class="w-1/2 bg-[#050505] flex flex-col overflow-hidden">
+<!-- Editor Toolbar -->
+<div class="bg-[#0a0a0a] border-b border-[#1A1A1A] h-8 flex items-center px-4 justify-between">
+<div class="flex items-center gap-4">
+<span class="text-[9px] font-bold text-[#4edea3] uppercase tracking-widest">Language: TypeScript</span>
+<span class="text-[9px] font-bold text-[#474747] uppercase tracking-widest">V: 5.2.2</span>
+</div>
+<span class="material-symbols-outlined text-[14px] text-[#474747] cursor-pointer hover:text-white">settings</span>
+</div>
+<!-- Editor Surface -->
+<div class="flex-1 overflow-y-auto custom-scrollbar font-mono text-[13px] p-6 relative">
+<!-- Line Numbers -->
+<div class="absolute left-0 top-6 w-10 text-right pr-4 text-[#333333] select-none text-[11px] leading-6">
+                            1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16<br/>17<br/>18<br/>19<br/>20
+                        </div>
+<!-- Syntax Code -->
+<div class="pl-8 leading-6">
+<div class="syntax-comment">// Initialize Neural Link Matrix</div>
+<div><span class="syntax-keyword">import</span> { <span class="syntax-text">CoreOptimizer</span> } <span class="syntax-keyword">from</span> <span class="syntax-text">"@monolith/core"</span>;</div>
+<div class="h-4"></div>
+<div><span class="syntax-keyword">async function</span> <span class="syntax-text">optimizeLink</span>(<span class="syntax-text">nodes: Node[]</span>): <span class="syntax-keyword">Promise</span>&lt;<span class="syntax-text">void</span>&gt; {</div>
+<div class="pl-4"><span class="syntax-keyword">const</span> <span class="syntax-text">matrix = </span><span class="syntax-keyword">new</span> <span class="syntax-text">CoreOptimizer();</span></div>
+<div class="h-4"></div>
+<div class="pl-4"><span class="syntax-comment">// Validate link density against Constraint_Alpha</span></div>
+<div class="pl-4"><span class="syntax-keyword">for</span> (<span class="syntax-keyword">let</span> <span class="syntax-text">i = 0; i &lt; nodes.length; i++</span>) {</div>
+<div class="pl-8"><span class="syntax-keyword">if</span> (<span class="syntax-text">nodes[i].connections &gt; 256</span>) {</div>
+<div class="pl-12"><span class="syntax-keyword">throw new</span> <span class="syntax-text">Error(</span><span class="syntax-text">"DENSITY_OVERLOAD"</span><span class="syntax-text">);</span></div>
+<div class="pl-8">}</div>
+<div class="pl-4">}</div>
+<div class="h-4"></div>
+<div class="pl-4"><span class="syntax-comment">// Begin recursive optimization sequence</span></div>
+<div class="pl-4"><span class="syntax-keyword">await</span> <span class="syntax-text">matrix.calibrate({</span></div>
+<div class="pl-8"><span class="syntax-text">precision: 0.99,</span></div>
+<div class="pl-8"><span class="syntax-text">temporalDriftLimit: 0.02</span></div>
+<div class="pl-4"><span class="syntax-text">});</span></div>
+<div class="h-4"></div>
+<div class="pl-4"><span class="syntax-keyword">return</span> <span class="syntax-text">matrix.getOptimizedRoute();</span></div>
+<div>}</div>
+</div>
+</div>
+<!-- Console/Output Pane -->
+<section class="h-40 bg-[#0A0A0A] border-t border-[#1A1A1A] flex flex-col">
+<div class="bg-[#131313] px-4 py-1 flex items-center justify-between">
+<div class="flex gap-4">
+<span class="text-[9px] font-bold text-[#4edea3] uppercase tracking-widest border-b border-[#4edea3]">Terminal</span>
+<span class="text-[9px] font-bold text-[#474747] uppercase tracking-widest hover:text-white cursor-pointer">Output</span>
+<span class="text-[9px] font-bold text-[#474747] uppercase tracking-widest hover:text-white cursor-pointer">Debug Console</span>
+</div>
+<span class="material-symbols-outlined text-[14px] text-[#474747] cursor-pointer">close</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 font-mono text-[11px] space-y-1">
+<div class="text-[#474747]">[14:02:33] INITIALIZING_ENVIRONMENT...</div>
+<div class="text-[#474747]">[14:02:34] FETCHING_NODE_DATA: OK</div>
+<div class="text-[#4edea3]">[14:02:34] SERVER_READY: LISTENING_ON_PORT_8080</div>
+<div class="flex items-center gap-2">
+<span class="text-[#4edea3]">&gt;</span>
+<div class="w-1 h-3 bg-[#4edea3] animate-pulse"></div>
+</div>
+</div>
+</section>
+</section>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-[#4edea3] text-[#000000] font-['Space_Grotesk'] text-[10px] font-bold uppercase fixed bottom-0 w-full z-50 flex justify-between items-center px-3 h-[24px]">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 hover:bg-[#5fedb0] px-2 h-full cursor-pointer">
+<span class="material-symbols-outlined text-[14px]" data-icon="terminal">terminal</span>
+<span>main*</span>
+</div>
+<div class="flex items-center gap-4 opacity-70">
+<span class="hover:text-black cursor-pointer">LN 42, COL 1</span>
+<span class="hover:text-black cursor-pointer">UTF-8</span>
+<span class="hover:text-black cursor-pointer">TypeScript</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 opacity-70">
+<span class="material-symbols-outlined text-[14px]" data-icon="cloud_done">cloud_done</span>
+<span>SYSTEM_READY</span>
+</div>
+<span class="bg-black text-[#4edea3] px-2 h-[18px] flex items-center">v1.0.4-stable</span>
+</div>
+</footer>
+</body></html>

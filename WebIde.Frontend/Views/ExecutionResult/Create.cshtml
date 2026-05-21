@@ -1,0 +1,93 @@
+@model WebIde.Frontend.Models.ExecutionResultCreateModel
+@{
+    var submission = ViewData["Submission"] as WebIde.Model.Submission;
+    ViewData["Title"] = "CREATE EXECUTION RESULT";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+                style="font-family:'Space Grotesk',sans-serif;">EXECUTION RESULT</h1>
+            <div class="h-2 w-24 bg-primary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family:'Space Grotesk',sans-serif;">
+                <a asp-controller="Submission" asp-action="Index" class="text-primary hover:underline no-underline">SUBMISSIONS</a>
+                <span class="mx-2 text-outline">/</span>
+                @if (submission != null)
+                {
+                    <a asp-controller="Submission" asp-action="Details" asp-route-id="@submission.Id"
+                       class="text-primary hover:underline no-underline">#@submission.Id</a>
+                    <span class="mx-2 text-outline">/</span>
+                }
+                <span class="text-on-surface-variant">RESULT</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+            <form asp-action="Create" asp-route-submissionId="@Model.SubmissionId" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="SubmissionId" />
+
+                <div class="mb-5">
+                    <label asp-for="Stdout" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">STDOUT *</label>
+                    <textarea asp-for="Stdout" rows="5"
+                              class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary resize-none"
+                              placeholder="Standard output..."></textarea>
+                    <span asp-validation-for="Stdout" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="Stderr" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">STDERR</label>
+                    <textarea asp-for="Stderr" rows="3"
+                              class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary resize-none"
+                              placeholder="Standard error..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-5">
+                    <div>
+                        <label asp-for="ExitCode" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">EXIT CODE</label>
+                        <input asp-for="ExitCode" type="number"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                    </div>
+                    <div class="flex items-end pb-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input asp-for="TimedOut" type="checkbox" class="w-5 h-5 border-2 border-black accent-primary" />
+                            <span class="text-xs font-bold uppercase tracking-widest"
+                                  style="font-family:'Space Grotesk',sans-serif;">TIMED OUT</span>
+                        </label>
+                    </div>
+                    <div class="flex items-end pb-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input asp-for="MemoryExceeded" type="checkbox" class="w-5 h-5 border-2 border-black accent-primary" />
+                            <span class="text-xs font-bold uppercase tracking-widest"
+                                  style="font-family:'Space Grotesk',sans-serif;">MEM EXCEEDED</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="submit"
+                            class="bg-primary text-white font-black uppercase px-6 py-2 border-2 border-black
+                                   shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                                   hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm"
+                            style="font-family:'Space Grotesk',sans-serif;">SAVE RESULT</button>
+                    @if (submission != null)
+                    {
+                        <a asp-controller="Submission" asp-action="Details" asp-route-id="@submission.Id"
+                           class="bg-white font-black uppercase px-6 py-2 border-2 border-black
+                                  shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                                  hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm no-underline"
+                           style="font-family:'Space Grotesk',sans-serif;">CANCEL</a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

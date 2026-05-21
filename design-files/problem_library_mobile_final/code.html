@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Monolith IDE - Problem Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#1e2d41",
+                    "error-dim": "#bb5551",
+                    "background": "#0a0e14",
+                    "outline": "#6a768a",
+                    "on-primary-container": "#5ae8ad",
+                    "error": "#ee7d77",
+                    "error-container": "#7f2927",
+                    "on-error-container": "#ff9993",
+                    "tertiary-dim": "#cdd2db",
+                    "primary-fixed": "#6ffbbe",
+                    "surface-container-high": "#16202e",
+                    "tertiary-fixed-dim": "#cdd2db",
+                    "on-primary-fixed-variant": "#006947",
+                    "primary-container": "#005236",
+                    "surface-dim": "#0a0e14",
+                    "secondary-container": "#373c43",
+                    "on-secondary-fixed": "#3b4047",
+                    "on-background": "#d9e6fd",
+                    "inverse-primary": "#006d4a",
+                    "on-surface-variant": "#9facc1",
+                    "surface-container-lowest": "#000000",
+                    "on-tertiary": "#545961",
+                    "primary": "#4edea3",
+                    "on-primary-fixed": "#004930",
+                    "tertiary-fixed": "#dbe0ea",
+                    "secondary-fixed": "#dee2ec",
+                    "inverse-on-surface": "#51555c",
+                    "on-tertiary-fixed": "#393e46",
+                    "tertiary": "#eaeef8",
+                    "surface-tint": "#4edea3",
+                    "outline-variant": "#3c495b",
+                    "on-error": "#490106",
+                    "on-secondary-container": "#bbbfc9",
+                    "tertiary-container": "#dbe0ea",
+                    "secondary-dim": "#999ea7",
+                    "on-primary": "#004a31",
+                    "on-tertiary-fixed-variant": "#555a62",
+                    "primary-fixed-dim": "#5fedb0",
+                    "inverse-surface": "#f8f9ff",
+                    "secondary-fixed-dim": "#d0d4de",
+                    "surface-variant": "#1a2637",
+                    "surface-container-low": "#0e141c",
+                    "on-secondary-fixed-variant": "#575c64",
+                    "on-tertiary-container": "#4b5058",
+                    "on-secondary": "#1b2027",
+                    "surface": "#0a0e14",
+                    "on-surface": "#d9e6fd",
+                    "surface-container-highest": "#1a2637",
+                    "secondary": "#999ea7",
+                    "primary-dim": "#3cd096",
+                    "surface-container": "#121a25"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #0a0e14; color: #d9e6fd; }
+        .mono-header { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="bg-zinc-950 flex items-center justify-between px-6 h-16 w-full top-0 z-50 fixed">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#4edea3]">menu</span>
+<h1 class="font-['Space_Grotesk'] tracking-[0.05em] uppercase text-xs text-[#4edea3] font-bold tracking-tighter text-xl">MONOLITH_IDE</h1>
+</div>
+<div class="w-8 h-8 bg-zinc-800 flex items-center justify-center overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover opacity-80" data-alt="Close up portrait of a professional developer in a dark room with soft rim lighting and a minimalist tech aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2UNujS8o_zbuHjtj4CDpUcyAEf5NKUhB_i3Tgn02P5BUBH9mXerzZPDMby4_ydWM_WZUZubHTdDmNxMshXEcgWUAvyJ2-7EEQ8eD89M3FPfc7eJWRznP0idf3TwjIRwDHE83PysC8ew2I915MvVkwfTJWH65oRlZ57L9bJAkbaSx3AWHnf8tnbdXzVmbV5TT_s81Lq7B1xxH9IkjzjKHL0XE6WjN7U2lBjHpB7nia13G50QTAND5H61k01zk41th-b-xaCccsV2s"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-24 px-4 min-h-screen">
+<!-- Search & Filter Strip (Asymmetric Layout) -->
+<div class="mb-8 flex flex-col gap-4">
+<div class="flex flex-col">
+<span class="font-headline text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2">System_Query</span>
+<div class="bg-surface-container-low flex items-center px-4 py-3 border-b-2 border-outline-variant focus-within:border-primary transition-all group">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary text-sm mr-3">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-body uppercase tracking-wider w-full placeholder:text-outline-variant" placeholder="FIND_PROBLEM_SET..." type="text"/>
+</div>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+<button class="bg-primary text-on-primary px-4 py-1 text-[10px] font-headline uppercase font-bold tracking-widest whitespace-nowrap">ALL_TOPICS</button>
+<button class="bg-surface-container-highest text-on-surface-variant px-4 py-1 text-[10px] font-headline uppercase font-bold tracking-widest whitespace-nowrap hover:bg-zinc-800">ALGORITHMS</button>
+<button class="bg-surface-container-highest text-on-surface-variant px-4 py-1 text-[10px] font-headline uppercase font-bold tracking-widest whitespace-nowrap hover:bg-zinc-800">DATA_STRUCTURES</button>
+<button class="bg-surface-container-highest text-on-surface-variant px-4 py-1 text-[10px] font-headline uppercase font-bold tracking-widest whitespace-nowrap hover:bg-zinc-800">DYNAMIC_PROGRAMMING</button>
+</div>
+</div>
+<!-- Problems List (The Monolith Approach: Stacked Layers) -->
+<div class="flex flex-col gap-1">
+<!-- Problem Item 01 -->
+<div class="bg-surface-container-low hover:bg-surface-container px-4 py-6 transition-colors group cursor-pointer flex justify-between items-start">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<span class="font-headline text-[10px] text-primary tracking-tighter opacity-60">ID_742</span>
+<h3 class="font-headline text-lg font-medium tracking-tight group-hover:text-primary transition-colors">BINARY_MATRIX_PATH</h3>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-primary"></span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">LVL: OPTIMIZED</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">analytics</span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">ACC: 94.2%</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">arrow_forward_ios</span>
+<span class="mt-4 text-[9px] font-label text-outline uppercase">Array, BFS</span>
+</div>
+</div>
+<!-- Problem Item 02 -->
+<div class="bg-surface-container-low hover:bg-surface-container px-4 py-6 transition-colors group cursor-pointer flex justify-between items-start">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<span class="font-headline text-[10px] text-error-dim tracking-tighter opacity-60">ID_109</span>
+<h3 class="font-headline text-lg font-medium tracking-tight group-hover:text-primary transition-colors">CONCURRENT_SHEDULER</h3>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-error"></span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">LVL: CRITICAL</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">analytics</span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">ACC: 12.8%</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">arrow_forward_ios</span>
+<span class="mt-4 text-[9px] font-label text-outline uppercase">Locks, Threads</span>
+</div>
+</div>
+<!-- Problem Item 03 -->
+<div class="bg-surface-container-low hover:bg-surface-container px-4 py-6 transition-colors group cursor-pointer flex justify-between items-start">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<span class="font-headline text-[10px] text-on-tertiary-fixed-variant tracking-tighter opacity-60">ID_523</span>
+<h3 class="font-headline text-lg font-medium tracking-tight group-hover:text-primary transition-colors">LRU_CACHE_IMPLEMENTATION</h3>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-on-surface-variant"></span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">LVL: STANDARD</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">analytics</span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">ACC: 68.5%</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">arrow_forward_ios</span>
+<span class="mt-4 text-[9px] font-label text-outline uppercase">Hashtable</span>
+</div>
+</div>
+<!-- Problem Item 04 -->
+<div class="bg-surface-container-low hover:bg-surface-container px-4 py-6 transition-colors group cursor-pointer flex justify-between items-start">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<span class="font-headline text-[10px] text-primary tracking-tighter opacity-60">ID_992</span>
+<h3 class="font-headline text-lg font-medium tracking-tight group-hover:text-primary transition-colors">GRAPH_CYCLIC_DETECTION</h3>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-primary"></span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">LVL: OPTIMIZED</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-outline">analytics</span>
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">ACC: 42.1%</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">arrow_forward_ios</span>
+<span class="mt-4 text-[9px] font-label text-outline uppercase">Graphs, DFS</span>
+</div>
+</div>
+<!-- Problem Item 05 (Completed State) -->
+<div class="bg-zinc-900 opacity-60 px-4 py-6 cursor-pointer flex justify-between items-start grayscale">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<h3 class="font-headline text-lg font-medium tracking-tight line-through">TWO_SUM_REDUX</h3>
+</div>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-1">
+<span class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">LVL: STANDARD</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[9px] font-label text-primary font-bold tracking-widest uppercase">SOLVED</span>
+</div>
+</div>
+</div>
+<!-- Pagination / Load More (Brutalist CTA) -->
+<button class="mt-12 w-full bg-surface-container-high py-4 font-headline text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant hover:bg-zinc-800 hover:text-primary transition-all">
+            FETCH_NEXT_BUFFER
+        </button>
+</main>
+<!-- Bottom Navigation Bar (Responsive Pivot - Mobile) -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-zinc-900 flex items-center justify-around z-50 md:hidden">
+<a class="flex flex-col items-center gap-1 text-[#4edea3] border-t-2 border-[#4edea3] h-full justify-center px-4 bg-zinc-800 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">library_books</span>
+<span class="text-[9px] font-['Space_Grotesk'] tracking-widest uppercase font-bold">Library</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-400 hover:text-zinc-100 transition-all h-full justify-center px-4" href="#">
+<span class="material-symbols-outlined">code</span>
+<span class="text-[9px] font-['Space_Grotesk'] tracking-widest uppercase">Editor</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-400 hover:text-zinc-100 transition-all h-full justify-center px-4" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="text-[9px] font-['Space_Grotesk'] tracking-widest uppercase">Results</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-400 hover:text-zinc-100 transition-all h-full justify-center px-4" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[9px] font-['Space_Grotesk'] tracking-widest uppercase">User</span>
+</a>
+</nav>
+<!-- Navigation Drawer (Web Version Hidden on Mobile) -->
+<aside class="hidden md:flex flex-col h-full w-80 fixed left-0 top-0 z-[60] bg-zinc-900 py-8 shadow-[24px_0_48px_rgba(0,0,0,0.6)]">
+<div class="px-8 mb-12">
+<h2 class="text-[#4edea3] font-black font-['Space_Grotesk'] tracking-widest">TERMINAL_NAV</h2>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-4 px-8 py-4 bg-zinc-800 text-[#4edea3] border-l-2 border-[#4edea3] cursor-pointer">
+<span class="material-symbols-outlined">library_books</span>
+<span class="font-['Space_Grotesk'] text-sm tracking-wide">Problem Library</span>
+</div>
+<div class="flex items-center gap-4 px-8 py-4 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all cursor-pointer">
+<span class="material-symbols-outlined">code</span>
+<span class="font-['Space_Grotesk'] text-sm tracking-wide">Code Editor</span>
+</div>
+<div class="flex items-center gap-4 px-8 py-4 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all cursor-pointer">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-['Space_Grotesk'] text-sm tracking-wide">Submission Results</span>
+</div>
+<div class="flex items-center gap-4 px-8 py-4 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all cursor-pointer">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Space_Grotesk'] text-sm tracking-wide">User Profile</span>
+</div>
+</nav>
+</aside>
+</body></html>

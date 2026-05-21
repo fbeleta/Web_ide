@@ -1,0 +1,101 @@
+@model WebIde.Model.Organization
+@{
+    ViewData["Title"] = Model.Name.ToUpper();
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+        <nav class="text-xs font-bold uppercase mb-8" style="font-family: 'Space Grotesk', sans-serif;">
+            <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+            <span class="mx-2 text-outline">/</span>
+            <a asp-controller="Organization" asp-action="Index" class="text-primary hover:underline no-underline">ORGANIZATIONS</a>
+            <span class="mx-2 text-outline">/</span>
+            <span class="text-on-surface-variant">@Model.Name.ToUpper().Replace(" ", "_")</span>
+        </nav>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
+            <div class="flex justify-between items-start mb-4">
+                <h1 class="text-4xl font-black uppercase tracking-tighter"
+                    style="font-family: 'Space Grotesk', sans-serif;">@Model.Name.ToUpper().Replace(" ", "_")</h1>
+                <span class="material-symbols-outlined text-5xl text-secondary">group</span>
+            </div>
+            <p class="text-base leading-relaxed mb-6">@Model.Description</p>
+            <div class="flex gap-4">
+                <div class="border-2 border-black px-6 py-3">
+                    <p class="text-xs font-bold uppercase text-outline" style="font-family: 'Space Grotesk', sans-serif;">MEMBERS</p>
+                    <p class="text-3xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@Model.Members.Count</p>
+                </div>
+                <div class="border-2 border-black px-6 py-3">
+                    <p class="text-xs font-bold uppercase text-outline" style="font-family: 'Space Grotesk', sans-serif;">PROBLEM_SETS</p>
+                    <p class="text-3xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@Model.ProblemSets.Count</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h2 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">MEMBERS</h2>
+                <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+                    @foreach (var member in Model.Members)
+                    {
+                        <div class="flex items-center justify-between p-4 border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black border-2 border-black flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white text-xs font-black" style="font-family: 'Space Grotesk', sans-serif;">
+                                        @member.DisplayName.Substring(0, 1).ToUpper()
+                                    </span>
+                                </div>
+                                <div>
+                                    <a asp-controller="User" asp-action="Details" asp-route-id="@member.Id"
+                                       class="font-bold text-sm hover:text-primary no-underline block"
+                                       style="font-family: 'Space Grotesk', sans-serif;">@member.DisplayName</a>
+                                    <span class="text-xs text-outline">@@member.Username</span>
+                                </div>
+                            </div>
+                            @switch (member.Role)
+                            {
+                                case UserRole.Admin:
+                                    <span class="role-admin border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase" style="font-family: 'Space Grotesk', sans-serif;">ADMIN</span> break;
+                                case UserRole.Instructor:
+                                    <span class="role-instructor border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase" style="font-family: 'Space Grotesk', sans-serif;">INSTR</span> break;
+                                default:
+                                    <span class="role-student border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase" style="font-family: 'Space Grotesk', sans-serif;">STUDENT</span> break;
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">PROBLEM_SETS</h2>
+                <div class="space-y-4">
+                    @foreach (var ps in Model.ProblemSets)
+                    {
+                        <div class="border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <div class="flex justify-between items-start mb-2">
+                                <a asp-controller="ProblemSet" asp-action="Details" asp-route-id="@ps.Id"
+                                   class="font-black text-lg uppercase hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@ps.Title.ToUpper().Replace(" ", "_")</a>
+                                @if (ps.IsPublic)
+                                {
+                                    <span class="bg-tertiary-container text-on-tertiary-container border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase"
+                                          style="font-family: 'Space Grotesk', sans-serif;">PUBLIC</span>
+                                }
+                                else
+                                {
+                                    <span class="bg-surface-container-highest border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase"
+                                          style="font-family: 'Space Grotesk', sans-serif;">PRIVATE</span>
+                                }
+                            </div>
+                            <p class="text-sm text-outline mb-2">@ps.Problems.Count problems · @ps.CreatedAt.ToString("yyyy-MM-dd")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>

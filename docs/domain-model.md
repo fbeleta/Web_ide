@@ -1,6 +1,19 @@
 # Domain Model
 
-All classes live in `WebIde.Model`. The model is a pure class library with no framework dependencies — it can be referenced by any layer.
+All classes live in `WebIde.Model`. The model references `Microsoft.EntityFrameworkCore` for EF annotations and is used by both `WebIde.DAL` (DbContext) and `WebIde.Frontend` (repositories).
+
+## EF Core Annotations
+
+The model is annotated for Entity Framework Core:
+
+| Pattern | Usage |
+|---|---|
+| `[Key]` | On every `Id` property — marks it as the primary key |
+| `virtual ICollection<T>` | On 1-N and N-N collection navigation properties — enables EF lazy loading proxy |
+| `int XxxId` + `[ForeignKey("XxxId")]` | On 1-N owned side (Submission, TestCase, ProblemSet) — explicit FK column + navigation |
+| `= null!` | On required navigation properties to suppress nullable warnings while letting EF set the value |
+
+N-N relationships (Problem↔Tag, Problem↔ProblemSet, User↔Organization) are configured with explicit join table names in `WebIdeDbContext.OnModelCreating`.
 
 ## Enums
 

@@ -1,0 +1,94 @@
+@model WebIde.Model.Tag
+@{
+    ViewData["Title"] = "#" + Model.Name.ToUpper();
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+        <nav class="text-xs font-bold uppercase mb-8" style="font-family: 'Space Grotesk', sans-serif;">
+            <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+            <span class="mx-2 text-outline">/</span>
+            <a asp-controller="Tag" asp-action="Index" class="text-primary hover:underline no-underline">TAGS</a>
+            <span class="mx-2 text-outline">/</span>
+            <span class="text-on-surface-variant">#@Model.Name.ToUpper().Replace(" ", "_")</span>
+        </nav>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
+            <div class="flex justify-between items-start mb-4">
+                <h1 class="text-4xl font-black uppercase tracking-tighter text-primary"
+                    style="font-family: 'Space Grotesk', sans-serif;">#@Model.Name.ToUpper().Replace(" ", "_")</h1>
+                <span class="border-4 border-black bg-black text-white px-4 py-2 text-2xl font-black"
+                      style="font-family: 'Space Grotesk', sans-serif;">@Model.Problems.Count</span>
+            </div>
+            <p class="text-sm font-bold uppercase text-outline" style="font-family: 'Space Grotesk', sans-serif;">
+                @Model.Problems.Count PROBLEM@(Model.Problems.Count == 1 ? "" : "S") TAGGED
+            </p>
+        </div>
+
+        <h2 class="text-2xl font-black uppercase mb-4" style="font-family: 'Space Grotesk', sans-serif;">
+            PROBLEMS (@Model.Problems.Count)
+        </h2>
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">#</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TITLE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">TAGS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 1; }
+                    @foreach (var p in Model.Problems)
+                    {
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4 font-black text-outline" style="font-family: 'Space Grotesk', sans-serif;">@(idx++)</td>
+                            <td class="p-4">
+                                <a asp-controller="Problem" asp-action="Details" asp-route-id="@p.Id"
+                                   class="font-bold hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@p.Title</a>
+                            </td>
+                            <td class="p-4">
+                                @switch (p.Difficulty)
+                                {
+                                    case DifficultyLevel.Easy:   <span class="badge-easy">EASY</span>   break;
+                                    case DifficultyLevel.Medium: <span class="badge-medium">MEDIUM</span> break;
+                                    case DifficultyLevel.Hard:   <span class="badge-hard">HARD</span>   break;
+                                }
+                            </td>
+                            <td class="p-4">
+                                <div class="flex gap-1 flex-wrap">
+                                    @foreach (var t in p.Tags)
+                                    {
+                                        <a asp-controller="Tag" asp-action="Details" asp-route-id="@t.Id"
+                                           class="text-[10px] font-black uppercase no-underline @(t.Id == Model.Id ? "text-primary underline" : "text-outline hover:text-primary")"
+                                           style="font-family: 'Space Grotesk', sans-serif;">#@t.Name.Replace(" ", "_")</a>
+                                    }
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <a asp-controller="Problem" asp-action="Details" asp-route-id="@p.Id"
+                                   class="border-2 border-black px-3 py-1 text-xs font-bold uppercase
+                                          hover:bg-black hover:text-white transition-none no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">SOLVE</a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Problems.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-outline font-bold uppercase text-sm"
+                                style="font-family: 'Space Grotesk', sans-serif;">NO_PROBLEMS_TAGGED</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>

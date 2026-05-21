@@ -1,0 +1,91 @@
+@using WebIde.Model.Enums
+@model WebIde.Frontend.Models.UserEditModel
+@{
+    ViewData["Title"] = "EDIT USER";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+                style="font-family:'Space Grotesk',sans-serif;">EDIT USER</h1>
+            <div class="h-2 w-24 bg-secondary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family:'Space Grotesk',sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <a asp-controller="User" asp-action="Index" class="text-primary hover:underline no-underline">USERS</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">EDIT</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+            <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-5">
+                    <label asp-for="Username" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">USERNAME *</label>
+                    <input asp-for="Username"
+                           class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                    <span asp-validation-for="Username" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="DisplayName" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">DISPLAY NAME *</label>
+                    <input asp-for="DisplayName"
+                           class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                    <span asp-validation-for="DisplayName" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="Email" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">EMAIL *</label>
+                    <input asp-for="Email" type="email"
+                           class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                    <span asp-validation-for="Email" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="Role" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">ROLE *</label>
+                    <select asp-for="Role"
+                            asp-items="Html.GetEnumSelectList<UserRole>()"
+                            class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary">
+                    </select>
+                </div>
+
+                <div class="mb-5">
+                    @{
+                        ViewData["FieldName"] = "RegisteredAt";
+                        ViewData["Label"]     = "REGISTERED AT";
+                        ViewData["Value"]     = Model.RegisteredAt as DateTime?;
+                        ViewData["Required"]  = true;
+                    }
+                    @await Html.PartialAsync("_DatePicker")
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="submit"
+                            class="bg-primary text-white font-black uppercase px-6 py-2 border-2 border-black
+                                   shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                                   hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm"
+                            style="font-family:'Space Grotesk',sans-serif;">SAVE CHANGES</button>
+                    <a asp-controller="User" asp-action="Index"
+                       class="bg-white font-black uppercase px-6 py-2 border-2 border-black
+                              shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                              hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm no-underline"
+                       style="font-family:'Space Grotesk',sans-serif;">CANCEL</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

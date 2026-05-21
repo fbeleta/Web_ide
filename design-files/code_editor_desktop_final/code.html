@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#1e2d41",
+                    "error-dim": "#bb5551",
+                    "background": "#0a0e14",
+                    "outline": "#6a768a",
+                    "on-primary-container": "#5ae8ad",
+                    "error": "#ee7d77",
+                    "error-container": "#7f2927",
+                    "on-error-container": "#ff9993",
+                    "tertiary-dim": "#cdd2db",
+                    "primary-fixed": "#6ffbbe",
+                    "surface-container-high": "#16202e",
+                    "tertiary-fixed-dim": "#cdd2db",
+                    "on-primary-fixed-variant": "#006947",
+                    "primary-container": "#005236",
+                    "surface-dim": "#0a0e14",
+                    "secondary-container": "#373c43",
+                    "on-secondary-fixed": "#3b4047",
+                    "on-background": "#d9e6fd",
+                    "inverse-primary": "#006d4a",
+                    "on-surface-variant": "#9facc1",
+                    "surface-container-lowest": "#000000",
+                    "on-tertiary": "#545961",
+                    "primary": "#4edea3",
+                    "on-primary-fixed": "#004930",
+                    "tertiary-fixed": "#dbe0ea",
+                    "secondary-fixed": "#dee2ec",
+                    "inverse-on-surface": "#51555c",
+                    "on-tertiary-fixed": "#393e46",
+                    "tertiary": "#eaeef8",
+                    "surface-tint": "#4edea3",
+                    "outline-variant": "#3c495b",
+                    "on-error": "#490106",
+                    "on-secondary-container": "#bbbfc9",
+                    "tertiary-container": "#dbe0ea",
+                    "secondary-dim": "#999ea7",
+                    "on-primary": "#004a31",
+                    "on-tertiary-fixed-variant": "#555a62",
+                    "primary-fixed-dim": "#5fedb0",
+                    "inverse-surface": "#f8f9ff",
+                    "secondary-fixed-dim": "#d0d4de",
+                    "surface-variant": "#1a2637",
+                    "surface-container-low": "#0e141c",
+                    "on-secondary-fixed-variant": "#575c64",
+                    "on-tertiary-container": "#4b5058",
+                    "on-secondary": "#1b2027",
+                    "surface": "#0a0e14",
+                    "on-surface": "#d9e6fd",
+                    "surface-container-highest": "#1a2637",
+                    "secondary": "#999ea7",
+                    "primary-dim": "#3cd096",
+                    "surface-container": "#121a25"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"],
+                    "mono": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0e14;
+            color: #d9e6fd;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e141c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c495b;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4edea3;
+        }
+    </style>
+</head>
+<body class="overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-stone-950 flex justify-between items-center px-6 w-full fixed top-0 z-50 h-14 border-none">
+<div class="flex items-center gap-8">
+<div class="text-xl font-bold tracking-tighter text-emerald-400">MONOLITH_IDE</div>
+<nav class="hidden md:flex gap-6">
+<a class="font-space-grotesk tracking-wider uppercase text-xs text-stone-500 hover:text-emerald-300 transition-colors" href="#">Problem Library</a>
+<a class="font-space-grotesk tracking-wider uppercase text-xs text-emerald-400 border-b-2 border-emerald-400 pb-1" href="#">Editor</a>
+<a class="font-space-grotesk tracking-wider uppercase text-xs text-stone-500 hover:text-emerald-300 transition-colors" href="#">Results</a>
+<a class="font-space-grotesk tracking-wider uppercase text-xs text-stone-500 hover:text-emerald-300 transition-colors" href="#">Community</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 hover:text-emerald-300 cursor-pointer">settings</span>
+<span class="material-symbols-outlined text-stone-500 hover:text-emerald-300 cursor-pointer">notifications</span>
+<div class="w-8 h-8 bg-surface-container-highest border border-outline-variant/20 flex items-center justify-center overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="professional portrait of a software engineer in a minimalist workspace with dark lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBR9LroSacWpjHr1u7mwbXOAHfHJrELqSYQ8ke0DDUnV-8-1vfyQqv0BykBK5qGdW8K6HcjxIlpSBq_zgOnkW-otoEzFZdziuk3saSYxpQlexbxGY6LDvWrGB26IQaAglDxl0bdF5ITH3UwOxAW48a0PozeXFuO4uACzawedYDle6QmsCakYB8VYd7tJFem6EP-qbIQgdXij0LjU8SRTM5go4L8iFrvlTI47MBtdaLxZFKkSD4gQUpJzoQuzQB-L4biTUFMmU7-EA"/>
+</div>
+</div>
+</header>
+<!-- Main Layout Container -->
+<main class="flex flex-1 pt-14 pb-6">
+<!-- SideNavBar -->
+<aside class="bg-stone-900 flex flex-col items-center py-4 space-y-8 h-full w-16 fixed left-0 top-14 border-none">
+<div class="flex flex-col items-center gap-6">
+<button class="text-emerald-400 border-l-2 border-emerald-400 w-full flex flex-col items-center py-2 transition-all duration-150">
+<span class="material-symbols-outlined">folder</span>
+<span class="font-space-grotesk text-[10px] tracking-widest mt-1">EXPLORER</span>
+</button>
+<button class="text-stone-500 hover:bg-stone-800 hover:text-stone-200 w-full flex flex-col items-center py-2 transition-all duration-150">
+<span class="material-symbols-outlined">search</span>
+<span class="font-space-grotesk text-[10px] tracking-widest mt-1">SEARCH</span>
+</button>
+<button class="text-stone-500 hover:bg-stone-800 hover:text-stone-200 w-full flex flex-col items-center py-2 transition-all duration-150">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-space-grotesk text-[10px] tracking-widest mt-1">GIT</span>
+</button>
+<button class="text-stone-500 hover:bg-stone-800 hover:text-stone-200 w-full flex flex-col items-center py-2 transition-all duration-150">
+<span class="material-symbols-outlined">bug_report</span>
+<span class="font-space-grotesk text-[10px] tracking-widest mt-1">DEBUG</span>
+</button>
+</div>
+<div class="mt-auto flex flex-col items-center gap-6 pb-4">
+<button class="text-stone-500 hover:bg-stone-800 hover:text-stone-200 w-full flex flex-col items-center py-2 transition-all duration-150">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-space-grotesk text-[10px] tracking-widest mt-1">TERMINAL</span>
+</button>
+<button class="text-stone-500 hover:bg-stone-800 hover:text-stone-200 w-full flex flex-col items-center py-2 transition-all duration-150">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-space-grotesk text-[10px] tracking-widest mt-1">OUTPUT</span>
+</button>
+</div>
+</aside>
+<!-- Main Workspace -->
+<div class="ml-16 w-full flex">
+<!-- Left Pane: Description/Tests -->
+<section class="w-1/3 bg-surface-container-low flex flex-col border-r border-transparent">
+<div class="h-10 bg-surface-container flex items-center px-4 gap-4">
+<button class="font-space-grotesk text-[10px] tracking-widest text-primary border-b border-primary h-full px-2">DESCRIPTION</button>
+<button class="font-space-grotesk text-[10px] tracking-widest text-on-surface-variant hover:text-primary h-full px-2">TEST_CASES</button>
+<button class="font-space-grotesk text-[10px] tracking-widest text-on-surface-variant hover:text-primary h-full px-2">SOLUTIONS</button>
+</div>
+<div class="flex-1 overflow-y-auto p-8 space-y-6">
+<div class="space-y-2">
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface">142. Binary Matrix Optimization</h1>
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-surface-container-high text-[10px] font-bold text-primary tracking-widest uppercase">Level: Hard</span>
+<span class="px-2 py-0.5 bg-surface-container-high text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Topic: Dynamic Programming</span>
+</div>
+</div>
+<div class="prose prose-invert max-w-none text-sm leading-relaxed text-on-surface-variant space-y-4">
+<p>Given an <code class="bg-surface-container-high px-1 text-primary">m x n</code> binary matrix <code class="bg-surface-container-high px-1 text-primary">mat</code>, find the maximum side length of a square which is entirely composed of <code class="bg-surface-container-high px-1 text-primary">1</code>s after performing at most <code class="bg-surface-container-high px-1 text-primary">k</code> row swaps.</p>
+<div class="bg-surface-container-lowest p-4 space-y-4">
+<h3 class="font-headline text-xs font-bold text-on-surface tracking-widest uppercase">Example 1:</h3>
+<div class="font-mono text-xs text-on-surface-variant leading-relaxed">
+<span class="text-primary-dim">Input:</span> mat = [[0,1,1],[1,1,1],[0,1,1]], k = 1<br/>
+<span class="text-primary-dim">Output:</span> 3<br/>
+<span class="text-primary-dim">Explanation:</span> Swap row 0 and row 2.
+                            </div>
+</div>
+<div class="space-y-2">
+<h3 class="font-headline text-xs font-bold text-on-surface tracking-widest uppercase">Constraints:</h3>
+<ul class="list-disc list-inside font-mono text-xs space-y-1">
+<li>m == mat.length</li>
+<li>n == mat[i].length</li>
+<li>1 &lt;= m, n &lt;= 300</li>
+<li>0 &lt;= k &lt;= m</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Pane: Code Editor & Console -->
+<section class="flex-1 flex flex-col bg-surface overflow-hidden">
+<!-- Editor Toolbar -->
+<div class="h-10 bg-surface-container flex items-center justify-between px-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">code</span>
+<span class="font-mono text-xs text-on-surface">solution.cpp</span>
+</div>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<select class="bg-transparent border-none text-[10px] font-space-grotesk tracking-widest text-on-surface-variant focus:ring-0 cursor-pointer p-0">
+<option>C++ 20</option>
+<option>PYTHON 3.11</option>
+<option>RUST 1.72</option>
+</select>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-1.5 bg-surface-container-high text-on-surface-variant font-space-grotesk text-[10px] tracking-widest hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">play_arrow</span> RUN
+                        </button>
+<button class="px-6 py-1.5 bg-gradient-to-b from-primary to-primary-dim text-on-primary font-space-grotesk text-[10px] font-bold tracking-widest hover:brightness-110 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">publish</span> SUBMIT
+                        </button>
+</div>
+</div>
+<!-- Actual Editor View -->
+<div class="flex-1 flex font-mono text-[13px] overflow-hidden">
+<!-- Line Numbers -->
+<div class="w-12 bg-surface-container-low flex flex-col items-end pr-3 py-4 text-on-tertiary-container select-none leading-6">
+<div>1</div><div>2</div><div class="text-primary">3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+</div>
+<!-- Code Canvas -->
+<div class="flex-1 p-4 overflow-y-auto leading-6 bg-surface relative">
+<div class="absolute left-0 right-0 top-[64px] h-6 bg-primary/5 border-l-2 border-primary"></div>
+<pre class="relative z-10"><span class="text-outline">#include</span> <span class="text-tertiary-dim">&lt;vector&gt;</span>
+<span class="text-outline">#include</span> <span class="text-tertiary-dim">&lt;algorithm&gt;</span>
+
+<span class="text-primary-dim">class</span> <span class="text-on-surface">Solution</span> {
+<span class="text-primary-dim">public</span>:
+    <span class="text-primary-dim">int</span> <span class="text-primary">maxSideLength</span>(std::vector&lt;std::vector&lt;<span class="text-primary-dim">int</span>&gt;&gt;&amp; mat, <span class="text-primary-dim">int</span> k) {
+        <span class="text-on-tertiary-container">// Monolith Engine - Optimized BFS Search</span>
+        <span class="text-primary-dim">int</span> m = mat.size();
+        <span class="text-primary-dim">int</span> n = mat[<span class="text-secondary-dim">0</span>].size();
+        
+        <span class="text-outline">std::vector</span>&lt;<span class="text-primary-dim">int</span>&gt; <span class="text-primary">heights</span>(n, <span class="text-secondary-dim">0</span>);
+        <span class="text-primary-dim">int</span> max_sq = <span class="text-secondary-dim">0</span>;
+        
+        <span class="text-primary-dim">for</span> (<span class="text-primary-dim">int</span> i = <span class="text-secondary-dim">0</span>; i &lt; m; ++i) {
+            <span class="text-primary-dim">for</span> (<span class="text-primary-dim">int</span> j = <span class="text-secondary-dim">0</span>; j &lt; n; ++j) {
+                <span class="text-primary-dim">if</span> (mat[i][j] == <span class="text-secondary-dim">1</span>) heights[j]++;
+                <span class="text-primary-dim">else</span> heights[j] = <span class="text-secondary-dim">0</span>;
+            }
+        }</pre>
+</div>
+</div>
+<!-- Console / Terminal Panel -->
+<div class="h-48 bg-surface-container-low flex flex-col">
+<div class="h-8 bg-surface-container-high flex items-center px-4 justify-between">
+<div class="flex gap-4">
+<span class="font-space-grotesk text-[10px] tracking-widest text-primary">CONSOLE</span>
+<span class="font-space-grotesk text-[10px] tracking-widest text-on-surface-variant hover:text-on-surface cursor-pointer">DEBUGGER</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-on-surface-variant hover:text-primary cursor-pointer">expand_less</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant hover:text-error cursor-pointer">close</span>
+</div>
+</div>
+<div class="flex-1 p-4 font-mono text-xs overflow-y-auto space-y-1">
+<div class="flex gap-2">
+<span class="text-primary-dim">[09:44:12]</span>
+<span class="text-on-surface-variant">Initializing build process for <span class="text-on-surface">solution.cpp</span>...</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary-dim">[09:44:13]</span>
+<span class="text-on-surface">Compiler: Clang 16.0.0 (Target: x86_64-linux-gnu)</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary-dim">[09:44:14]</span>
+<span class="text-on-primary-container">✓ Build successful. Running Example 1...</span>
+</div>
+<div class="mt-2 text-on-surface-variant border-t border-outline-variant/10 pt-2">
+<span class="text-primary">&gt;</span> <span class="animate-pulse">_</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-emerald-950 flex justify-between items-center px-4 w-full h-6 fixed bottom-0 z-50 border-none">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary animate-pulse"></span>
+<span class="font-space-grotesk text-[9px] font-bold text-white uppercase">Status: Ready</span>
+</div>
+<span class="font-space-grotesk text-[9px] font-bold text-emerald-300/70 uppercase">Ln 14, Col 28</span>
+<span class="font-space-grotesk text-[9px] font-bold text-emerald-300/70 uppercase">UTF-8</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-emerald-300/70 hover:text-white cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[10px]">account_tree</span>
+<span class="font-space-grotesk text-[9px] font-bold uppercase">Main Branch</span>
+</div>
+<span class="font-space-grotesk text-[9px] font-bold text-emerald-300/70 uppercase">© 2024 MONOLITH SYSTEMS</span>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MONOLITH_IDE | Code Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#1e2d41",
+                    "error-dim": "#bb5551",
+                    "background": "#0a0e14",
+                    "outline": "#6a768a",
+                    "on-primary-container": "#5ae8ad",
+                    "error": "#ee7d77",
+                    "error-container": "#7f2927",
+                    "on-error-container": "#ff9993",
+                    "tertiary-dim": "#cdd2db",
+                    "primary-fixed": "#6ffbbe",
+                    "surface-container-high": "#16202e",
+                    "tertiary-fixed-dim": "#cdd2db",
+                    "on-primary-fixed-variant": "#006947",
+                    "primary-container": "#005236",
+                    "surface-dim": "#0a0e14",
+                    "secondary-container": "#373c43",
+                    "on-secondary-fixed": "#3b4047",
+                    "on-background": "#d9e6fd",
+                    "inverse-primary": "#006d4a",
+                    "on-surface-variant": "#9facc1",
+                    "surface-container-lowest": "#000000",
+                    "on-tertiary": "#545961",
+                    "primary": "#4edea3",
+                    "on-primary-fixed": "#004930",
+                    "tertiary-fixed": "#dbe0ea",
+                    "secondary-fixed": "#dee2ec",
+                    "inverse-on-surface": "#51555c",
+                    "on-tertiary-fixed": "#393e46",
+                    "tertiary": "#eaeef8",
+                    "surface-tint": "#4edea3",
+                    "outline-variant": "#3c495b",
+                    "on-error": "#490106",
+                    "on-secondary-container": "#bbbfc9",
+                    "tertiary-container": "#dbe0ea",
+                    "secondary-dim": "#999ea7",
+                    "on-primary": "#004a31",
+                    "on-tertiary-fixed-variant": "#555a62",
+                    "primary-fixed-dim": "#5fedb0",
+                    "inverse-surface": "#f8f9ff",
+                    "secondary-fixed-dim": "#d0d4de",
+                    "surface-variant": "#1a2637",
+                    "surface-container-low": "#0e141c",
+                    "on-secondary-fixed-variant": "#575c64",
+                    "on-tertiary-container": "#4b5058",
+                    "on-secondary": "#1b2027",
+                    "surface": "#0a0e14",
+                    "on-surface": "#d9e6fd",
+                    "surface-container-highest": "#1a2637",
+                    "secondary": "#999ea7",
+                    "primary-dim": "#3cd096",
+                    "surface-container": "#121a25"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .brand-font { font-family: 'Space Grotesk', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .code-syntax { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="bg-zinc-950 text-[#4edea3] font-['Space_Grotesk'] tracking-[0.05em] uppercase text-xs w-full top-0 z-50 flex items-center justify-between px-6 h-16 w-full fixed">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#4edea3] active:opacity-80 transition-colors">menu</span>
+<span class="text-xl font-bold tracking-tighter text-[#4edea3]">MONOLITH_IDE</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="minimalist 3d avatar of a tech-focused professional with dark background and sharp lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK11te_q1-7GNinI2uPlosnVZvdGkE_XsQaIgP6JwkPgTaNi3kVtCpGhNC4BNYc2hkeWtdNI_fnX613uPnPW0DJDqB_QeIDvZU6bJTl-Xyu5dqoFj4EuE7X_mZLUhQvu_sx_zrAQTKwgkVwra425Cor7b34ApwXLB83ilVFTR6zdyG_mOxzEBcDkIRd9k7OIAwkWKBm2N3L7UDo_igWFBhSP12CN7E9pyfN9PLPyhkZaUoogxjHcMXvaE8y5jn7Hp96ijNSwgP2SE"/>
+</div>
+</div>
+</header>
+<main class="pt-16 pb-20 min-h-screen flex flex-col">
+<!-- Task Header (Contextual Anchor) -->
+<section class="bg-surface-container-low px-6 py-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-headline font-bold">Current_Task</span>
+<h2 class="text-lg font-headline font-bold text-on-surface tracking-tight">TWO_SUM_OPTIMIZED</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] px-2 py-1 bg-surface-container-highest text-primary font-mono border border-outline-variant/20">DIFFICULTY: HARD</span>
+</div>
+</section>
+<!-- Segmented Tab Navigation -->
+<nav class="flex bg-surface text-sm font-headline font-medium border-b border-outline-variant/10">
+<button class="flex-1 py-4 text-center border-b-2 border-primary text-primary transition-all">DESCRIPTION</button>
+<button class="flex-1 py-4 text-center text-on-surface-variant hover:text-on-surface transition-all">EDITOR</button>
+<button class="flex-1 py-4 text-center text-on-surface-variant hover:text-on-surface transition-all">SUBMISSIONS</button>
+</nav>
+<!-- Editor Content Area -->
+<div class="flex-1 flex flex-col bg-surface relative">
+<!-- IDE Toolbar -->
+<div class="bg-surface-container-low px-4 py-2 flex items-center justify-between text-[10px] font-mono text-on-surface-variant">
+<div class="flex gap-4">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> main.py</span>
+<span class="opacity-50">UTF-8</span>
+</div>
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span class="material-symbols-outlined text-sm">fullscreen</span>
+</div>
+</div>
+<!-- Code Editor Surface -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Line Numbers -->
+<div class="w-12 bg-surface-container-low flex flex-col items-center py-4 text-[11px] font-mono text-on-tertiary-container select-none">
+<span class="py-0.5 text-primary">01</span>
+<span class="py-0.5">02</span>
+<span class="py-0.5">03</span>
+<span class="py-0.5">04</span>
+<span class="py-0.5">05</span>
+<span class="py-0.5">06</span>
+<span class="py-0.5">07</span>
+<span class="py-0.5">08</span>
+<span class="py-0.5">09</span>
+<span class="py-0.5">10</span>
+</div>
+<!-- Code Area -->
+<div class="flex-1 p-4 bg-surface-container-lowest font-mono text-xs leading-relaxed overflow-x-auto whitespace-pre">
+<span class="text-on-primary-container">def</span> <span class="text-primary">two_sum</span>(nums: List[int], target: int) -&gt; List[int]:
+    <span class="text-on-surface-variant italic"># Optimized using Hash Map</span>
+    prevMap = {} <span class="text-on-surface-variant"># val : index</span>
+<span class="text-on-primary-container">for</span> i, n <span class="text-on-primary-container">in</span> <span class="text-primary-dim">enumerate</span>(nums):
+        diff = target - n
+        <span class="text-on-primary-container">if</span> diff <span class="text-on-primary-container">in</span> prevMap:
+            <span class="text-on-primary-container">return</span> [prevMap[diff], i]
+        prevMap[n] = i
+    <span class="text-on-primary-container">return</span> []
+                </div>
+</div>
+<!-- Execution Status Bar -->
+<div class="bg-primary-container text-on-primary-container px-6 h-10 flex items-center justify-between text-[10px] font-headline font-bold tracking-widest uppercase">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span>Syntax_Validated</span>
+</div>
+<div class="flex items-center gap-4">
+<span>PY 3.11</span>
+<span>142ms</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Navigation Shell (Bottom Navigation for Mobile) -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-zinc-900 flex md:hidden z-[60] shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<div class="flex-1 flex flex-col items-center justify-center text-zinc-400 hover:text-zinc-100 transition-all">
+<span class="material-symbols-outlined">library_books</span>
+<span class="text-[10px] font-headline mt-1 tracking-wide uppercase">Library</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center bg-zinc-800 text-[#4edea3] border-t-2 border-[#4edea3] transition-all">
+<span class="material-symbols-outlined">code</span>
+<span class="text-[10px] font-headline mt-1 tracking-wide uppercase">Editor</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center text-zinc-400 hover:text-zinc-100 transition-all">
+<span class="material-symbols-outlined">terminal</span>
+<span class="text-[10px] font-headline mt-1 tracking-wide uppercase">Output</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center text-zinc-400 hover:text-zinc-100 transition-all">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-headline mt-1 tracking-wide uppercase">Profile</span>
+</div>
+</nav>
+<!-- FAB Action Button (Contextual for Editor) -->
+<button class="fixed bottom-20 right-6 w-14 h-14 bg-gradient-to-b from-primary to-primary-dim text-on-primary flex items-center justify-center shadow-[0_12px_24px_rgba(78,222,163,0.3)] hover:scale-105 active:scale-95 transition-transform z-[55]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</body></html>

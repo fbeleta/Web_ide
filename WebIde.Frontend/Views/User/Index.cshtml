@@ -1,0 +1,141 @@
+@model List<WebIde.Model.User>
+@{
+    ViewData["Title"] = "USERS";
+}
+
+@await Html.PartialAsync("_Sidebar")
+@await Html.PartialAsync("_DeleteModal")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+
+        @if (TempData["Flash"] != null)
+        {
+            <div id="flash-message"
+                 class="mb-6 px-5 py-3 border-2 border-black bg-tertiary-container text-on-tertiary-container
+                        font-bold text-sm flex justify-between items-center"
+                 style="font-family:'Space Grotesk',sans-serif;">
+                @TempData["Flash"]
+                <button onclick="this.parentElement.remove()" class="font-black hover:text-error ml-4">×</button>
+            </div>
+        }
+
+        <div class="mb-8 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                    style="font-family: 'Space Grotesk', sans-serif;">USERS</h1>
+                <div class="h-2 w-24 bg-primary border-2 border-black"></div>
+                <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                    <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                    <span class="mx-2 text-outline">/</span>
+                    <span class="text-on-surface-variant">USERS</span>
+                </nav>
+            </div>
+            <a asp-controller="User" asp-action="Create"
+               class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                      shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                      hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+               style="font-family:'Space Grotesk',sans-serif;">+ CREATE USER</a>
+        </div>
+
+        <!-- AJAX Search -->
+        <div class="mb-4">
+            <input type="text" id="user-search" placeholder="SEARCH USERS..."
+                   class="w-full md:w-80 border-2 border-black px-4 py-2 bg-white text-black font-mono text-sm
+                          focus:outline-none focus:border-primary brutalist-input"
+                   style="font-family:'Space Grotesk',sans-serif;" />
+        </div>
+
+        <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">USER</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ROLE</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACCEPTED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">REGISTERED</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    @foreach (var user in Model)
+                    {
+                        int accepted = user.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-black border-2 border-black flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white font-black text-sm" style="font-family: 'Space Grotesk', sans-serif;">
+                                            @user.DisplayName.Substring(0, 1).ToUpper()
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <a asp-controller="User" asp-action="Details" asp-route-id="@user.Id"
+                                           class="font-bold text-base hover:text-primary no-underline block"
+                                           style="font-family: 'Space Grotesk', sans-serif;">@user.DisplayName</a>
+                                        <span class="text-xs text-outline">@@user.Username</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                @switch (user.Role)
+                                {
+                                    case UserRole.Admin:
+                                        <span class="role-admin border-2 border-black px-2 py-1 text-xs font-black uppercase"
+                                              style="font-family: 'Space Grotesk', sans-serif;">ADMIN</span> break;
+                                    case UserRole.Instructor:
+                                        <span class="role-instructor border-2 border-black px-2 py-1 text-xs font-black uppercase"
+                                              style="font-family: 'Space Grotesk', sans-serif;">INSTRUCTOR</span> break;
+                                    case UserRole.Student:
+                                        <span class="role-student border-2 border-black px-2 py-1 text-xs font-black uppercase"
+                                              style="font-family: 'Space Grotesk', sans-serif;">STUDENT</span> break;
+                                }
+                            </td>
+                            <td class="p-4">
+                                <span class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@user.Submissions.Count</span>
+                            </td>
+                            <td class="p-4">
+                                <span class="font-black text-xl text-tertiary" style="font-family: 'Space Grotesk', sans-serif;">@accepted</span>
+                            </td>
+                            <td class="p-4">
+                                <span class="text-sm font-bold" style="font-family: 'Space Grotesk', sans-serif;">@user.RegisteredAt.ToString("yyyy-MM-dd")</span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex gap-2">
+                                    <a asp-controller="User" asp-action="Details" asp-route-id="@user.Id"
+                                       class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                              shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
+                                              hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all no-underline"
+                                       style="font-family:'Space Grotesk',sans-serif;">VIEW</a>
+                                    <a asp-controller="User" asp-action="Edit" asp-route-id="@user.Id"
+                                       class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                              hover:bg-black hover:text-white transition-none no-underline"
+                                       style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                                    <button type="button"
+                                            onclick="openDeleteModal('@Url.Action("Delete","User", new { id = user.Id })', '@user.Username.Replace("'","\\'")')"
+                                            class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
+                                                   hover:bg-error hover:text-white transition-none"
+                                            style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+
+@section Scripts {
+<script>
+initAjaxSearch('user-search', 'users-tbody', '/users/search', function(u) {
+    return '<tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">' +
+        '<td class="p-4"><span class="font-bold" style="font-family:\'Space Grotesk\',sans-serif;">' + u.label + '</span></td>' +
+        '<td class="p-4" colspan="4"></td>' +
+        '<td class="p-4"><a href="/users/' + u.id + '" class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs no-underline shadow-[2px_2px_0_0_rgba(0,0,0,1)]" style="font-family:\'Space Grotesk\',sans-serif;">VIEW</a></td>' +
+        '</tr>';
+});
+</script>
+}

@@ -1,0 +1,142 @@
+@model List<WebIde.Web.Models.LeaderboardEntry>
+@{
+    ViewData["Title"] = "LEADERBOARD";
+    var top3 = Model.Take(3).ToList();
+    var rest  = Model.Skip(3).ToList();
+    // Podium bg colors per rank
+    string PodiumBg(int rank) => rank switch { 1 => "bg-tertiary-container", 2 => "bg-primary-container", _ => "bg-secondary-container" };
+    string PodiumIcon(int rank) => rank switch { 1 => "stars", 2 => "workspace_premium", _ => "emoji_events" };
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-20">
+    <div class="max-w-7xl mx-auto p-6 md:p-10">
+
+        @{
+            string lbSort = ViewData["sort"]?.ToString() ?? "solved";
+        }
+        <div class="mb-12 border-l-8 border-primary pl-6">
+            <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">LEADERBOARD</h1>
+            <p class="text-xl font-bold text-secondary uppercase tracking-widest"
+               style="font-family: 'Space Grotesk', sans-serif;">Global_Rankings_v.2.0</p>
+            <nav class="text-xs font-bold uppercase mt-2" style="font-family: 'Space Grotesk', sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">LEADERBOARD</span>
+            </nav>
+            <div class="flex gap-3 mt-4">
+                <a asp-action="Index" asp-route-sort="solved"
+                   class="border-2 border-black px-4 py-2 font-black text-xs uppercase no-underline @(lbSort == "solved" ? "bg-black text-white" : "bg-white hover:bg-surface-container-low")"
+                   style="font-family: 'Space Grotesk', sans-serif;">SORT:_SOLVED</a>
+                <a asp-action="Index" asp-route-sort="score"
+                   class="border-2 border-black px-4 py-2 font-black text-xs uppercase no-underline @(lbSort == "score" ? "bg-black text-white" : "bg-white hover:bg-surface-container-low")"
+                   style="font-family: 'Space Grotesk', sans-serif;">SORT:_SCORE</a>
+            </div>
+        </div>
+
+        @if (top3.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+                @{
+                    // Render rank 2 first (left), rank 1 center, rank 3 right — match Stitch design
+                    var ordered = new[] { top3.ElementAtOrDefault(1), top3.ElementAtOrDefault(0), top3.ElementAtOrDefault(2) }
+                                  .Where(e => e != null).ToList();
+                }
+                @foreach (var entry in ordered)
+                {
+                    bool isFirst = entry!.Rank == 1;
+                    <div class="md:col-span-4 @PodiumBg(entry.Rank) border-4 border-black p-@(isFirst ? "8" : "6") flex flex-col justify-between
+                                @(isFirst ? "shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] md:-translate-y-4" : "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]")">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="@(isFirst ? "text-6xl" : "text-4xl") font-black"
+                                      style="font-family: 'Space Grotesk', sans-serif;">
+                                    @entry.Rank.ToString("00")
+                                </span>
+                                <span class="material-symbols-outlined @(isFirst ? "text-6xl" : "text-4xl")">@PodiumIcon(entry.Rank)</span>
+                            </div>
+                            <a asp-controller="User" asp-action="Details" asp-route-id="@entry.User.Id"
+                               class="block @(isFirst ? "text-4xl" : "text-3xl") font-black uppercase no-underline hover:underline mb-1"
+                               style="font-family: 'Space Grotesk', sans-serif;">@entry.User.Username.ToUpper()</a>
+                            <p class="font-bold opacity-80 uppercase mb-@(isFirst ? "8" : "6") text-sm"
+                               style="font-family: 'Space Grotesk', sans-serif;">Solved: @entry.SolvedCount</p>
+                        </div>
+                        <div class="bg-black text-white p-@(isFirst ? "6" : "4")">
+                            <p class="text-xs font-bold uppercase"
+                               style="font-family: 'Space Grotesk', sans-serif;">SCORE_INDEX</p>
+                            <p class="@(isFirst ? "text-4xl" : "text-2xl") font-black"
+                               style="font-family: 'Space Grotesk', sans-serif;">@entry.Score PTS</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (rest.Any())
+        {
+            <div class="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden mb-12">
+                <div class="grid grid-cols-12 bg-black text-white p-4 font-black uppercase tracking-widest text-xs border-b-4 border-black"
+                     style="font-family: 'Space Grotesk', sans-serif;">
+                    <div class="col-span-2 md:col-span-1">RANK</div>
+                    <div class="col-span-6 md:col-span-5">USERNAME</div>
+                    <div class="hidden md:block col-span-3">SOLVED</div>
+                    <div class="col-span-4 md:col-span-3 text-right">SCORE</div>
+                </div>
+                <div class="divide-y-2 divide-black/20">
+                    @foreach (var entry in rest)
+                    {
+                        <div class="grid grid-cols-12 p-4 items-center hover:bg-surface-container-low transition-none cursor-pointer group">
+                            <div class="col-span-2 md:col-span-1 text-2xl font-black"
+                                 style="font-family: 'Space Grotesk', sans-serif;">@entry.Rank.ToString("00")</div>
+                            <div class="col-span-6 md:col-span-5 flex items-center gap-3">
+                                <div class="h-8 w-8 bg-surface-container-highest border-2 border-black hidden sm:flex items-center justify-center flex-shrink-0">
+                                    <span class="text-xs font-black" style="font-family: 'Space Grotesk', sans-serif;">
+                                        @entry.User.DisplayName.Substring(0, 1).ToUpper()
+                                    </span>
+                                </div>
+                                <a asp-controller="User" asp-action="Details" asp-route-id="@entry.User.Id"
+                                   class="font-black text-lg uppercase group-hover:text-primary no-underline"
+                                   style="font-family: 'Space Grotesk', sans-serif;">@entry.User.Username.ToUpper()</a>
+                            </div>
+                            <div class="hidden md:block col-span-3 font-bold"
+                                 style="font-family: 'Space Grotesk', sans-serif;">@entry.SolvedCount</div>
+                            <div class="col-span-4 md:col-span-3 text-right font-black text-xl"
+                                 style="font-family: 'Space Grotesk', sans-serif;">@entry.Score</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="border-4 border-black p-6 bg-white">
+                <h4 class="font-black uppercase text-xs text-secondary mb-4"
+                    style="font-family: 'Space Grotesk', sans-serif;">PLATFORM_METRIC_01</h4>
+                <p class="text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@Model.Count</p>
+                <p class="font-bold uppercase text-xs opacity-60 mt-1"
+                   style="font-family: 'Space Grotesk', sans-serif;">REGISTERED_USERS</p>
+            </div>
+            <div class="border-4 border-black p-6 bg-white">
+                <h4 class="font-black uppercase text-xs text-tertiary mb-4"
+                    style="font-family: 'Space Grotesk', sans-serif;">PLATFORM_METRIC_02</h4>
+                <p class="text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">
+                    @Model.Sum(e => e.SolvedCount)
+                </p>
+                <p class="font-bold uppercase text-xs opacity-60 mt-1"
+                   style="font-family: 'Space Grotesk', sans-serif;">TOTAL_ACCEPTED</p>
+            </div>
+            <div class="border-4 border-black p-6 bg-white">
+                <h4 class="font-black uppercase text-xs text-primary mb-4"
+                    style="font-family: 'Space Grotesk', sans-serif;">PLATFORM_METRIC_03</h4>
+                <p class="text-4xl font-black" style="font-family: 'Space Grotesk', sans-serif;">
+                    @(Model.FirstOrDefault()?.Score ?? 0)
+                </p>
+                <p class="font-bold uppercase text-xs opacity-60 mt-1"
+                   style="font-family: 'Space Grotesk', sans-serif;">TOP_SCORE</p>
+            </div>
+        </div>
+
+    </div>
+</main>

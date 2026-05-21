@@ -1,0 +1,191 @@
+@model WebIde.Web.Models.HomeViewModel
+@{
+    ViewData["Title"] = "HOME";
+}
+
+<section class="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center text-center px-6
+                border-b-4 border-black relative overflow-hidden bg-surface-bright">
+    <div class="absolute top-10 left-10 opacity-10 pointer-events-none">
+        <pre class="text-xs font-mono text-left">function execute(logic) {
+    return logic.map(bit => bit ^ 1);
+}</pre>
+    </div>
+    <div class="absolute bottom-10 right-10 opacity-10 pointer-events-none">
+        <pre class="text-xs font-mono text-right">while(alive) {
+    code();
+    optimize();
+}</pre>
+    </div>
+
+    <div class="z-10 max-w-6xl">
+        <h1 class="text-6xl md:text-9xl font-black tracking-tighter text-black leading-none mb-8"
+            style="font-family: 'Space Grotesk', sans-serif;">
+            COMPETE.<br />
+            <span class="text-primary italic">CODE.</span><br />
+            CONQUER.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl mx-auto mb-12 border-l-4 border-secondary px-6 text-left">
+            The raw, unadulterated platform for high-velocity competitive programming. No fluff. Just logic.
+        </p>
+        <div class="flex flex-col md:flex-row gap-6 justify-center">
+            <a asp-controller="Problem" asp-action="Index"
+               class="bg-secondary text-white text-2xl md:text-3xl font-black uppercase px-10 py-5 border-4 border-black
+                      shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
+                      hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]
+                      transition-all inline-block"
+               style="font-family: 'Space Grotesk', sans-serif;">START_CODING</a>
+            <a asp-controller="Leaderboard" asp-action="Index"
+               class="bg-white text-black text-2xl md:text-3xl font-black uppercase px-10 py-5 border-4 border-black
+                      shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:bg-tertiary-container transition-all inline-block"
+               style="font-family: 'Space Grotesk', sans-serif;">LEADERBOARD</a>
+        </div>
+    </div>
+</section>
+
+<section class="p-6 md:p-12 bg-surface">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 max-w-7xl mx-auto">
+
+        <div class="md:col-span-8 border-4 border-black bg-surface-container-lowest p-8
+                    shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between min-h-[380px]">
+            <div>
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="text-5xl font-black uppercase tracking-tighter"
+                        style="font-family: 'Space Grotesk', sans-serif;">PROBLEMS</h3>
+                    <span class="material-symbols-outlined text-6xl text-primary">code</span>
+                </div>
+                <p class="text-xl font-bold uppercase mb-8 max-w-md">
+                    @Model.TotalProblems algorithmic challenges — arrays, graphs, DP, binary search &amp; more.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                @foreach (var p in Model.FeaturedProblems)
+                {
+                    <a asp-controller="Problem" asp-action="Details" asp-route-id="@p.Id"
+                       class="border-2 border-black px-3 py-1 text-xs font-black uppercase
+                              hover:bg-black hover:text-white transition-none no-underline bg-surface-container-low"
+                       style="font-family: 'Space Grotesk', sans-serif;">
+                        @p.Title.ToUpper().Replace(" ", "_")
+                    </a>
+                }
+                <a asp-controller="Problem" asp-action="Index"
+                   class="border-2 border-primary px-3 py-1 text-xs font-black uppercase text-primary
+                          hover:bg-primary hover:text-white transition-none no-underline"
+                   style="font-family: 'Space Grotesk', sans-serif;">VIEW_ALL →</a>
+            </div>
+        </div>
+
+        <div class="md:col-span-4 border-4 border-black bg-primary p-8
+                    shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white flex flex-col justify-between">
+            <div>
+                <h3 class="text-3xl font-black uppercase tracking-tighter mb-3"
+                    style="font-family: 'Space Grotesk', sans-serif;">LEADERBOARD</h3>
+                <span class="material-symbols-outlined text-5xl mb-4 block">military_tech</span>
+                <ul class="space-y-3" style="font-family: 'Space Grotesk', sans-serif; font-weight: 700;">
+                    @{ int rank = 1; }
+                    @foreach (var (user, solved) in Model.TopUsers)
+                    {
+                        <li class="flex justify-between border-b-2 border-white/30 pb-2">
+                            <span>@rank. @user.Username.ToUpper()</span>
+                            <span>@solved pts</span>
+                        </li>
+                        rank++;
+                    }
+                </ul>
+            </div>
+            <a asp-controller="Leaderboard" asp-action="Index"
+               class="mt-6 block text-center bg-white text-black font-black uppercase py-3 border-2 border-black
+                      hover:bg-secondary-container transition-none no-underline"
+               style="font-family: 'Space Grotesk', sans-serif;">VIEW_ALL</a>
+        </div>
+
+        <div class="md:col-span-12 grid md:grid-cols-2 border-4 border-black bg-tertiary-container
+                    shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+            <div class="p-8 flex flex-col justify-center">
+                <div class="bg-black text-white inline-block px-3 py-1 font-bold mb-4 uppercase w-fit text-xs"
+                     style="font-family: 'Space Grotesk', sans-serif;">PLATFORM LIVE</div>
+                <h3 class="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4"
+                    style="font-family: 'Space Grotesk', sans-serif;">@Model.AcceptanceRate%_RATE</h3>
+                <p class="text-lg font-bold uppercase mb-6">
+                    @Model.AcceptedSubmissions accepted / @Model.TotalSubmissions total submissions
+                </p>
+                <a asp-controller="Submission" asp-action="Index"
+                   class="bg-black text-white font-black uppercase px-8 py-4 border-2 border-black
+                          hover:bg-primary transition-none no-underline w-fit"
+                   style="font-family: 'Space Grotesk', sans-serif;">VIEW_SUBMISSIONS</a>
+            </div>
+            <div class="bg-black flex items-center justify-center p-8 min-h-[220px]">
+                <pre class="text-[#32ff00] font-mono text-sm leading-loose">
+&gt; SYSTEM_STATUS ──────────────
+  Problems    @Model.TotalProblems
+  Users       @Model.TotalUsers
+  Submissions @Model.TotalSubmissions
+  Accepted    @Model.AcceptedSubmissions
+  Rate        @Model.AcceptanceRate%
+&gt; OK_████████████████ 100%</pre>
+            </div>
+        </div>
+
+        <div class="md:col-span-6 border-4 border-black bg-surface-container-highest p-8
+                    shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <h3 class="text-2xl font-black uppercase tracking-tighter mb-6 flex items-center gap-2"
+                style="font-family: 'Space Grotesk', sans-serif;">
+                <span class="material-symbols-outlined">bar_chart</span> SYSTEM_STATUS
+            </h3>
+            <div class="space-y-5">
+                <div>
+                    <div class="flex justify-between mb-2 font-bold uppercase text-xs"
+                         style="font-family: 'Space Grotesk', sans-serif;">
+                        <span>Total Problems</span><span>@Model.TotalProblems</span>
+                    </div>
+                    <div class="w-full h-7 bg-white border-2 border-black">
+                        <div class="bg-tertiary h-full border-r-2 border-black"
+                             style="width: @(Math.Min(Model.TotalProblems * 15, 100))%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-2 font-bold uppercase text-xs"
+                         style="font-family: 'Space Grotesk', sans-serif;">
+                        <span>Acceptance Rate</span><span>@Model.AcceptanceRate%</span>
+                    </div>
+                    <div class="w-full h-7 bg-white border-2 border-black">
+                        <div class="bg-primary h-full border-r-2 border-black"
+                             style="width: @((int)Model.AcceptanceRate)%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-6 border-4 border-black bg-secondary p-8
+                    shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <h3 class="text-3xl font-black uppercase tracking-tighter mb-4"
+                    style="font-family: 'Space Grotesk', sans-serif;">EXPLORE_ALL</h3>
+                <p class="font-bold uppercase text-base mb-6">
+                    Browse organizations, problem sets, tags, and full submission history.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <a asp-controller="Organization" asp-action="Index"
+                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                              hover:bg-black hover:text-white transition-none no-underline text-sm"
+                       style="font-family: 'Space Grotesk', sans-serif;">ORGS</a>
+                    <a asp-controller="ProblemSet" asp-action="Index"
+                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                              hover:bg-black hover:text-white transition-none no-underline text-sm"
+                       style="font-family: 'Space Grotesk', sans-serif;">SETS</a>
+                    <a asp-controller="Tag" asp-action="Index"
+                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                              hover:bg-black hover:text-white transition-none no-underline text-sm"
+                       style="font-family: 'Space Grotesk', sans-serif;">TAGS</a>
+                    <a asp-controller="User" asp-action="Index"
+                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                              hover:bg-black hover:text-white transition-none no-underline text-sm"
+                       style="font-family: 'Space Grotesk', sans-serif;">USERS</a>
+                </div>
+            </div>
+            <span class="material-symbols-outlined text-[10rem] absolute -bottom-8 -right-8 opacity-20 pointer-events-none">
+                rocket_launch
+            </span>
+        </div>
+
+    </div>
+</section>

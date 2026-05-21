@@ -1,0 +1,251 @@
+@model List<WebIde.Model.Problem>
+@{
+    ViewData["Title"] = "PROBLEMS";
+    // Acceptance rate per problem: Accepted / Total submissions
+    double Rate(WebIde.Model.Problem p) =>
+        p.Submissions.Count == 0 ? 0 :
+        Math.Round((double)p.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted) / p.Submissions.Count * 100, 1);
+}
+
+@await Html.PartialAsync("_Sidebar")
+@await Html.PartialAsync("_DeleteModal")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+
+        @if (TempData["Flash"] != null)
+        {
+            <div id="flash-message"
+                 class="mb-6 px-5 py-3 border-2 border-black bg-tertiary-container text-on-tertiary-container
+                        font-bold text-sm flex justify-between items-center"
+                 style="font-family:'Space Grotesk',sans-serif;">
+                @TempData["Flash"]
+                <button onclick="this.parentElement.remove()" class="font-black hover:text-error ml-4">×</button>
+            </div>
+        }
+
+        <div class="mb-8 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                    style="font-family: 'Space Grotesk', sans-serif;">PROBLEMS_LIBRARY</h1>
+                <div class="h-2 w-32 bg-primary border-2 border-black"></div>
+                <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                    <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                    <span class="mx-2 text-outline">/</span>
+                    <span class="text-on-surface-variant">PROBLEMS</span>
+                </nav>
+            </div>
+            <a asp-controller="Problem" asp-action="Create"
+               class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                      shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                      hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+               style="font-family:'Space Grotesk',sans-serif;">+ CREATE PROBLEM</a>
+        </div>
+
+        @{
+            int total = Model.Count;
+            int accepted = Model.Sum(p => p.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted));
+            int totalSubs = Model.Sum(p => p.Submissions.Count);
+            double overallRate = totalSubs == 0 ? 0 : Math.Round((double)accepted / totalSubs * 100, 1);
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-primary text-on-primary border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <p class="font-bold uppercase text-xs opacity-80 mb-1" style="font-family: 'Space Grotesk', sans-serif;">TOTAL_PROBLEMS</p>
+                <h4 class="text-5xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@total</h4>
+            </div>
+            <div class="bg-tertiary text-on-tertiary border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <p class="font-bold uppercase text-xs opacity-80 mb-1" style="font-family: 'Space Grotesk', sans-serif;">ACCEPTANCE_RATE</p>
+                <h4 class="text-5xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@overallRate%</h4>
+            </div>
+            <div class="bg-secondary text-on-secondary border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <p class="font-bold uppercase text-xs opacity-80 mb-1" style="font-family: 'Space Grotesk', sans-serif;">TOTAL_SUBMISSIONS</p>
+                <h4 class="text-5xl font-black" style="font-family: 'Space Grotesk', sans-serif;">@totalSubs</h4>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <input type="text" id="prob-search" placeholder="SEARCH PROBLEMS..."
+                   class="w-full md:w-80 border-2 border-black px-4 py-2 bg-white text-black font-mono text-sm
+                          focus:outline-none focus:border-primary brutalist-input"
+                   style="font-family:'Space Grotesk',sans-serif;" />
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+
+            <div class="xl:col-span-1">
+                <div class="bg-surface-container-low border-4 border-black p-6 sticky top-28">
+                    <h3 class="font-black uppercase mb-6 flex items-center gap-2 text-base"
+                        style="font-family: 'Space Grotesk', sans-serif;">
+                        <span class="material-symbols-outlined">filter_list</span>
+                        FILTER_CONTROLS
+                    </h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block font-bold text-xs uppercase mb-2"
+                                   style="font-family: 'Space Grotesk', sans-serif;">SEARCH_NAME</label>
+                            <input class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none"
+                                   placeholder="problem_slug..." type="text"
+                                   style="font-family: 'Space Grotesk', sans-serif;" />
+                        </div>
+                        <div>
+                            <label class="block font-bold text-xs uppercase mb-3"
+                                   style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <span class="font-bold uppercase text-sm group-hover:text-tertiary"
+                                          style="font-family: 'Space Grotesk', sans-serif;">EASY_MODE</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <span class="font-bold uppercase text-sm group-hover:text-primary"
+                                          style="font-family: 'Space Grotesk', sans-serif;">MEDIUM_MODE</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <span class="font-bold uppercase text-sm group-hover:text-secondary"
+                                          style="font-family: 'Space Grotesk', sans-serif;">HARD_MODE</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="xl:col-span-3">
+                <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <table class="w-full text-left border-collapse">
+                        @{
+                            string currentSort = ViewData["sort"]?.ToString() ?? "";
+                            string NextSort(string asc, string desc) => currentSort == asc ? desc : asc;
+                            string SortArrow(string asc, string desc) => currentSort == asc ? " ▲" : currentSort == desc ? " ▼" : "";
+                        }
+                        <thead>
+                            <tr class="bg-black text-white border-b-4 border-black">
+                                <th class="p-4 font-black uppercase text-xs tracking-widest"
+                                    style="font-family: 'Space Grotesk', sans-serif;">STATUS</th>
+                                <th class="p-4 font-black uppercase text-xs tracking-widest"
+                                    style="font-family: 'Space Grotesk', sans-serif;">
+                                    <a asp-action="Index" asp-route-sort="title"
+                                       class="text-white hover:text-primary no-underline">PROBLEM_NAME@SortArrow("title","title")</a>
+                                </th>
+                                <th class="p-4 font-black uppercase text-xs tracking-widest"
+                                    style="font-family: 'Space Grotesk', sans-serif;">
+                                    <a asp-action="Index" asp-route-sort="@NextSort("difficulty-asc","difficulty-desc")"
+                                       class="text-white hover:text-primary no-underline">DIFFICULTY@SortArrow("difficulty-asc","difficulty-desc")</a>
+                                </th>
+                                <th class="p-4 font-black uppercase text-xs tracking-widest"
+                                    style="font-family: 'Space Grotesk', sans-serif;">
+                                    <a asp-action="Index" asp-route-sort="@NextSort("acceptance-desc","acceptance-asc")"
+                                       class="text-white hover:text-primary no-underline">ACCEPTANCE@SortArrow("acceptance-asc","acceptance-desc")</a>
+                                </th>
+                                <th class="p-4 font-black uppercase text-xs tracking-widest"
+                                    style="font-family: 'Space Grotesk', sans-serif;">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prob-tbody">
+                            @foreach (var problem in Model)
+                            {
+                                var hasAccepted = problem.Submissions.Any(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
+                                var rate = Rate(problem);
+                                <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                                    <td class="p-4">
+                                        @if (hasAccepted)
+                                        {
+                                            <span class="material-symbols-outlined text-tertiary"
+                                                  style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                        }
+                                        else if (problem.Submissions.Any())
+                                        {
+                                            <span class="material-symbols-outlined text-error">cancel</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+                                        }
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex flex-col">
+                                            <a asp-controller="Problem" asp-action="Details" asp-route-id="@problem.Id"
+                                               class="font-bold text-base leading-none mb-1 hover:text-primary no-underline"
+                                               style="font-family: 'Space Grotesk', sans-serif;">
+                                                @($"{problem.Id:000}_{problem.Title.ToUpper().Replace(" ", "_")}")
+                                            </a>
+                                            <div class="flex gap-2 flex-wrap">
+                                                @foreach (var tag in problem.Tags)
+                                                {
+                                                    <a asp-controller="Tag" asp-action="Details" asp-route-id="@tag.Id"
+                                                       class="text-[10px] text-primary font-black uppercase no-underline hover:underline"
+                                                       style="font-family: 'Space Grotesk', sans-serif;">
+                                                        #@tag.Name.ToUpper().Replace(" ", "_")
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-4">
+                                        @switch (problem.Difficulty)
+                                        {
+                                            case DifficultyLevel.Easy:
+                                                <span class="badge-easy">EASY</span>
+                                                break;
+                                            case DifficultyLevel.Medium:
+                                                <span class="badge-medium">MEDIUM</span>
+                                                break;
+                                            case DifficultyLevel.Hard:
+                                                <span class="badge-hard">HARD</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="p-4">
+                                        <span class="font-black text-lg" style="font-family: 'Space Grotesk', sans-serif;">@rate%</span>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="flex gap-2">
+                                            <a asp-controller="Problem" asp-action="Details" asp-route-id="@problem.Id"
+                                               class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                                      shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
+                                                      hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] transition-all no-underline"
+                                               style="font-family:'Space Grotesk',sans-serif;">SOLVE</a>
+                                            <a asp-controller="Problem" asp-action="Edit" asp-route-id="@problem.Id"
+                                               class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                                      hover:bg-black hover:text-white transition-none no-underline"
+                                               style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                                            <button type="button"
+                                                    onclick="openDeleteModal('@Url.Action("Delete","Problem", new { id = problem.Id })', '@problem.Title.Replace("'","\\'")')"
+                                                    class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
+                                                           hover:bg-error hover:text-white transition-none"
+                                                    style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-surface-container-high flex justify-between items-center border-t-2 border-black">
+                        <span class="font-bold text-xs uppercase"
+                              style="font-family: 'Space Grotesk', sans-serif;">SHOWING_@(Model.Count)_ENTRIES</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+<script>
+initAjaxSearch('prob-search', 'prob-tbody', '/problems/search', function(p) {
+    return '<tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">' +
+        '<td class="p-4"><span class="material-symbols-outlined text-outline">radio_button_unchecked</span></td>' +
+        '<td class="p-4 font-bold" style="font-family:\'Space Grotesk\',sans-serif;">' + p.label + '</td>' +
+        '<td colspan="2" class="p-4"></td>' +
+        '<td class="p-4"><div class="flex gap-2">' +
+        '<a href="/problems/' + p.id + '" class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs no-underline" style="font-family:\'Space Grotesk\',sans-serif;">SOLVE</a>' +
+        '<a href="/problems/' + p.id + '/edit" class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs no-underline hover:bg-black hover:text-white" style="font-family:\'Space Grotesk\',sans-serif;">EDIT</a>' +
+        '</div></td>' +
+        '</tr>';
+});
+</script>
+}

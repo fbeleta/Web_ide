@@ -19,12 +19,10 @@ var problem1 = new Problem
     CreatedAt = new DateTime(2025, 1, 10),
     AuthorUsername = "admin"
 };
-problem1.Tags.AddRange([tagArrays, tagHashMap]);
-problem1.TestCases.AddRange([
-    new TestCase { Id = 1, InputArgs = "[2,7,11,15], 9", ExpectedOutput = "[0,1]", IsSample = true,  OrderIndex = 1, Points = 30, Problem = problem1 },
-    new TestCase { Id = 2, InputArgs = "[3,2,4], 6",     ExpectedOutput = "[1,2]", IsSample = true,  OrderIndex = 2, Points = 30, Problem = problem1 },
-    new TestCase { Id = 3, InputArgs = "[3,3], 6",       ExpectedOutput = "[0,1]", IsSample = false, OrderIndex = 3, Points = 40, Problem = problem1 },
-]);
+problem1.Tags.Add(tagArrays); problem1.Tags.Add(tagHashMap);
+problem1.TestCases.Add(new TestCase { Id = 1, InputArgs = "[2,7,11,15], 9", ExpectedOutput = "[0,1]", IsSample = true,  OrderIndex = 1, Points = 30, Problem = problem1 });
+problem1.TestCases.Add(new TestCase { Id = 2, InputArgs = "[3,2,4], 6",     ExpectedOutput = "[1,2]", IsSample = true,  OrderIndex = 2, Points = 30, Problem = problem1 });
+problem1.TestCases.Add(new TestCase { Id = 3, InputArgs = "[3,3], 6",       ExpectedOutput = "[0,1]", IsSample = false, OrderIndex = 3, Points = 40, Problem = problem1 });
 tagArrays.Problems.Add(problem1);
 tagHashMap.Problems.Add(problem1);
 
@@ -39,12 +37,10 @@ var problem2 = new Problem
     CreatedAt = new DateTime(2025, 2, 5),
     AuthorUsername = "admin"
 };
-problem2.Tags.AddRange([tagSlidingWin, tagHashMap]);
-problem2.TestCases.AddRange([
-    new TestCase { Id = 4, InputArgs = "\"abcabcbb\"", ExpectedOutput = "3", IsSample = true,  OrderIndex = 1, Points = 33, Problem = problem2 },
-    new TestCase { Id = 5, InputArgs = "\"bbbbb\"",    ExpectedOutput = "1", IsSample = true,  OrderIndex = 2, Points = 33, Problem = problem2 },
-    new TestCase { Id = 6, InputArgs = "\"pwwkew\"",   ExpectedOutput = "3", IsSample = false, OrderIndex = 3, Points = 34, Problem = problem2 },
-]);
+problem2.Tags.Add(tagSlidingWin); problem2.Tags.Add(tagHashMap);
+problem2.TestCases.Add(new TestCase { Id = 4, InputArgs = "\"abcabcbb\"", ExpectedOutput = "3", IsSample = true,  OrderIndex = 1, Points = 33, Problem = problem2 });
+problem2.TestCases.Add(new TestCase { Id = 5, InputArgs = "\"bbbbb\"",    ExpectedOutput = "1", IsSample = true,  OrderIndex = 2, Points = 33, Problem = problem2 });
+problem2.TestCases.Add(new TestCase { Id = 6, InputArgs = "\"pwwkew\"",   ExpectedOutput = "3", IsSample = false, OrderIndex = 3, Points = 34, Problem = problem2 });
 tagSlidingWin.Problems.Add(problem2);
 tagHashMap.Problems.Add(problem2);
 
@@ -60,12 +56,10 @@ var problem3 = new Problem
     AuthorUsername = "admin"
 };
 problem3.Tags.Add(tagBinarySearch);
-problem3.TestCases.AddRange([
-    new TestCase { Id = 7,  InputArgs = "[1,3], [2]",   ExpectedOutput = "2.0", IsSample = true,  OrderIndex = 1, Points = 25, Problem = problem3 },
-    new TestCase { Id = 8,  InputArgs = "[1,2], [3,4]", ExpectedOutput = "2.5", IsSample = true,  OrderIndex = 2, Points = 25, Problem = problem3 },
-    new TestCase { Id = 9,  InputArgs = "[0,0], [0,0]", ExpectedOutput = "0.0", IsSample = false, OrderIndex = 3, Points = 25, Problem = problem3 },
-    new TestCase { Id = 10, InputArgs = "[], [1]",      ExpectedOutput = "1.0", IsSample = false, OrderIndex = 4, Points = 25, Problem = problem3 },
-]);
+problem3.TestCases.Add(new TestCase { Id = 7,  InputArgs = "[1,3], [2]",   ExpectedOutput = "2.0", IsSample = true,  OrderIndex = 1, Points = 25, Problem = problem3 });
+problem3.TestCases.Add(new TestCase { Id = 8,  InputArgs = "[1,2], [3,4]", ExpectedOutput = "2.5", IsSample = true,  OrderIndex = 2, Points = 25, Problem = problem3 });
+problem3.TestCases.Add(new TestCase { Id = 9,  InputArgs = "[0,0], [0,0]", ExpectedOutput = "0.0", IsSample = false, OrderIndex = 3, Points = 25, Problem = problem3 });
+problem3.TestCases.Add(new TestCase { Id = 10, InputArgs = "[], [1]",      ExpectedOutput = "1.0", IsSample = false, OrderIndex = 4, Points = 25, Problem = problem3 });
 tagBinarySearch.Problems.Add(problem3);
 
 var problems = new List<Problem> { problem1, problem2, problem3 };
@@ -82,7 +76,7 @@ var org = new Organization
     Name = "FER Algorithms",
     Description = "Faculty of Electrical Engineering and Computing - Algorithms course"
 };
-org.Members.AddRange([user1, user2, user3]);
+org.Members.Add(user1); org.Members.Add(user2); org.Members.Add(user3);
 user1.Organizations.Add(org);
 user2.Organizations.Add(org);
 user3.Organizations.Add(org);
@@ -97,7 +91,7 @@ var problemSet = new ProblemSet
     OrderIndex = 1,
     Organization = org
 };
-problemSet.Problems.AddRange(problems);
+foreach (var p in problems) problemSet.Problems.Add(p);
 org.ProblemSets.Add(problemSet);
 
 Submission MakeSubmission(int id, User user, Problem problem, string code,
