@@ -25,19 +25,19 @@ public class WebIdeDbContext : DbContext
         modelBuilder.Entity<Problem>()
             .HasMany(p => p.Tags)
             .WithMany(t => t.Problems)
-            .UsingEntity("ProblemTag");
+            .UsingEntity("ProblemTag", j => j.ToTable("ProblemTags"));
 
         // N-N: Problem <-> ProblemSet
         modelBuilder.Entity<ProblemSet>()
             .HasMany(ps => ps.Problems)
             .WithMany()
-            .UsingEntity("ProblemSetProblem");
+            .UsingEntity("ProblemProblemSet", j => j.ToTable("ProblemSetProblems"));
 
         // N-N: Organization <-> User (Members)
         modelBuilder.Entity<Organization>()
             .HasMany(o => o.Members)
             .WithMany(u => u.Organizations)
-            .UsingEntity("OrganizationUser");
+            .UsingEntity("OrganizationUser", j => j.ToTable("OrganizationMembers"));
 
         // ── Seed data ─────────────────────────────────────────────────────────
 
@@ -120,14 +120,14 @@ public class WebIdeDbContext : DbContext
         );
 
         // ProblemSet <-> Problem (join table seed)
-        modelBuilder.Entity("ProblemSetProblem").HasData(
-            new { ProblemSetsId = 1, ProblemsId = 1 },
-            new { ProblemSetsId = 1, ProblemsId = 2 },
-            new { ProblemSetsId = 1, ProblemsId = 3 },
-            new { ProblemSetsId = 2, ProblemsId = 4 },
-            new { ProblemSetsId = 2, ProblemsId = 5 },
-            new { ProblemSetsId = 3, ProblemsId = 1 },
-            new { ProblemSetsId = 3, ProblemsId = 4 }
+        modelBuilder.Entity("ProblemProblemSet").HasData(
+            new { ProblemSetId = 1, ProblemsId = 1 },
+            new { ProblemSetId = 1, ProblemsId = 2 },
+            new { ProblemSetId = 1, ProblemsId = 3 },
+            new { ProblemSetId = 2, ProblemsId = 4 },
+            new { ProblemSetId = 2, ProblemsId = 5 },
+            new { ProblemSetId = 3, ProblemsId = 1 },
+            new { ProblemSetId = 3, ProblemsId = 4 }
         );
 
         // ExecutionResults
