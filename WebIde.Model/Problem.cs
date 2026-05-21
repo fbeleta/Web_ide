@@ -13,6 +13,7 @@ public class Problem
     public int TimeLimitMs { get; set; }
     public int MemoryLimitKb { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public required string AuthorUsername { get; set; }
     public virtual ICollection<TestCase> TestCases { get; set; } = new List<TestCase>();
     public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();

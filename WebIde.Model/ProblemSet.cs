@@ -12,6 +12,7 @@ public class ProblemSet
     public DateTime CreatedAt { get; set; }
     public bool IsPublic { get; set; }
     public int OrderIndex { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public int OrganizationId { get; set; }
     [ForeignKey("OrganizationId")]
     public virtual Organization Organization { get; set; } = null!;

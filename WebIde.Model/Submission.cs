@@ -15,6 +15,7 @@ public class Submission
     public int Score { get; set; }
     public int WallTimeMs { get; set; }
     public int PeakMemoryKb { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public int UserId { get; set; }
     [ForeignKey("UserId")]
     public virtual User User { get; set; } = null!;

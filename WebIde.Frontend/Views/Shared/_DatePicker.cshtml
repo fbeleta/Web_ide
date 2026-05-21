@@ -1,0 +1,72 @@
+@* Parameters: fieldName (string), label (string), value (DateTime?), required (bool) *@
+@{
+    var fieldName   = ViewData["FieldName"]  as string ?? "Date";
+    var label       = ViewData["Label"]      as string ?? fieldName;
+    var value       = ViewData["Value"]      as DateTime?;
+    var isRequired  = ViewData["Required"] is true;
+    var inputId     = "dp_" + fieldName.Replace(".", "_");
+    var culture     = System.Globalization.CultureInfo.CurrentCulture;
+    var isHr        = culture.TwoLetterISOLanguageName == "hr";
+    // Format for display in the picker input
+    var displayFmt  = isHr ? "d.m.Y H:i" : "m/d/Y h:i K";
+    var isoValue    = value.HasValue ? value.Value.ToString("yyyy-MM-ddTHH:mm") : "";
+    var displayVal  = value.HasValue
+        ? (isHr ? value.Value.ToString("d.M.yyyy HH:mm") : value.Value.ToString("M/d/yyyy h:mm tt"))
+        : "";
+    var locale      = isHr ? "hr" : "default";
+}
+
+<div class="mb-4">
+    <label class="block text-xs font-bold uppercase tracking-widest mb-1"
+           style="font-family:'Space Grotesk',sans-serif;">
+        @label@(isRequired ? " *" : "")
+    </label>
+    <div class="relative">
+        <input type="text"
+               id="@inputId"
+               class="w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm
+                      focus:outline-none focus:border-primary placeholder-[#aaa]"
+               placeholder="@(isHr ? "dd.mm.yyyy hh:mm" : "mm/dd/yyyy hh:mm")"
+               value="@displayVal"
+               autocomplete="off" />
+        <input type="hidden"
+               name="@fieldName"
+               id="@(inputId)_hidden"
+               value="@isoValue" />
+        <span class="absolute right-2 top-1/2 -translate-y-1/2 material-symbols-outlined text-base text-[#777] pointer-events-none">calendar_today</span>
+    </div>
+    <span class="text-xs text-error mt-1 block" id="@(inputId)_error" style="display:none;"></span>
+</div>
+
+<script>
+(function() {
+    var input   = document.getElementById('@inputId');
+    var hidden  = document.getElementById('@(inputId)_hidden');
+    var locale  = '@locale';
+    var fmt     = '@displayFmt';
+
+    if (!input) return;
+
+    var fp = flatpickr(input, {
+        enableTime: true,
+        dateFormat: fmt,
+        time_24hr: @(isHr ? "true" : "false"),
+        locale: locale !== 'default' ? flatpickr.l10ns[locale] : flatpickr.l10ns.default,
+        defaultDate: hidden.value || null,
+        onChange: function(dates, dateStr) {
+            if (dates.length > 0) {
+                // Store as ISO for model binding
+                var d = dates[0];
+                var iso = d.getFullYear() + '-' +
+                    String(d.getMonth()+1).padStart(2,'0') + '-' +
+                    String(d.getDate()).padStart(2,'0') + 'T' +
+                    String(d.getHours()).padStart(2,'0') + ':' +
+                    String(d.getMinutes()).padStart(2,'0');
+                hidden.value = iso;
+            } else {
+                hidden.value = '';
+            }
+        }
+    });
+})();
+</script>

@@ -1,3 +1,5 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using WebIde.DAL;
 using WebIde.Web.Repositories;
@@ -17,6 +19,8 @@ builder.Services.AddScoped<OrganizationRepository>();
 builder.Services.AddScoped<ProblemSetRepository>();
 builder.Services.AddScoped<SubmissionRepository>();
 builder.Services.AddScoped<TagRepository>();
+builder.Services.AddScoped<TestCaseRepository>();
+builder.Services.AddScoped<ExecutionResultRepository>();
 
 var app = builder.Build();
 
@@ -28,6 +32,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+var supportedCultures = new[] { new CultureInfo("hr"), new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("hr"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
 
 app.UseAuthorization();
 

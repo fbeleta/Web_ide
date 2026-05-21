@@ -12,6 +12,7 @@ public class TestCase
     public bool IsSample { get; set; }
     public int OrderIndex { get; set; }
     public int Points { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public int ProblemId { get; set; }
     [ForeignKey("ProblemId")]
     public virtual Problem Problem { get; set; } = null!;
