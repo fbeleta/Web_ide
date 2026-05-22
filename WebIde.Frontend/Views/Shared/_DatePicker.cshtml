@@ -39,7 +39,7 @@
 </div>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     var input   = document.getElementById('@inputId');
     var hidden  = document.getElementById('@(inputId)_hidden');
     var locale  = '@locale';
@@ -68,5 +68,5 @@
             }
         }
     });
-})();
+});
 </script>
