@@ -10,7 +10,7 @@
 @await Html.PartialAsync("_Sidebar")
 @await Html.PartialAsync("_DeleteModal")
 
-<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+<main class="lg:ml-64 pt-28 px-3 pb-24 min-h-screen">
     <div class="max-w-7xl mx-auto">
 
         @if (TempData["Flash"] != null)
@@ -71,7 +71,7 @@
                    style="font-family:'Space Grotesk',sans-serif;" />
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4">
 
             <div class="xl:col-span-1">
                 <div class="bg-surface-container-low border-4 border-black p-6 sticky top-28">
@@ -84,7 +84,7 @@
                         <div>
                             <label class="block font-bold text-xs uppercase mb-2"
                                    style="font-family: 'Space Grotesk', sans-serif;">SEARCH_NAME</label>
-                            <input class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none"
+                            <input id="prob-filter-search" class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none brutalist-input"
                                    placeholder="problem_slug..." type="text"
                                    style="font-family: 'Space Grotesk', sans-serif;" />
                         </div>
@@ -93,17 +93,17 @@
                                    style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</label>
                             <div class="space-y-2">
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input type="checkbox" data-diff="EASY" class="w-4 h-4 border-2 border-black diff-filter" />
                                     <span class="font-bold uppercase text-sm group-hover:text-tertiary"
                                           style="font-family: 'Space Grotesk', sans-serif;">EASY_MODE</span>
                                 </label>
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input type="checkbox" data-diff="MEDIUM" class="w-4 h-4 border-2 border-black diff-filter" />
                                     <span class="font-bold uppercase text-sm group-hover:text-primary"
                                           style="font-family: 'Space Grotesk', sans-serif;">MEDIUM_MODE</span>
                                 </label>
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input type="checkbox" data-diff="HARD" class="w-4 h-4 border-2 border-black diff-filter" />
                                     <span class="font-bold uppercase text-sm group-hover:text-secondary"
                                           style="font-family: 'Space Grotesk', sans-serif;">HARD_MODE</span>
                                 </label>
@@ -114,7 +114,7 @@
             </div>
 
             <div class="xl:col-span-3">
-                <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div class="border-4 border-black bg-white overflow-x-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                     <table class="w-full text-left border-collapse">
                         @{
                             string currentSort = ViewData["sort"]?.ToString() ?? "";
@@ -201,7 +201,7 @@
                                     <td class="p-4">
                                         <span class="font-black text-lg" style="font-family: 'Space Grotesk', sans-serif;">@rate%</span>
                                     </td>
-                                    <td class="p-4">
+                                    <td class="p-4 whitespace-nowrap">
                                         <div class="flex gap-2">
                                             <a asp-controller="Problem" asp-action="Details" asp-route-id="@problem.Id"
                                                class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
@@ -236,6 +236,27 @@
 
 @section Scripts {
 <script>
+// Sync filter search with main AJAX search
+document.getElementById('prob-filter-search').addEventListener('keyup', function() {
+    document.getElementById('prob-search').value = this.value;
+    document.getElementById('prob-search').dispatchEvent(new Event('keyup'));
+});
+
+// Difficulty checkbox filter
+document.querySelectorAll('.diff-filter').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+        var checked = Array.from(document.querySelectorAll('.diff-filter:checked')).map(function(c) { return c.dataset.diff; });
+        var rows = document.querySelectorAll('#prob-tbody tr');
+        rows.forEach(function(row) {
+            if (checked.length === 0) { row.style.display = ''; return; }
+            var badge = row.querySelector('.badge-easy, .badge-medium, .badge-hard');
+            if (!badge) { row.style.display = ''; return; }
+            var diff = badge.textContent.trim().toUpperCase();
+            row.style.display = checked.includes(diff) ? '' : 'none';
+        });
+    });
+});
+
 initAjaxSearch('prob-search', 'prob-tbody', '/problems/search', function(p) {
     return '<tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">' +
         '<td class="p-4"><span class="material-symbols-outlined text-outline">radio_button_unchecked</span></td>' +

@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: webide_dev
       POSTGRES_DB: webide
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -16,7 +16,7 @@ services:
     image: dpage/pgadmin4:latest
     container_name: webide_pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@webide.local
+      PGADMIN_DEFAULT_EMAIL: admin@webide.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"

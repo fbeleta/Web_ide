@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebIde.DAL;
@@ -11,9 +12,11 @@ using WebIde.DAL;
 namespace WebIde.DAL.Migrations
 {
     [DbContext(typeof(WebIdeDbContext))]
-    partial class WebIdeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260522074523_SyncModel")]
+    partial class SyncModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
