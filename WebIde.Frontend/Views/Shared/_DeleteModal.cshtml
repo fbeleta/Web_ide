@@ -1,0 +1,82 @@
+@* Reusable delete confirmation modal.
+   Usage: include once per page. Trigger via: openDeleteModal(formAction, entityName)
+*@
+<div id="delete-modal"
+     class="fixed inset-0 z-[100] flex items-center justify-center hidden"
+     style="background: rgba(0,0,0,0); transition: background 0.2s;">
+    <div id="delete-modal-box"
+         class="bg-white border-4 border-black p-8 w-full max-w-md relative"
+         style="box-shadow: 8px 8px 0 0 rgba(0,0,0,1);
+                transform: translateY(-40px); opacity: 0;
+                transition: transform 0.2s ease, opacity 0.2s ease;">
+        <h2 class="text-xl font-black uppercase tracking-tight mb-2"
+            style="font-family:'Space Grotesk',sans-serif;">CONFIRM DELETE</h2>
+        <p class="text-sm mb-6 text-[#333]">
+            Are you sure you want to delete
+            <strong id="delete-entity-name" style="font-family:'Space Grotesk',sans-serif;"></strong>?
+            <br/><span class="text-error font-bold">This action cannot be undone easily.</span>
+        </p>
+        <div class="flex gap-3">
+            <form id="delete-form" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit"
+                        class="bg-error text-white font-black uppercase px-6 py-2 border-2 border-black
+                               shadow-[4px_4px_0_0_rgba(0,0,0,1)]
+                               hover:shadow-none hover:translate-x-1 hover:translate-y-1
+                               transition-all text-sm delete-confirm-btn"
+                        style="font-family:'Space Grotesk',sans-serif;">
+                    DELETE
+                </button>
+            </form>
+            <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="bg-white font-black uppercase px-6 py-2 border-2 border-black
+                           shadow-[4px_4px_0_0_rgba(0,0,0,1)]
+                           hover:shadow-none hover:translate-x-1 hover:translate-y-1
+                           transition-all text-sm"
+                    style="font-family:'Space Grotesk',sans-serif;">
+                CANCEL
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDeleteModal(formAction, entityName) {
+    var modal = document.getElementById('delete-modal');
+    var box   = document.getElementById('delete-modal-box');
+    var form  = document.getElementById('delete-form');
+    var name  = document.getElementById('delete-entity-name');
+
+    form.action = formAction;
+    name.textContent = '"' + entityName + '"';
+
+    modal.classList.remove('hidden');
+    requestAnimationFrame(function() {
+        modal.style.background = 'rgba(0,0,0,0.5)';
+        box.style.transform = 'translateY(0)';
+        box.style.opacity   = '1';
+    });
+}
+
+function closeDeleteModal() {
+    var modal = document.getElementById('delete-modal');
+    var box   = document.getElementById('delete-modal-box');
+
+    modal.style.background = 'rgba(0,0,0,0)';
+    box.style.transform = 'translateY(-40px)';
+    box.style.opacity   = '0';
+    setTimeout(function() { modal.classList.add('hidden'); }, 220);
+}
+
+// Close on backdrop click
+document.getElementById('delete-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+});
+
+// Animate confirm button on submit
+document.querySelector('.delete-confirm-btn').addEventListener('click', function() {
+    this.textContent = 'DELETING...';
+    this.style.background = '#510017';
+});
+</script>

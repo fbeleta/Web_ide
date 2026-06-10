@@ -14,6 +14,7 @@ public class User
     public DateTime RegisteredAt { get; set; }
     public string? GitHubId { get; set; }
     public string? AvatarUrl { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
     public virtual ICollection<Organization> Organizations { get; set; } = new List<Organization>();
 }

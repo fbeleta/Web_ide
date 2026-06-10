@@ -4,75 +4,105 @@ A competitive coding web IDE and evaluator — think LeetCode, but self-hosted a
 
 ## Status
 
-Lab 3 complete. EF Core with PostgreSQL is wired up, replacing mock in-memory data. Custom attribute routing is applied to all major controllers. Sorting is available on Problems, Submissions, and Leaderboard pages.
+Lab 4 complete. Full CRUD with AJAX search, autocomplete dropdowns, client+server validation, a custom date picker partial, soft delete, and animations across all entities.
 
 | Lab | Status | What was built |
 |---|---|---|
 | Lab 1 | Done | Domain model (8 classes), LINQ queries, async demo |
 | Lab 2 | Done | ASP.NET MVC web layer, mock repositories, Brutalist UI |
-| Lab 3 | Done | EF Core + PostgreSQL, migrations, custom routing, sorting, docs |
+| Lab 3 | Done | EF Core + PostgreSQL, migrations, custom routing, sorting |
+| Lab 4 | Done | Full CRUD, AJAX search, autocomplete, validation, datepicker, animations |
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
 | Web (MVC) | ASP.NET MVC (.NET 10) |
+| API | ASP.NET Core Web API (`WebIde.Api`) |
 | ORM | Entity Framework Core 9 |
-| Database | PostgreSQL (via Npgsql) |
+| Database | PostgreSQL 16 (via Npgsql) |
 | Real-time (planned) | SignalR |
 | Cache / Sessions (planned) | Redis |
 | Code Execution (planned) | Isolated sandbox (Docker) |
-| Reverse Proxy (planned) | Nginx |
+| Reverse Proxy (planned) | Caddy |
 
 ## Project Structure
 
 ```
 WebIde.Model/       — Domain model: classes, enums, EF annotations
-WebIde.DAL/         — EF DbContext, migrations
-WebIde.Frontend/    — ASP.NET MVC: controllers, views, repositories
+WebIde.DAL/         — EF DbContext, migrations, seed data
+WebIde.Frontend/    — ASP.NET MVC: controllers, views, repositories, models
+WebIde.Api/         — REST API with DTOs for Problems
 WebIde.Console/     — Lab-1 console app: LINQ queries, async demo
-docs/               — Architecture, domain model, semantic model, sitemap, skills
-lab-1/              — AI agent usage logs (Lab 1)
-lab-3/              — AI agent usage logs (Lab 3)
+docs/               — Architecture, domain model, semantic model, sitemap
+lab-4/              — AI agent usage logs (Lab 4)
 ```
 
-## Setup
+## Running Locally
 
 ### Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- PostgreSQL running on `localhost:5432`
+- Docker Desktop (for PostgreSQL + pgAdmin)
 
-### Database setup
-
-Start PostgreSQL (example with Docker):
-```bash
-docker run -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:16
-```
-
-Update the connection string in `WebIde.Frontend/appsettings.json` if needed:
-```json
-"WebIdeDb": "Host=localhost;Port=5432;Database=webide;Username=postgres;Password=postgres"
-```
-
-### Run migrations
+### 1. Start the database
 
 ```bash
-cd WebIde.DAL
-dotnet ef migrations add Initial --startup-project ../WebIde.Frontend --context WebIdeDbContext
-dotnet ef database update --startup-project ../WebIde.Frontend --context WebIdeDbContext
+docker compose up -d
 ```
 
-### Run the web app
+Starts:
+- `webide_postgres` on port **15432** (mapped to avoid conflicts with local Postgres)
+- `webide_pgadmin` on port **5050**
+
+pgAdmin login: `admin@webide.com` / `admin`
+
+> **Note:** Ports 5432–5434 are reserved for local Homebrew PostgreSQL instances on this machine. The Docker container is mapped to 15432 and `appsettings.json` reflects this.
+
+### 2. Apply migrations
+
+From the repo root:
+
+```bash
+dotnet ef database update --project WebIde.DAL --startup-project WebIde.Frontend
+```
+
+Applies 3 migrations and seeds the database with sample data (5 problems, 4 users, 2 organizations, 8 submissions, 6 tags, 3 problem sets).
+
+### 3. Run the web app
 
 ```bash
 dotnet run --project WebIde.Frontend
 ```
 
-### Run the Lab-1 console app
+App runs at **http://localhost:5197**
+
+### 4. Run the console app (Lab 1)
 
 ```bash
 dotnet run --project WebIde.Console
 ```
+
+## Key Pages
+
+| URL | Description |
+|---|---|
+| `/` | Dashboard / home |
+| `/Problem` | Problem library with AJAX search + difficulty filter |
+| `/Submission` | All submissions with AJAX search |
+| `/User` | User management (CRUD) |
+| `/Organization` | Organizations (CRUD) |
+| `/Tag` | Tags (CRUD) |
+| `/ProblemSet` | Problem sets (CRUD) |
+| `/Leaderboard` | Ranking by accepted submissions |
+
+## Lab 4 Features
+
+- **Full CRUD** — Create, Edit, soft-delete (via `DeletedAt`) for all 7 entities, with confirmation modals
+- **AJAX search** — Live search on every list page with skeleton loading and stagger animations
+- **Autocomplete dropdown** — Reusable partial (`_AutocompleteDropdown.cshtml`) with debounced AJAX fetch, used on foreign-key fields in forms
+- **Validation** — `[Required]`, `[Range]`, `[StringLength]`, `[EmailAddress]` on all form models; `ModelState.IsValid` on all POST actions; client-side via `jquery.validate` with on-blur trigger
+- **Date picker** — Flatpickr-based partial (`_DatePicker.cshtml`) applied to all date fields, supports `hr` and `en` browser locales
+- **Animations** — Row stagger on page load, fade-in on search results, flash notifications
 
 ## Documentation
 
@@ -80,4 +110,3 @@ dotnet run --project WebIde.Console
 - [Domain Model](docs/domain-model.md) — all classes, enums, EF annotations
 - [Semantic Model](docs/semantic-model.md) — DB tables, columns, relationships
 - [Sitemap](docs/sitemap.md) — every URL, controller, action, and view
-- [EF Skill](docs/skills/ef-skill.md) — guide for adding EF entities and running migrations

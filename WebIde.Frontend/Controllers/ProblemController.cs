@@ -57,6 +57,16 @@ public class ProblemController : Controller
         return View(problem);
     }
 
+    // ── Search (AJAX autocomplete) ─────────────────────────────────────────────
+
+    [Route("search")]
+    [HttpGet]
+    public IActionResult Search(string q)
+    {
+        var results = _repo.Search(q ?? "");
+        return Json(results.Select(p => new { id = p.Id, label = p.Title }));
+    }
+
     // ── Create ────────────────────────────────────────────────────────────────
 
     [HttpGet("create")]
@@ -101,6 +111,7 @@ public class ProblemController : Controller
         _db.Problems.Add(problem);
         _db.SaveChanges();
 
+        TempData["Flash"] = $"Problem \"{model.Title}\" created.";
         return RedirectToAction(nameof(Details), new { id = problem.Id });
     }
 
@@ -161,10 +172,11 @@ public class ProblemController : Controller
         problem.Tags = _db.Tags.Where(t => editTagIds.Contains(t.Id)).ToList();
 
         _db.SaveChanges();
+        TempData["Flash"] = $"Problem \"{model.Title}\" updated.";
         return RedirectToAction(nameof(Edit), new { id });
     }
 
-    // ── Delete ────────────────────────────────────────────────────────────────
+    // ── Delete (soft delete) ───────────────────────────────────────────────────
 
     [HttpGet("{id:int}/delete")]
     [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin")]
@@ -181,19 +193,11 @@ public class ProblemController : Controller
     [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin")]
     public IActionResult DeleteConfirmed(int id)
     {
-        var problem = _db.Problems.Include(p => p.Attachments).FirstOrDefault(p => p.Id == id);
+        var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
         if (problem is null) return NotFound();
 
-        // Remove physical attachment files
-        foreach (var att in problem.Attachments)
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "problems",
-                id.ToString(), att.StoredFileName);
-            if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
-        }
-
-        _db.Problems.Remove(problem);
-        _db.SaveChanges();
+        _repo.SoftDelete(id);
+        TempData["Flash"] = "Problem deleted.";
         return RedirectToAction(nameof(Index));
     }
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -54,6 +56,8 @@ builder.Services.AddScoped<OrganizationRepository>();
 builder.Services.AddScoped<ProblemSetRepository>();
 builder.Services.AddScoped<SubmissionRepository>();
 builder.Services.AddScoped<TagRepository>();
+builder.Services.AddScoped<TestCaseRepository>();
+builder.Services.AddScoped<ExecutionResultRepository>();
 
 // ── Authentication — Cookie + GitHub OAuth ─────────────────────────────────────
 // AddAuthentication configures the default scheme (GitHub cookie).
@@ -221,6 +225,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+var supportedCultures = new[] { new CultureInfo("hr"), new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("hr"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+
 app.UseRateLimiter();
 app.UseAuthentication();    // MUST be before Authorization
 app.UseAuthorization();

@@ -4,39 +4,114 @@
 }
 
 @await Html.PartialAsync("_Sidebar")
+@await Html.PartialAsync("_DeleteModal")
 
 <main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
     <div class="max-w-7xl mx-auto">
 
-        <div class="mb-10">
-            <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
-                style="font-family: 'Space Grotesk', sans-serif;">TAGS</h1>
-            <div class="h-2 w-32 bg-secondary border-2 border-black"></div>
-            <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
-                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
-                <span class="mx-2 text-outline">/</span>
-                <span class="text-on-surface-variant">TAGS</span>
-            </nav>
+        @if (TempData["Flash"] != null)
+        {
+            <div id="flash-message"
+                 class="mb-6 px-5 py-3 border-2 border-black bg-tertiary-container text-on-tertiary-container
+                        font-bold text-sm flex justify-between items-center"
+                 style="font-family:'Space Grotesk',sans-serif;">
+                @TempData["Flash"]
+                <button onclick="this.parentElement.remove()" class="font-black hover:text-error ml-4">×</button>
+            </div>
+        }
+
+        <div class="mb-10 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                    style="font-family: 'Space Grotesk', sans-serif;">TAGS</h1>
+                <div class="h-2 w-32 bg-secondary border-2 border-black"></div>
+                <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                    <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                    <span class="mx-2 text-outline">/</span>
+                    <span class="text-on-surface-variant">TAGS</span>
+                </nav>
+            </div>
+            <a asp-controller="Tag" asp-action="Create"
+               class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                      shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                      hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+               style="font-family:'Space Grotesk',sans-serif;">+ CREATE TAG</a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <!-- AJAX Search -->
+        <div class="mb-6">
+            <input type="text" id="tag-search" placeholder="SEARCH TAGS..."
+                   class="w-full md:w-80 border-2 border-black px-4 py-2 bg-white text-black font-mono text-sm
+                          focus:outline-none focus:border-primary brutalist-input"
+                   style="font-family:'Space Grotesk',sans-serif;" />
+        </div>
+
+        <div id="tags-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             @foreach (var tag in Model.OrderByDescending(t => t.Problems.Count))
             {
-                <a asp-controller="Tag" asp-action="Details" asp-route-id="@tag.Id"
-                   class="block border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                          hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-                          transition-all no-underline">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-2xl font-black uppercase tracking-tighter text-primary"
-                              style="font-family: 'Space Grotesk', sans-serif;">#@tag.Name.Replace(" ", "_")</span>
+                <div class="border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3">
+                    <div class="flex justify-between items-start gap-2">
+                        <a asp-controller="Tag" asp-action="Details" asp-route-id="@tag.Id"
+                           class="text-2xl font-black uppercase tracking-tighter text-primary no-underline hover:underline min-w-0 break-words"
+                           style="font-family:'Space Grotesk',sans-serif;">#@tag.Name.Replace(" ", "_")</a>
                         <span class="border-2 border-black px-3 py-1 text-xs font-black bg-black text-white"
-                              style="font-family: 'Space Grotesk', sans-serif;">@tag.Problems.Count</span>
+                              style="font-family:'Space Grotesk',sans-serif;">@tag.Problems.Count</span>
                     </div>
                     <p class="text-xs font-bold uppercase text-outline"
-                       style="font-family: 'Space Grotesk', sans-serif;">@tag.Problems.Count PROBLEM@(tag.Problems.Count == 1 ? "" : "S")</p>
-                </a>
+                       style="font-family:'Space Grotesk',sans-serif;">@tag.Problems.Count PROBLEM@(tag.Problems.Count == 1 ? "" : "S")</p>
+                    <div class="flex gap-2 mt-auto">
+                        <a asp-controller="Tag" asp-action="Edit" asp-route-id="@tag.Id"
+                           class="text-xs font-black uppercase px-3 py-1 border-2 border-black hover:bg-black hover:text-white transition-none no-underline"
+                           style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                        <button type="button"
+                                onclick="openDeleteModal('@Url.Action("Delete", "Tag", new { id = tag.Id })', '@tag.Name.Replace("'", "\\'")' )"
+                                class="text-xs font-black uppercase px-3 py-1 border-2 border-error text-error hover:bg-error hover:text-white transition-none"
+                                style="font-family:'Space Grotesk',sans-serif;">DELETE</button>
+                    </div>
+                </div>
             }
         </div>
 
     </div>
 </main>
+
+@section Scripts {
+<script>
+(function() {
+    var input = document.getElementById('tag-search');
+    var grid  = document.getElementById('tags-grid');
+    if (!input || !grid) return;
+
+    var timer;
+    input.addEventListener('keyup', function() {
+        clearTimeout(timer);
+        var q = this.value.trim().toLowerCase();
+        timer = setTimeout(function() {
+            if (q === '') {
+                // Restore all cards
+                grid.querySelectorAll('[data-tag-name]').forEach(function(card) {
+                    card.style.display = '';
+                });
+                return;
+            }
+            // Client-side filter for instant UX (server search used for autocomplete dropdown elsewhere)
+            grid.querySelectorAll('[data-tag-name]').forEach(function(card) {
+                var name = card.dataset.tagName.toLowerCase();
+                card.style.display = name.includes(q) ? '' : 'none';
+            });
+        }, 200);
+    });
+})();
+</script>
+}
+
+@* Add data-tag-name attrs via JS after render *@
+<script>
+document.querySelectorAll('#tags-grid > div').forEach(function(card, i) {
+    var link = card.querySelector('a[href*="/Tag/Details"]') || card.querySelector('a');
+    if (link) {
+        var name = link.textContent.trim().replace(/^#/, '').replace(/_/g, ' ');
+        card.dataset.tagName = name;
+    }
+});
+</script>

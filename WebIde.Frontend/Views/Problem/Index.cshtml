@@ -8,19 +8,38 @@
 }
 
 @await Html.PartialAsync("_Sidebar")
+@await Html.PartialAsync("_DeleteModal")
 
-<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+<main class="lg:ml-64 pt-28 px-3 pb-24 min-h-screen">
     <div class="max-w-7xl mx-auto">
 
-        <div class="mb-10">
-            <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
-                style="font-family: 'Space Grotesk', sans-serif;">PROBLEMS_LIBRARY</h1>
-            <div class="h-2 w-32 bg-primary border-2 border-black"></div>
-            <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
-                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
-                <span class="mx-2 text-outline">/</span>
-                <span class="text-on-surface-variant">PROBLEMS</span>
-            </nav>
+        @if (TempData["Flash"] != null)
+        {
+            <div id="flash-message"
+                 class="mb-6 px-5 py-3 border-2 border-black bg-tertiary-container text-on-tertiary-container
+                        font-bold text-sm flex justify-between items-center"
+                 style="font-family:'Space Grotesk',sans-serif;">
+                @TempData["Flash"]
+                <button onclick="this.parentElement.remove()" class="font-black hover:text-error ml-4">×</button>
+            </div>
+        }
+
+        <div class="mb-8 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                    style="font-family: 'Space Grotesk', sans-serif;">PROBLEMS_LIBRARY</h1>
+                <div class="h-2 w-32 bg-primary border-2 border-black"></div>
+                <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                    <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                    <span class="mx-2 text-outline">/</span>
+                    <span class="text-on-surface-variant">PROBLEMS</span>
+                </nav>
+            </div>
+            <a asp-controller="Problem" asp-action="Create"
+               class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                      shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                      hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+               style="font-family:'Space Grotesk',sans-serif;">+ CREATE PROBLEM</a>
         </div>
 
         @{
@@ -45,7 +64,14 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div class="mb-4">
+            <input type="text" id="prob-search" placeholder="SEARCH PROBLEMS..."
+                   class="w-full md:w-80 border-2 border-black px-4 py-2 bg-white text-black font-mono text-sm
+                          focus:outline-none focus:border-primary brutalist-input"
+                   style="font-family:'Space Grotesk',sans-serif;" />
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4">
 
             <div class="xl:col-span-1">
                 <div class="bg-surface-container-low border-4 border-black p-6 sticky top-28">
@@ -58,8 +84,7 @@
                         <div>
                             <label class="block font-bold text-xs uppercase mb-2"
                                    style="font-family: 'Space Grotesk', sans-serif;">SEARCH_NAME</label>
-                            <input id="filter-search"
-                                   class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none"
+                            <input id="prob-filter-search" class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none brutalist-input"
                                    placeholder="problem_slug..." type="text"
                                    style="font-family: 'Space Grotesk', sans-serif;" />
                         </div>
@@ -68,17 +93,17 @@
                                    style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</label>
                             <div class="space-y-2">
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input id="filter-easy" type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input type="checkbox" data-diff="EASY" class="w-4 h-4 border-2 border-black diff-filter" />
                                     <span class="font-bold uppercase text-sm group-hover:text-tertiary"
                                           style="font-family: 'Space Grotesk', sans-serif;">EASY_MODE</span>
                                 </label>
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input id="filter-medium" type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input type="checkbox" data-diff="MEDIUM" class="w-4 h-4 border-2 border-black diff-filter" />
                                     <span class="font-bold uppercase text-sm group-hover:text-primary"
                                           style="font-family: 'Space Grotesk', sans-serif;">MEDIUM_MODE</span>
                                 </label>
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input id="filter-hard" type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input type="checkbox" data-diff="HARD" class="w-4 h-4 border-2 border-black diff-filter" />
                                     <span class="font-bold uppercase text-sm group-hover:text-secondary"
                                           style="font-family: 'Space Grotesk', sans-serif;">HARD_MODE</span>
                                 </label>
@@ -89,7 +114,7 @@
             </div>
 
             <div class="xl:col-span-3">
-                <div class="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div class="border-4 border-black bg-white overflow-x-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                     <table class="w-full text-left border-collapse">
                         @{
                             string currentSort = ViewData["sort"]?.ToString() ?? "";
@@ -116,10 +141,10 @@
                                        class="text-white hover:text-primary no-underline">ACCEPTANCE@SortArrow("acceptance-asc","acceptance-desc")</a>
                                 </th>
                                 <th class="p-4 font-black uppercase text-xs tracking-widest"
-                                    style="font-family: 'Space Grotesk', sans-serif;">ACTION</th>
+                                    style="font-family: 'Space Grotesk', sans-serif;">ACTIONS</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="prob-tbody">
                             @foreach (var problem in Model)
                             {
                                 var hasAccepted = problem.Submissions.Any(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
@@ -178,12 +203,23 @@
                                     <td class="p-4">
                                         <span class="font-black text-lg" style="font-family: 'Space Grotesk', sans-serif;">@rate%</span>
                                     </td>
-                                    <td class="p-4">
-                                        <a asp-controller="Problem" asp-action="Details" asp-route-id="@problem.Id"
-                                           class="bg-primary text-white border-2 border-black px-4 py-2 font-bold uppercase text-xs
-                                                  shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
-                                                  hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all no-underline"
-                                           style="font-family: 'Space Grotesk', sans-serif;">SOLVE</a>
+                                    <td class="p-4 whitespace-nowrap">
+                                        <div class="flex gap-2">
+                                            <a asp-controller="Problem" asp-action="Details" asp-route-id="@problem.Id"
+                                               class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                                      shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
+                                                      hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] transition-all no-underline"
+                                               style="font-family:'Space Grotesk',sans-serif;">SOLVE</a>
+                                            <a asp-controller="Problem" asp-action="Edit" asp-route-id="@problem.Id"
+                                               class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                                      hover:bg-black hover:text-white transition-none no-underline"
+                                               style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                                            <button type="button"
+                                                    onclick="openDeleteModal('@Url.Action("Delete","Problem", new { id = problem.Id })', '@problem.Title.Replace("'","\\'")')"
+                                                    class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
+                                                           hover:bg-error hover:text-white transition-none"
+                                                    style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -202,44 +238,37 @@
 
 @section Scripts {
 <script>
-(function () {
-    const searchInput = document.getElementById('filter-search');
-    const easyBox    = document.getElementById('filter-easy');
-    const mediumBox  = document.getElementById('filter-medium');
-    const hardBox    = document.getElementById('filter-hard');
-    const rows       = document.querySelectorAll('tbody tr');
-    const countEl    = document.getElementById('entry-count');
+// Sync filter search with main AJAX search
+document.getElementById('prob-filter-search').addEventListener('keyup', function() {
+    document.getElementById('prob-search').value = this.value;
+    document.getElementById('prob-search').dispatchEvent(new Event('keyup'));
+});
 
-    function applyFilters() {
-        const query      = searchInput.value.toLowerCase().trim();
-        const easyOn     = easyBox.checked;
-        const mediumOn   = mediumBox.checked;
-        const hardOn     = hardBox.checked;
-        const anyDiff    = easyOn || mediumOn || hardOn;
-
-        let visible = 0;
-        rows.forEach(function (row) {
-            const title  = row.dataset.title  || '';
-            const diff   = row.dataset.difficulty || '';
-
-            const matchesSearch = !query || title.includes(query);
-            const matchesDiff   = !anyDiff ||
-                (easyOn   && diff === 'easy')   ||
-                (mediumOn && diff === 'medium') ||
-                (hardOn   && diff === 'hard');
-
-            const show = matchesSearch && matchesDiff;
-            row.style.display = show ? '' : 'none';
-            if (show) visible++;
+// Difficulty checkbox filter
+document.querySelectorAll('.diff-filter').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+        var checked = Array.from(document.querySelectorAll('.diff-filter:checked')).map(function(c) { return c.dataset.diff; });
+        var rows = document.querySelectorAll('#prob-tbody tr');
+        rows.forEach(function(row) {
+            if (checked.length === 0) { row.style.display = ''; return; }
+            var badge = row.querySelector('.badge-easy, .badge-medium, .badge-hard');
+            if (!badge) { row.style.display = ''; return; }
+            var diff = badge.textContent.trim().toUpperCase();
+            row.style.display = checked.includes(diff) ? '' : 'none';
         });
+    });
+});
 
-        countEl.textContent = 'SHOWING_' + visible + '_ENTRIES';
-    }
-
-    searchInput.addEventListener('input', applyFilters);
-    easyBox.addEventListener('change',   applyFilters);
-    mediumBox.addEventListener('change', applyFilters);
-    hardBox.addEventListener('change',   applyFilters);
-}());
+initAjaxSearch('prob-search', 'prob-tbody', '/problems/search', function(p) {
+    return '<tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">' +
+        '<td class="p-4"><span class="material-symbols-outlined text-outline">radio_button_unchecked</span></td>' +
+        '<td class="p-4 font-bold" style="font-family:\'Space Grotesk\',sans-serif;">' + p.label + '</td>' +
+        '<td colspan="2" class="p-4"></td>' +
+        '<td class="p-4"><div class="flex gap-2">' +
+        '<a href="/problems/' + p.id + '" class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs no-underline" style="font-family:\'Space Grotesk\',sans-serif;">SOLVE</a>' +
+        '<a href="/problems/' + p.id + '/edit" class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs no-underline hover:bg-black hover:text-white" style="font-family:\'Space Grotesk\',sans-serif;">EDIT</a>' +
+        '</div></td>' +
+        '</tr>';
+});
 </script>
 }

@@ -38,3 +38,11 @@ nginx/htpasswd
 # npm
 tailwind/node_modules/
 tailwind/package-lock.json
+
+# Node / Vite frontend build artifacts
+node_modules/
+dist/
+.vite/
+
+# Lab sandbox execution outputs
+lab-2/

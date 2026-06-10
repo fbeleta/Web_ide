@@ -1,0 +1,187 @@
+@* Parameters:
+   FieldName    (string) — hidden input name for the selected ID(s)
+   Label        (string) — field label
+   SearchUrl    (string) — AJAX endpoint e.g. "/Tag/search"
+   InitialText  (string) — display text to pre-fill (for edit forms)
+   InitialIds   (string) — comma-separated IDs to pre-select (for edit forms)
+   IsMulti      (bool)   — allow multiple selections (tags); false = single FK
+   Required     (bool)
+*@
+@{
+    var fieldName   = ViewData["FieldName"]   as string ?? "SelectedId";
+    var label       = ViewData["Label"]       as string ?? fieldName;
+    var searchUrl   = ViewData["SearchUrl"]   as string ?? "#";
+    var initialText = ViewData["InitialText"] as string ?? "";
+    var initialIds  = ViewData["InitialIds"]  as string ?? "";
+    var isMulti     = ViewData["IsMulti"] is true;
+    var isRequired  = ViewData["Required"] is true;
+    var wrapperId   = "ac_" + fieldName.Replace(".", "_").Replace("[", "").Replace("]", "");
+}
+
+<div class="mb-4 ac-wrapper" id="@wrapperId">
+    <label class="block text-xs font-bold uppercase tracking-widest mb-1"
+           style="font-family:'Space Grotesk',sans-serif;">
+        @label@(isRequired ? " *" : "")
+    </label>
+
+    @if (isMulti)
+    {
+        <!-- Multi-select: show chips for selected items -->
+        <div id="@(wrapperId)_chips" class="flex flex-wrap gap-1 mb-1 min-h-[28px]">
+            @if (!string.IsNullOrEmpty(initialText) && !string.IsNullOrEmpty(initialIds))
+            {
+                var texts = initialText.Split(',');
+                var ids   = initialIds.Split(',');
+                for (int i = 0; i < ids.Length && i < texts.Length; i++)
+                {
+                    <span class="chip inline-flex items-center gap-1 bg-primary text-white text-xs font-bold px-2 py-0.5 border border-black"
+                          data-id="@ids[i].Trim()" style="font-family:'Space Grotesk',sans-serif;">
+                        @texts[i].Trim()
+                        <button type="button" class="chip-remove font-black hover:text-error ml-1">×</button>
+                    </span>
+                }
+            }
+        </div>
+        <!-- Hidden inputs for selected IDs rendered by JS -->
+        <div id="@(wrapperId)_hiddens"></div>
+    }
+    else
+    {
+        <input type="hidden" name="@fieldName" id="@(wrapperId)_hidden" value="@initialIds" />
+    }
+
+    <div class="relative">
+        <input type="text"
+               id="@(wrapperId)_input"
+               class="w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm
+                      focus:outline-none focus:border-primary placeholder-[#aaa]"
+               placeholder="Search..."
+               value="@(isMulti ? "" : initialText)"
+               autocomplete="off" />
+        <div id="@(wrapperId)_dropdown"
+             class="absolute z-50 w-full bg-white border-2 border-black border-t-0 hidden"
+             style="box-shadow: 4px 4px 0 0 rgba(0,0,0,1); transform-origin: top; transform: scaleY(0); transition: transform 0.12s ease;">
+        </div>
+    </div>
+
+    @if (!isMulti)
+    {
+        <span class="text-xs text-error mt-1" id="@(wrapperId)_error" style="display:none;"></span>
+    }
+</div>
+
+<script>
+(function() {
+    var wrapperId  = '@wrapperId';
+    var searchUrl  = '@searchUrl';
+    var isMulti    = @(isMulti ? "true" : "false");
+    var fieldName  = '@fieldName';
+
+    var input      = document.getElementById(wrapperId + '_input');
+    var dropdown   = document.getElementById(wrapperId + '_dropdown');
+    var hiddenSingle = isMulti ? null : document.getElementById(wrapperId + '_hidden');
+    var chipsContainer = isMulti ? document.getElementById(wrapperId + '_chips') : null;
+    var hiddensContainer = isMulti ? document.getElementById(wrapperId + '_hiddens') : null;
+
+    var debounceTimer;
+    var selectedIds = new Set();
+
+    // Init multi from existing chips
+    if (isMulti && chipsContainer) {
+        chipsContainer.querySelectorAll('.chip').forEach(function(chip) {
+            selectedIds.add(chip.dataset.id);
+            renderHiddenInput(chip.dataset.id);
+            chip.querySelector('.chip-remove').addEventListener('click', function() {
+                removeChip(chip.dataset.id, chip);
+            });
+        });
+    }
+
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        var q = this.value.trim();
+        if (q.length < 1) { closeDropdown(); return; }
+        debounceTimer = setTimeout(function() { fetchResults(q); }, 280);
+    });
+
+    input.addEventListener('blur', function() {
+        setTimeout(closeDropdown, 200);
+    });
+
+    function fetchResults(q) {
+        fetch(searchUrl + '?q=' + encodeURIComponent(q))
+            .then(function(r) { return r.json(); })
+            .then(function(data) { renderDropdown(data); });
+    }
+
+    function renderDropdown(items) {
+        if (!items.length) { closeDropdown(); return; }
+        dropdown.innerHTML = items.map(function(item) {
+            return '<div class="ac-item px-3 py-2 text-sm font-mono cursor-pointer hover:bg-black hover:text-white border-b border-[#eee] last:border-b-0" ' +
+                   'data-id="' + item.id + '" data-label="' + escapeHtml(item.label) + '">' +
+                   escapeHtml(item.label) + '</div>';
+        }).join('');
+
+        dropdown.querySelectorAll('.ac-item').forEach(function(item) {
+            item.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                selectItem(this.dataset.id, this.dataset.label);
+            });
+        });
+
+        dropdown.classList.remove('hidden');
+        dropdown.style.transform = 'scaleY(1)';
+    }
+
+    function closeDropdown() {
+        dropdown.style.transform = 'scaleY(0)';
+        setTimeout(function() { dropdown.classList.add('hidden'); }, 120);
+    }
+
+    function selectItem(id, label) {
+        if (isMulti) {
+            if (selectedIds.has(id)) { closeDropdown(); input.value = ''; return; }
+            selectedIds.add(id);
+            addChip(id, label);
+            renderHiddenInput(id);
+            input.value = '';
+        } else {
+            hiddenSingle.value = id;
+            input.value = label;
+        }
+        closeDropdown();
+    }
+
+    function addChip(id, label) {
+        var chip = document.createElement('span');
+        chip.className = 'chip inline-flex items-center gap-1 bg-primary text-white text-xs font-bold px-2 py-0.5 border border-black';
+        chip.dataset.id = id;
+        chip.style.fontFamily = "'Space Grotesk', sans-serif";
+        chip.innerHTML = escapeHtml(label) +
+            '<button type="button" class="chip-remove font-black hover:text-error ml-1">×</button>';
+        chip.querySelector('.chip-remove').addEventListener('click', function() {
+            removeChip(id, chip);
+        });
+        chipsContainer.appendChild(chip);
+    }
+
+    function removeChip(id, chipEl) {
+        selectedIds.delete(id);
+        chipEl.remove();
+        var hidden = document.querySelector('input[name="' + fieldName + '"][value="' + id + '"]');
+        if (hidden) hidden.remove();
+    }
+
+    function renderHiddenInput(id) {
+        var h = document.createElement('input');
+        h.type = 'hidden';
+        h.name = fieldName;
+        h.value = id;
+        hiddensContainer.appendChild(h);
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+})();
+</script>

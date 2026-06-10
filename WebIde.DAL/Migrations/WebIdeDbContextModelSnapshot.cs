@@ -167,6 +167,33 @@ namespace WebIde.DAL.Migrations
                     b.HasIndex("OrganizationsId");
 
                     b.ToTable("OrganizationMembers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MembersId = 1,
+                            OrganizationsId = 1
+                        },
+                        new
+                        {
+                            MembersId = 2,
+                            OrganizationsId = 1
+                        },
+                        new
+                        {
+                            MembersId = 3,
+                            OrganizationsId = 1
+                        },
+                        new
+                        {
+                            MembersId = 1,
+                            OrganizationsId = 2
+                        },
+                        new
+                        {
+                            MembersId = 4,
+                            OrganizationsId = 2
+                        });
                 });
 
             modelBuilder.Entity("ProblemProblemSet", b =>
@@ -182,6 +209,43 @@ namespace WebIde.DAL.Migrations
                     b.HasIndex("ProblemsId");
 
                     b.ToTable("ProblemSetProblems", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ProblemSetId = 1,
+                            ProblemsId = 1
+                        },
+                        new
+                        {
+                            ProblemSetId = 1,
+                            ProblemsId = 2
+                        },
+                        new
+                        {
+                            ProblemSetId = 1,
+                            ProblemsId = 3
+                        },
+                        new
+                        {
+                            ProblemSetId = 2,
+                            ProblemsId = 4
+                        },
+                        new
+                        {
+                            ProblemSetId = 2,
+                            ProblemsId = 5
+                        },
+                        new
+                        {
+                            ProblemSetId = 3,
+                            ProblemsId = 1
+                        },
+                        new
+                        {
+                            ProblemSetId = 3,
+                            ProblemsId = 4
+                        });
                 });
 
             modelBuilder.Entity("ProblemTag", b =>
@@ -197,6 +261,43 @@ namespace WebIde.DAL.Migrations
                     b.HasIndex("TagsId");
 
                     b.ToTable("ProblemTags", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ProblemsId = 1,
+                            TagsId = 1
+                        },
+                        new
+                        {
+                            ProblemsId = 1,
+                            TagsId = 2
+                        },
+                        new
+                        {
+                            ProblemsId = 2,
+                            TagsId = 3
+                        },
+                        new
+                        {
+                            ProblemsId = 2,
+                            TagsId = 2
+                        },
+                        new
+                        {
+                            ProblemsId = 3,
+                            TagsId = 4
+                        },
+                        new
+                        {
+                            ProblemsId = 4,
+                            TagsId = 5
+                        },
+                        new
+                        {
+                            ProblemsId = 5,
+                            TagsId = 6
+                        });
                 });
 
             modelBuilder.Entity("WebIde.DAL.AppUser", b =>
@@ -337,6 +438,80 @@ namespace WebIde.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExecutionResults");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "[0,1]",
+                            TimedOut = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "3",
+                            TimedOut = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "2.0",
+                            TimedOut = false
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "[0,1]",
+                            TimedOut = false
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "",
+                            TimedOut = true
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "2.5",
+                            TimedOut = false
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ExitCode = 0,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "[0,1]",
+                            TimedOut = false
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ExitCode = 1,
+                            MemoryExceeded = false,
+                            Stderr = "",
+                            Stdout = "",
+                            TimedOut = false
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.Organization", b =>
@@ -346,6 +521,9 @@ namespace WebIde.DAL.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -358,6 +536,20 @@ namespace WebIde.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Organizations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Faculty of Electrical Engineering and Computing — Algorithms course. Weekly problem sets and graded contests.",
+                            Name = "FER Algorithms"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Student-run open source club. Practice problems, hackathons, and community challenges.",
+                            Name = "Open Source Club"
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.Problem", b =>
@@ -373,6 +565,9 @@ namespace WebIde.DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -398,6 +593,63 @@ namespace WebIde.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Problems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuthorUsername = "admin",
+                            CreatedAt = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.",
+                            Difficulty = 0,
+                            MemoryLimitKb = 65536,
+                            TimeLimitMs = 1000,
+                            Title = "Two Sum"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AuthorUsername = "admin",
+                            CreatedAt = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Given a string s, find the length of the longest substring without duplicate characters.",
+                            Difficulty = 1,
+                            MemoryLimitKb = 65536,
+                            TimeLimitMs = 2000,
+                            Title = "Longest Substring Without Repeating Characters"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AuthorUsername = "admin",
+                            CreatedAt = new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays. The overall run time complexity should be O(log(m+n)).",
+                            Difficulty = 2,
+                            MemoryLimitKb = 131072,
+                            TimeLimitMs = 3000,
+                            Title = "Median of Two Sorted Arrays"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AuthorUsername = "prof_hr",
+                            CreatedAt = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+                            Difficulty = 0,
+                            MemoryLimitKb = 32768,
+                            TimeLimitMs = 1000,
+                            Title = "Climbing Stairs"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AuthorUsername = "prof_hr",
+                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "There are numCourses courses you have to take. Some courses have prerequisites. Given the total number of courses and a list of prerequisite pairs, determine if it is possible to finish all courses.",
+                            Difficulty = 1,
+                            MemoryLimitKb = 65536,
+                            TimeLimitMs = 2000,
+                            Title = "Course Schedule"
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.ProblemSet", b =>
@@ -409,6 +661,9 @@ namespace WebIde.DAL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -433,6 +688,38 @@ namespace WebIde.DAL.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("ProblemSets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Array manipulation and hashing basics.",
+                            IsPublic = true,
+                            OrderIndex = 1,
+                            OrganizationId = 1,
+                            Title = "Week 1 — Fundamentals"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Dynamic programming, graph traversal, and advanced search techniques.",
+                            IsPublic = false,
+                            OrderIndex = 2,
+                            OrganizationId = 1,
+                            Title = "Advanced Algorithms"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2025, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Quick 2-hour sprint with easy and medium problems. Open to all club members.",
+                            IsPublic = true,
+                            OrderIndex = 1,
+                            OrganizationId = 2,
+                            Title = "OSC Sprint #1"
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.Submission", b =>
@@ -442,6 +729,9 @@ namespace WebIde.DAL.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ExecutionResultId")
                         .HasColumnType("integer");
@@ -484,6 +774,120 @@ namespace WebIde.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Submissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ExecutionResultId = 1,
+                            Language = "cpp",
+                            PeakMemoryKb = 2048,
+                            ProblemId = 1,
+                            Score = 100,
+                            SourceCode = "// correct two sum",
+                            Status = 2,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 55, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1,
+                            WallTimeMs = 45
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ExecutionResultId = 2,
+                            Language = "cpp",
+                            PeakMemoryKb = 4096,
+                            ProblemId = 2,
+                            Score = 100,
+                            SourceCode = "// sliding window",
+                            Status = 2,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 50, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1,
+                            WallTimeMs = 120
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ExecutionResultId = 3,
+                            Language = "cpp",
+                            PeakMemoryKb = 8192,
+                            ProblemId = 3,
+                            Score = 60,
+                            SourceCode = "// binary search attempt",
+                            Status = 3,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 45, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1,
+                            WallTimeMs = 200
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ExecutionResultId = 4,
+                            Language = "cpp",
+                            PeakMemoryKb = 2048,
+                            ProblemId = 1,
+                            Score = 100,
+                            SourceCode = "// brute force O(n^2)",
+                            Status = 2,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 40, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2,
+                            WallTimeMs = 980
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ExecutionResultId = 5,
+                            Language = "cpp",
+                            PeakMemoryKb = 4096,
+                            ProblemId = 2,
+                            Score = 0,
+                            SourceCode = "// naive TLE",
+                            Status = 4,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 35, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2,
+                            WallTimeMs = 2001
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ExecutionResultId = 6,
+                            Language = "cpp",
+                            PeakMemoryKb = 4096,
+                            ProblemId = 3,
+                            Score = 100,
+                            SourceCode = "// correct binary search",
+                            Status = 2,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 30, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2,
+                            WallTimeMs = 55
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ExecutionResultId = 7,
+                            Language = "cpp",
+                            PeakMemoryKb = 1024,
+                            ProblemId = 1,
+                            Score = 100,
+                            SourceCode = "// optimal hash map",
+                            Status = 2,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 25, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3,
+                            WallTimeMs = 32
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ExecutionResultId = 8,
+                            Language = "cpp",
+                            PeakMemoryKb = 0,
+                            ProblemId = 3,
+                            Score = 0,
+                            SourceCode = "// compile error",
+                            Status = 6,
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 20, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3,
+                            WallTimeMs = 0
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.Tag", b =>
@@ -494,6 +898,9 @@ namespace WebIde.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -501,6 +908,38 @@ namespace WebIde.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tags");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Arrays"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Hash Map"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Sliding Window"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Binary Search"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Dynamic Programming"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Graph"
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.TestCase", b =>
@@ -510,6 +949,9 @@ namespace WebIde.DAL.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ExpectedOutput")
                         .IsRequired()
@@ -536,6 +978,148 @@ namespace WebIde.DAL.Migrations
                     b.HasIndex("ProblemId");
 
                     b.ToTable("TestCases");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ExpectedOutput = "[0,1]",
+                            InputArgs = "[2,7,11,15], 9",
+                            IsSample = true,
+                            OrderIndex = 1,
+                            Points = 30,
+                            ProblemId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ExpectedOutput = "[1,2]",
+                            InputArgs = "[3,2,4], 6",
+                            IsSample = true,
+                            OrderIndex = 2,
+                            Points = 30,
+                            ProblemId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ExpectedOutput = "[0,1]",
+                            InputArgs = "[3,3], 6",
+                            IsSample = false,
+                            OrderIndex = 3,
+                            Points = 40,
+                            ProblemId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ExpectedOutput = "3",
+                            InputArgs = "\"abcabcbb\"",
+                            IsSample = true,
+                            OrderIndex = 1,
+                            Points = 33,
+                            ProblemId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ExpectedOutput = "1",
+                            InputArgs = "\"bbbbb\"",
+                            IsSample = true,
+                            OrderIndex = 2,
+                            Points = 33,
+                            ProblemId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ExpectedOutput = "3",
+                            InputArgs = "\"pwwkew\"",
+                            IsSample = false,
+                            OrderIndex = 3,
+                            Points = 34,
+                            ProblemId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ExpectedOutput = "2.0",
+                            InputArgs = "[1,3], [2]",
+                            IsSample = true,
+                            OrderIndex = 1,
+                            Points = 25,
+                            ProblemId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ExpectedOutput = "2.5",
+                            InputArgs = "[1,2], [3,4]",
+                            IsSample = true,
+                            OrderIndex = 2,
+                            Points = 25,
+                            ProblemId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ExpectedOutput = "0.0",
+                            InputArgs = "[0,0], [0,0]",
+                            IsSample = false,
+                            OrderIndex = 3,
+                            Points = 25,
+                            ProblemId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ExpectedOutput = "1.0",
+                            InputArgs = "[], [1]",
+                            IsSample = false,
+                            OrderIndex = 4,
+                            Points = 25,
+                            ProblemId = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ExpectedOutput = "2",
+                            InputArgs = "2",
+                            IsSample = true,
+                            OrderIndex = 1,
+                            Points = 50,
+                            ProblemId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ExpectedOutput = "3",
+                            InputArgs = "3",
+                            IsSample = true,
+                            OrderIndex = 2,
+                            Points = 50,
+                            ProblemId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ExpectedOutput = "true",
+                            InputArgs = "2, [[1,0]]",
+                            IsSample = true,
+                            OrderIndex = 1,
+                            Points = 50,
+                            ProblemId = 5
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ExpectedOutput = "false",
+                            InputArgs = "2, [[1,0],[0,1]]",
+                            IsSample = true,
+                            OrderIndex = 2,
+                            Points = 50,
+                            ProblemId = 5
+                        });
                 });
 
             modelBuilder.Entity("WebIde.Model.User", b =>
@@ -548,6 +1132,9 @@ namespace WebIde.DAL.Migrations
 
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
