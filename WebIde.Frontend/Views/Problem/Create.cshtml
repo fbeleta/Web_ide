@@ -1,0 +1,92 @@
+@model WebIde.Web.Models.CreateProblemViewModel
+@using WebIde.Model
+@{
+    ViewData["Title"] = "CREATE PROBLEM";
+    var allTags = ViewData["Tags"] as List<Tag> ?? new();
+}
+
+<div class="max-w-3xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-black uppercase mb-8" style="font-family:'Space Grotesk',sans-serif;">Create Problem</h1>
+
+    <form asp-action="Create" asp-controller="Problem" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+
+        <div class="mb-5">
+            <label asp-for="Title" class="block font-bold mb-1"></label>
+            <input asp-for="Title" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+            <span asp-validation-for="Title" class="text-red-600 text-sm"></span>
+        </div>
+
+        <div class="mb-5">
+            <label asp-for="Description" class="block font-bold mb-1"></label>
+            <textarea asp-for="Description" rows="8"
+                      class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none"></textarea>
+            <span asp-validation-for="Description" class="text-red-600 text-sm"></span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-5">
+            <div>
+                <label asp-for="Difficulty" class="block font-bold mb-1"></label>
+                <select asp-for="Difficulty" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none">
+                    <option>Easy</option>
+                    <option>Medium</option>
+                    <option>Hard</option>
+                </select>
+            </div>
+            <div>
+                <label asp-for="AuthorUsername" class="block font-bold mb-1"></label>
+                <input asp-for="AuthorUsername" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-5">
+            <div>
+                <label asp-for="TimeLimitMs" class="block font-bold mb-1">Time Limit (ms)</label>
+                <input asp-for="TimeLimitMs" type="number" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                <span asp-validation-for="TimeLimitMs" class="text-red-600 text-sm"></span>
+            </div>
+            <div>
+                <label asp-for="MemoryLimitKb" class="block font-bold mb-1">Memory Limit (KB)</label>
+                <input asp-for="MemoryLimitKb" type="number" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                <span asp-validation-for="MemoryLimitKb" class="text-red-600 text-sm"></span>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <label asp-for="FloatTolerance" class="block font-bold mb-1">Float Tolerance (optional)</label>
+            <input asp-for="FloatTolerance" type="number" step="any"
+                   class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+        </div>
+
+        @if (allTags.Any())
+        {
+            <div class="mb-6">
+                <label class="block font-bold mb-2">Tags</label>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var tag in allTags)
+                    {
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" name="TagIds" value="@tag.Id"
+                                   @(Model.TagIds != null && Model.TagIds.Contains(tag.Id) ? "checked" : "") />
+                            <span class="font-mono text-sm">@tag.Name</span>
+                        </label>
+                    }
+                </div>
+            </div>
+        }
+
+        <button type="submit"
+                class="bg-black text-white font-black uppercase px-8 py-3 border-2 border-black
+                       shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]
+                       hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.3)]
+                       transition-all"
+                style="font-family:'Space Grotesk',sans-serif;">
+            Create Problem
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

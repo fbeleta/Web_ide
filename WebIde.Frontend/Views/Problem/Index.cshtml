@@ -58,7 +58,8 @@
                         <div>
                             <label class="block font-bold text-xs uppercase mb-2"
                                    style="font-family: 'Space Grotesk', sans-serif;">SEARCH_NAME</label>
-                            <input class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none"
+                            <input id="filter-search"
+                                   class="w-full bg-white border-2 border-black p-3 text-sm focus:border-primary outline-none"
                                    placeholder="problem_slug..." type="text"
                                    style="font-family: 'Space Grotesk', sans-serif;" />
                         </div>
@@ -67,17 +68,17 @@
                                    style="font-family: 'Space Grotesk', sans-serif;">DIFFICULTY</label>
                             <div class="space-y-2">
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input id="filter-easy" type="checkbox" class="w-4 h-4 border-2 border-black" />
                                     <span class="font-bold uppercase text-sm group-hover:text-tertiary"
                                           style="font-family: 'Space Grotesk', sans-serif;">EASY_MODE</span>
                                 </label>
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input id="filter-medium" type="checkbox" class="w-4 h-4 border-2 border-black" />
                                     <span class="font-bold uppercase text-sm group-hover:text-primary"
                                           style="font-family: 'Space Grotesk', sans-serif;">MEDIUM_MODE</span>
                                 </label>
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="checkbox" class="w-4 h-4 border-2 border-black" />
+                                    <input id="filter-hard" type="checkbox" class="w-4 h-4 border-2 border-black" />
                                     <span class="font-bold uppercase text-sm group-hover:text-secondary"
                                           style="font-family: 'Space Grotesk', sans-serif;">HARD_MODE</span>
                                 </label>
@@ -123,7 +124,9 @@
                             {
                                 var hasAccepted = problem.Submissions.Any(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
                                 var rate = Rate(problem);
-                                <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                                <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none"
+                                    data-difficulty="@problem.Difficulty.ToString().ToLower()"
+                                    data-title="@($"{problem.Id:000}_{problem.Title.ToLower().Replace(" ", "_")}")">
                                     <td class="p-4">
                                         @if (hasAccepted)
                                         {
@@ -187,7 +190,7 @@
                         </tbody>
                     </table>
                     <div class="p-4 bg-surface-container-high flex justify-between items-center border-t-2 border-black">
-                        <span class="font-bold text-xs uppercase"
+                        <span id="entry-count" class="font-bold text-xs uppercase"
                               style="font-family: 'Space Grotesk', sans-serif;">SHOWING_@(Model.Count)_ENTRIES</span>
                     </div>
                 </div>
@@ -196,3 +199,47 @@
         </div>
     </div>
 </main>
+
+@section Scripts {
+<script>
+(function () {
+    const searchInput = document.getElementById('filter-search');
+    const easyBox    = document.getElementById('filter-easy');
+    const mediumBox  = document.getElementById('filter-medium');
+    const hardBox    = document.getElementById('filter-hard');
+    const rows       = document.querySelectorAll('tbody tr');
+    const countEl    = document.getElementById('entry-count');
+
+    function applyFilters() {
+        const query      = searchInput.value.toLowerCase().trim();
+        const easyOn     = easyBox.checked;
+        const mediumOn   = mediumBox.checked;
+        const hardOn     = hardBox.checked;
+        const anyDiff    = easyOn || mediumOn || hardOn;
+
+        let visible = 0;
+        rows.forEach(function (row) {
+            const title  = row.dataset.title  || '';
+            const diff   = row.dataset.difficulty || '';
+
+            const matchesSearch = !query || title.includes(query);
+            const matchesDiff   = !anyDiff ||
+                (easyOn   && diff === 'easy')   ||
+                (mediumOn && diff === 'medium') ||
+                (hardOn   && diff === 'hard');
+
+            const show = matchesSearch && matchesDiff;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        countEl.textContent = 'SHOWING_' + visible + '_ENTRIES';
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    easyBox.addEventListener('change',   applyFilters);
+    mediumBox.addEventListener('change', applyFilters);
+    hardBox.addEventListener('change',   applyFilters);
+}());
+</script>
+}

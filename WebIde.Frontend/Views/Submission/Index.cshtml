@@ -74,6 +74,8 @@
                                         <span class="status-tle">TLE</span> break;
                                     case WebIde.Model.Enums.SubmissionStatus.CompileError:
                                         <span class="status-error">CE</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.RuntimeError:
+                                        <span class="status-error">RE</span> break;
                                     default:
                                         <span class="status-error">@sub.Status.ToString().ToUpper()</span> break;
                                 }

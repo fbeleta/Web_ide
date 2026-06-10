@@ -1,0 +1,45 @@
+@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "Register with " + Model.ProviderDisplayName;
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <h1 class="mb-2">Register</h1>
+        <h4 class="mb-4 text-muted">Associate your @Model.ProviderDisplayName account</h4>
+
+        @if (!string.IsNullOrEmpty(Model.StatusMessage))
+        {
+            <div class="alert alert-danger">@Model.StatusMessage</div>
+        }
+
+        <form method="post" asp-page-handler="Confirmation">
+            <input type="hidden" asp-for="Input.Email" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label"></label>
+                <input asp-for="Input.Email" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.OIB" class="form-label"></label>
+                <input asp-for="Input.OIB" class="form-control" maxlength="11" />
+                <span asp-validation-for="Input.OIB" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.JMBG" class="form-label"></label>
+                <input asp-for="Input.JMBG" class="form-control" maxlength="13" />
+                <span asp-validation-for="Input.JMBG" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

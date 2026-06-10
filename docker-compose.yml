@@ -1,0 +1,242 @@
+name: webide
+
+# All env vars read from .env (copy from .env.template)
+
+networks:
+  webide-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  seq-data:
+  certbot-etc:
+  certbot-var:
+  acme-challenge:
+  postgres-backups:
+  uploads-data:
+
+x-log-config: &log-config
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+
+  # ── nginx — TLS termination, reverse proxy ──────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/proxy_pass.conf:/etc/nginx/proxy_pass.conf:ro
+      - certbot-etc:/etc/letsencrypt
+      - acme-challenge:/var/www/acme
+      # htpasswd is generated on server; not committed to repo
+      - ./nginx/htpasswd:/etc/nginx/htpasswd:ro
+      - ./nginx/generate-self-signed.sh:/docker-entrypoint.d/00-self-signed.sh:ro
+    depends_on:
+      - webide-app
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 64M
+    logging: *log-config
+    restart: unless-stopped
+
+  # ── ASP.NET MVC app ──────────────────────────────────────────────────────────
+  webide-app:
+    image: ghcr.io/fbeleta/web_ide/app:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__WebIdeDb: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
+      GitHub__ClientId:     ${GITHUB_CLIENT_ID}
+      GitHub__ClientSecret: ${GITHUB_CLIENT_SECRET}
+      Google__ClientId:     ${GOOGLE_CLIENT_ID}
+      Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
+      PublicHostname:       ${PUBLIC_HOSTNAME}
+      Serilog__SeqUrl:      "http://seq:5341"
+    volumes:
+      - uploads-data:/app/wwwroot/uploads
+    depends_on:
+      - postgres
+      - redis
+      - seq
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    logging: *log-config
+    restart: unless-stopped
+
+  # ── .NET Worker Service ───────────────────────────────────────────────────────
+  # NOTE: WebIde.Worker project is created in Phase 2.
+  # This service definition is correct for Phase 2+. It will fail to pull/build
+  # until the image exists. That is expected in Phase 0.
+  webide-worker:
+    image: ghcr.io/fbeleta/web_ide/worker:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    user: "${DEPLOY_UID:-1000}:${DEPLOY_GID:-1000}"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__WebIdeDb: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
+      Worker__MaxConcurrentSandboxes: ${WORKER__MAXCONCURRENTSANDBOXES:-2}
+      Worker__SandboxMemMb:           ${WORKER__SANDBOXMEMMB:-512}
+      Worker__SandboxCpus:            ${WORKER__SANDBOXCPUS:-0.9}
+      Sandbox__GccDigest:    ${SANDBOX_GCC_DIGEST}
+      Sandbox__PythonDigest: ${SANDBOX_PYTHON_DIGEST}
+      Sandbox__NodeDigest:   ${SANDBOX_NODE_DIGEST}
+      Serilog__SeqUrl: "http://seq:5341"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/webide-src:/tmp/webide-src
+    depends_on:
+      - postgres
+      - redis
+      - seq
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 256M
+    logging: *log-config
+    restart: unless-stopped
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────────
+  # No ports: directive — internal network only
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER:-webide}
+      POSTGRES_DB:       ${POSTGRES_DB:-webide}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command:
+      - postgres
+      - -c
+      - shared_buffers=256MB
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+    logging: *log-config
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-webide}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ─────────────────────────────────────────────────────────────────────
+  # No ports: directive — internal network only
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 128M
+    logging: *log-config
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Seq log aggregation ───────────────────────────────────────────────────────
+  # No ports: directive — accessed via nginx /seq/ with basic auth
+  seq:
+    image: datalust/seq:2024
+    environment:
+      ACCEPT_EULA:                  "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD:   ${SEQ_FIRSTRUN_ADMINPASSWORD}
+      SEQ_CACHE_SYSTEMRAMTARGET:    0.2
+    volumes:
+      - seq-data:/data
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 512M
+    logging: *log-config
+    restart: unless-stopped
+
+  # ── Postgres nightly backup ───────────────────────────────────────────────────
+  postgres-backup:
+    image: prodrigestivill/postgres-backup-local:16
+    environment:
+      POSTGRES_HOST:     postgres
+      POSTGRES_DB:       ${POSTGRES_DB:-webide}
+      POSTGRES_USER:     ${POSTGRES_USER:-webide}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SCHEDULE:          "@daily"
+      BACKUP_KEEP_DAYS:  7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+    volumes:
+      - postgres-backups:/backups
+    depends_on:
+      - postgres
+    networks:
+      - webide-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 64M
+    logging: *log-config
+    restart: unless-stopped
+
+  # ── Certbot (Let's Encrypt renewal sidecar) ───────────────────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - acme-challenge:/var/www/acme:rw
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        trap exit TERM
+        while :; do
+          certbot renew --webroot -w /var/www/acme --quiet
+          sleep 12h & wait $${!}
+        done
+    networks:
+      - webide-net
+    logging: *log-config
+    restart: unless-stopped

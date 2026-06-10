@@ -23,4 +23,23 @@ public class SubmissionRepository
             .Include(s => s.Problem)
             .Include(s => s.ExecutionResult)
             .FirstOrDefault(s => s.Id == id);
+
+    public Task<bool> IsOwnedByAsync(int submissionId, int userId) =>
+        _db.Submissions.AnyAsync(s => s.Id == submissionId && s.UserId == userId);
+
+    public async Task<Submission> CreateAsync(int userId, int problemId, string language, string sourceCode)
+    {
+        var submission = new Submission
+        {
+            UserId      = userId,
+            ProblemId   = problemId,
+            Language    = language,
+            SourceCode  = sourceCode,
+            Status      = WebIde.Model.Enums.SubmissionStatus.Pending,
+            SubmittedAt = DateTime.UtcNow,
+        };
+        _db.Submissions.Add(submission);
+        await _db.SaveChangesAsync();
+        return submission;
+    }
 }

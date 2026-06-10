@@ -31,6 +31,8 @@
                         <span class="status-tle text-base px-4 py-2">TIME_LIMIT_EXCEEDED</span> break;
                     case WebIde.Model.Enums.SubmissionStatus.CompileError:
                         <span class="status-error text-base px-4 py-2">COMPILE_ERROR</span> break;
+                    case WebIde.Model.Enums.SubmissionStatus.RuntimeError:
+                        <span class="status-error text-base px-4 py-2">RUNTIME_ERROR</span> break;
                     default:
                         <span class="status-error text-base px-4 py-2">@Model.Status.ToString().ToUpper()</span> break;
                 }

@@ -12,6 +12,8 @@ public class User
     public required string DisplayName { get; set; }
     public UserRole Role { get; set; }
     public DateTime RegisteredAt { get; set; }
+    public string? GitHubId { get; set; }
+    public string? AvatarUrl { get; set; }
     public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
     public virtual ICollection<Organization> Organizations { get; set; } = new List<Organization>();
 }

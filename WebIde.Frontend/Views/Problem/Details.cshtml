@@ -111,39 +111,42 @@
 
     <div class="flex-1 flex flex-col overflow-hidden h-full">
 
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <div class="h-12 bg-surface-container-highest border-b-4 border-black flex items-center px-4 justify-between">
-                <div class="flex gap-2">
-                    <span class="px-4 py-1 bg-white brutal-border font-black text-xs uppercase"
-                          style="font-family: 'Space Grotesk', sans-serif;">solution.cpp</span>
-                </div>
-                <span class="text-xs font-bold text-outline uppercase"
-                      style="font-family: 'Space Grotesk', sans-serif;">C++_17</span>
+        <!-- ── Editor toolbar ─────────────────────────────────────────────── -->
+        <div class="h-12 bg-surface-container-highest border-b-4 border-black flex items-center px-4 justify-between flex-shrink-0">
+            <div class="flex gap-2 items-center">
+                <select id="lang-picker"
+                        class="bg-white border-2 border-black font-black text-xs uppercase px-3 py-1 outline-none cursor-pointer"
+                        style="font-family: 'Space Grotesk', sans-serif;">
+                    <option value="cpp">C++_17</option>
+                    <option value="c">C_11</option>
+                    <option value="python">PYTHON_3</option>
+                    <option value="javascript">NODE_22</option>
+                </select>
             </div>
-
-            <div class="flex-1 overflow-auto bg-[#0e0e0e] text-white p-4 font-mono text-sm leading-relaxed no-scrollbar">
-                @if (lastSub != null)
-                {
-                    <div class="flex">
-                        <div class="w-8 text-outline text-right pr-4 select-none opacity-30 text-xs leading-relaxed">
-                            @for (int i = 1; i <= lastSub.SourceCode.Split('\n').Length; i++)
-                            {
-                                @i<br />
-                            }
-                        </div>
-                        <pre class="flex-1 text-[#f1f2ff] whitespace-pre-wrap">@lastSub.SourceCode</pre>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-outline text-xs uppercase font-bold"
-                         style="font-family: 'Space Grotesk', sans-serif;">// NO_SUBMISSIONS_YET</div>
-                }
-            </div>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <button id="submit-btn"
+                        class="bg-primary text-on-primary font-black uppercase px-5 py-1 border-2 border-black text-xs
+                               shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                               hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                               transition-all cursor-pointer disabled:opacity-50"
+                        style="font-family: 'Space Grotesk', sans-serif;">SUBMIT</button>
+            }
+            else
+            {
+                <a asp-controller="Auth" asp-action="Login"
+                   class="bg-surface-container-highest text-black font-black uppercase px-5 py-1 border-2 border-black text-xs
+                          shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] no-underline"
+                   style="font-family: 'Space Grotesk', sans-serif;" title="Login to submit">LOGIN_TO_SUBMIT</a>
+            }
         </div>
 
+        <!-- ── Monaco editor ──────────────────────────────────────────────── -->
+        <div id="monaco-editor" class="flex-1 overflow-hidden"></div>
+
+        <!-- ── Bottom panel ───────────────────────────────────────────────── -->
         <div class="h-2/5 min-h-[220px] bg-[#f6f6f6] border-t-4 border-black flex flex-col">
-            <div class="h-10 bg-surface-container-highest border-b-2 border-black flex items-center px-4 gap-4">
+            <div class="h-10 bg-surface-container-highest border-b-2 border-black flex items-center px-4 gap-4 flex-shrink-0">
                 <span class="font-black text-[10px] uppercase text-primary border-b-2 border-primary h-full flex items-center"
                       style="font-family: 'Space Grotesk', sans-serif;">CONSOLE</span>
                 <span class="font-black text-[10px] uppercase text-outline h-full flex items-center"
@@ -153,27 +156,29 @@
             </div>
 
             <div class="flex-1 p-4 font-mono text-xs overflow-y-auto bg-white no-scrollbar">
-                @if (lastSub != null)
-                {
-                    <p class="font-bold mb-2" style="color: #106b00; font-family: 'Space Grotesk', sans-serif;">
-                        &gt;&gt;&gt; LAST_SUBMISSION — <span class="status-@lastSub.Status.ToString().ToLower()">@lastSub.Status.ToString().ToUpper()</span>
-                    </p>
-                    @if (lastSub.ExecutionResult != null)
+                <div id="console-output">
+                    @if (lastSub != null)
                     {
-                        <div class="space-y-1">
-                            <p><span class="opacity-50">STDOUT: </span>@(string.IsNullOrEmpty(lastSub.ExecutionResult.Stdout) ? "(empty)" : lastSub.ExecutionResult.Stdout)</p>
-                            <p><span class="opacity-50">EXIT:   </span>@lastSub.ExecutionResult.ExitCode</p>
-                            <p><span class="opacity-50">TIME:   </span>@lastSub.WallTimeMs ms</p>
-                            <p><span class="opacity-50">MEM:    </span>@lastSub.PeakMemoryKb KB</p>
-                        </div>
+                        <p class="font-bold mb-2" style="color: #106b00; font-family: 'Space Grotesk', sans-serif;">
+                            &gt;&gt;&gt; LAST_SUBMISSION — <span class="status-@lastSub.Status.ToString().ToLower()">@lastSub.Status.ToString().ToUpper()</span>
+                        </p>
+                        @if (lastSub.ExecutionResult != null)
+                        {
+                            <div class="space-y-1">
+                                <p><span class="opacity-50">STDOUT: </span>@(string.IsNullOrEmpty(lastSub.ExecutionResult.Stdout) ? "(empty)" : lastSub.ExecutionResult.Stdout)</p>
+                                <p><span class="opacity-50">EXIT:   </span>@lastSub.ExecutionResult.ExitCode</p>
+                                <p><span class="opacity-50">TIME:   </span>@lastSub.WallTimeMs ms</p>
+                                <p><span class="opacity-50">MEM:    </span>@lastSub.PeakMemoryKb KB</p>
+                            </div>
+                        }
                     }
-                }
-                else
-                {
-                    <p class="text-outline font-bold" style="font-family: 'Space Grotesk', sans-serif;">
-                        &gt;&gt;&gt; NO_SUBMISSIONS_YET. Submit a solution to see results here.
-                    </p>
-                }
+                    else
+                    {
+                        <p class="text-outline font-bold" style="font-family: 'Space Grotesk', sans-serif;">
+                            &gt;&gt;&gt; NO_SUBMISSIONS_YET. Submit a solution to see results here.
+                        </p>
+                    }
+                </div>
 
                 <div class="mt-4 pt-4 border-t-2 border-black/10">
                     <p class="text-outline mb-2 text-[10px] uppercase font-bold"
@@ -196,6 +201,8 @@
                                         <span class="status-tle">TLE</span> break;
                                     case WebIde.Model.Enums.SubmissionStatus.CompileError:
                                         <span class="status-error">COMPILE_ERROR</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.RuntimeError:
+                                        <span class="status-error">RUNTIME_ERROR</span> break;
                                     default:
                                         <span class="status-error">@sub.Status.ToString().ToUpper()</span> break;
                                 }
@@ -206,7 +213,7 @@
                 </div>
             </div>
 
-            <div class="p-3 border-t-2 border-black flex justify-between items-center bg-white">
+            <div class="p-3 border-t-2 border-black flex justify-between items-center bg-white flex-shrink-0">
                 <a asp-controller="Problem" asp-action="Index"
                    class="px-4 py-2 brutal-border bg-surface-container-highest font-black uppercase text-xs
                           hover:bg-black hover:text-white no-underline transition-none"
@@ -220,3 +227,111 @@
 
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@@0.47.0/min/vs/loader.js"></script>
+<script>
+(function () {
+    const PROBLEM_ID = @Model.Id;
+    const ANTIFORGERY_TOKEN = document.cookie
+        .split('; ')
+        .find(c => c.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1] ?? '';
+
+    // Language map: picker value → Monaco language id
+    const LANG_MAP = { cpp: 'cpp', c: 'c', python: 'python', javascript: 'javascript' };
+    const STARTER  = {
+        cpp:        '#include <iostream>\nusing namespace std;\nint main() {\n    // your code here\n    return 0;\n}\n',
+        c:          '#include <stdio.h>\nint main() {\n    // your code here\n    return 0;\n}\n',
+        python:     '# your code here\n',
+        javascript: '// your code here\nconst lines = require("fs").readFileSync("/dev/stdin","utf8").trim().split("\\n");\n',
+    };
+
+    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@@0.47.0/min/vs' } });
+    require(['vs/editor/editor.main'], function () {
+        const picker = document.getElementById('lang-picker');
+        let currentLang = picker.value;
+
+        const editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+            value:       STARTER[currentLang],
+            language:    LANG_MAP[currentLang],
+            theme:       'vs-dark',
+            fontSize:    13,
+            minimap:     { enabled: false },
+            scrollBeyondLastLine: false,
+            fontFamily:  '"Fira Code", "Cascadia Code", monospace',
+        });
+
+        // Switch language on picker change
+        picker.addEventListener('change', function () {
+            currentLang = picker.value;
+            const model = editor.getModel();
+            monaco.editor.setModelLanguage(model, LANG_MAP[currentLang]);
+            if (!model.getValue().trim()) {
+                editor.setValue(STARTER[currentLang]);
+            }
+        });
+
+        // Resize editor with window
+        window.addEventListener('resize', () => editor.layout());
+
+        // Submit handler
+        const submitBtn = document.getElementById('submit-btn');
+        if (!submitBtn) return;
+
+        submitBtn.addEventListener('click', async function () {
+            const sourceCode = editor.getValue();
+            if (!sourceCode.trim()) {
+                alert('Write some code first.');
+                return;
+            }
+
+            submitBtn.disabled    = true;
+            submitBtn.textContent = 'SUBMITTING...';
+
+            const consoleEl = document.getElementById('console-output');
+            consoleEl.innerHTML = '<p style="font-family:\'Space Grotesk\',sans-serif;" class="text-outline font-bold">&gt;&gt;&gt; SUBMITTING...</p>';
+
+            try {
+                // Read antiforgery token from the hidden input ASP.NET puts on the page
+                const af = document.querySelector('input[name="__RequestVerificationToken"]');
+                const token = af ? af.value : ANTIFORGERY_TOKEN;
+
+                const res = await fetch('/submissions', {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type':              'application/json',
+                        'RequestVerificationToken':  token,
+                    },
+                    body: JSON.stringify({
+                        problemId:  PROBLEM_ID,
+                        language:   currentLang,
+                        sourceCode: sourceCode,
+                    }),
+                });
+
+                if (res.status === 429) {
+                    consoleEl.innerHTML = '<p class="text-error font-bold">&gt;&gt;&gt; RATE_LIMIT: too many submissions. Wait 1 minute.</p>';
+                    return;
+                }
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    consoleEl.innerHTML = `<p class="text-error font-bold">&gt;&gt;&gt; ERROR: ${err.error ?? res.statusText}</p>`;
+                    return;
+                }
+
+                const { submissionId } = await res.json();
+                consoleEl.innerHTML = `<p style="color:#106b00;font-family:'Space Grotesk',sans-serif;" class="font-bold">&gt;&gt;&gt; SUBMITTED — ID #${submissionId} — STATUS: PENDING<br>Check <a href="/submissions/${submissionId}" class="text-primary underline">submission #${submissionId}</a> for results.</p>`;
+
+            } catch (e) {
+                consoleEl.innerHTML = `<p class="text-error font-bold">&gt;&gt;&gt; NETWORK_ERROR: ${e.message}</p>`;
+            } finally {
+                submitBtn.disabled    = false;
+                submitBtn.textContent = 'SUBMIT';
+            }
+        });
+    });
+}());
+</script>
+@Html.AntiForgeryToken()
+}

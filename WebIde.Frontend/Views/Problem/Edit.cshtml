@@ -1,0 +1,150 @@
+@model WebIde.Web.Models.CreateProblemViewModel
+@using WebIde.Model
+@{
+    ViewData["Title"] ??= $"EDIT: {Model.Title?.ToUpper()}";
+    var allTags = ViewData["Tags"] as List<Tag> ?? new();
+}
+
+<div class="max-w-6xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-black uppercase mb-8" style="font-family:'Space Grotesk',sans-serif;">
+        Edit: @Model.Title
+    </h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <!-- Left: edit form -->
+        <div>
+            <form asp-action="Edit" asp-controller="Problem" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+
+                <div class="mb-5">
+                    <label asp-for="Title" class="block font-bold mb-1"></label>
+                    <input asp-for="Title" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                    <span asp-validation-for="Title" class="text-red-600 text-sm"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="Description" class="block font-bold mb-1"></label>
+                    <textarea asp-for="Description" rows="8"
+                              class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none"></textarea>
+                    <span asp-validation-for="Description" class="text-red-600 text-sm"></span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label asp-for="Difficulty" class="block font-bold mb-1"></label>
+                        <select asp-for="Difficulty" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none">
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label asp-for="AuthorUsername" class="block font-bold mb-1"></label>
+                        <input asp-for="AuthorUsername" class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label asp-for="TimeLimitMs" class="block font-bold mb-1">Time Limit (ms)</label>
+                        <input asp-for="TimeLimitMs" type="number"
+                               class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                    </div>
+                    <div>
+                        <label asp-for="MemoryLimitKb" class="block font-bold mb-1">Memory Limit (KB)</label>
+                        <input asp-for="MemoryLimitKb" type="number"
+                               class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="FloatTolerance" class="block font-bold mb-1">Float Tolerance</label>
+                    <input asp-for="FloatTolerance" type="number" step="any"
+                           class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                </div>
+
+                @if (allTags.Any())
+                {
+                    <div class="mb-6">
+                        <label class="block font-bold mb-2">Tags</label>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (var tag in allTags)
+                            {
+                                <label class="flex items-center gap-1 cursor-pointer">
+                                    <input type="checkbox" name="TagIds" value="@tag.Id"
+                                           @(Model.TagIds != null && Model.TagIds.Contains(tag.Id) ? "checked" : "") />
+                                    <span class="font-mono text-sm">@tag.Name</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <button type="submit"
+                        class="bg-black text-white font-black uppercase px-8 py-3 border-2 border-black
+                               shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]
+                               hover:translate-x-[-2px] hover:translate-y-[-2px]
+                               transition-all"
+                        style="font-family:'Space Grotesk',sans-serif;">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- Right: Dropzone attachments -->
+        <div>
+            <h2 class="text-xl font-black uppercase mb-4" style="font-family:'Space Grotesk',sans-serif;">
+                Attachments
+            </h2>
+
+            @Html.AntiForgeryToken()
+
+            <form id="attachment-dz"
+                  action="/problems/@Model.Id/attachments"
+                  class="border-4 border-dashed border-black p-8 text-center cursor-pointer
+                         hover:bg-gray-50 transition-none mb-4">
+                <p class="font-bold text-gray-500">Drop files here or click to upload</p>
+                <p class="text-sm text-gray-400 mt-1">PDF, PNG, JPG, ZIP, TXT — max 10 MB</p>
+            </form>
+
+            <div id="attachment-list"></div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@6/dist/dropzone.css" />
+    <script src="https://unpkg.com/dropzone@6/dist/dropzone-min.js"></script>
+    <script>
+        Dropzone.autoDiscover = false;
+
+        const dz = new Dropzone("#attachment-dz", {
+            url: "/problems/@Model.Id/attachments",
+            headers: {
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            maxFilesize: 10,
+            acceptedFiles: ".pdf,.png,.jpg,.jpeg,.zip,.txt",
+            success: function () {
+                loadAttachments();
+            },
+            error: function (file, msg) {
+                alert("Upload error: " + (typeof msg === "string" ? msg : msg.error));
+                this.removeFile(file);
+            }
+        });
+
+        function loadAttachments() {
+            fetch("/problems/@Model.Id/attachments")
+                .then(r => r.text())
+                .then(html => { document.getElementById("attachment-list").innerHTML = html; });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadAttachments);
+    </script>
+}

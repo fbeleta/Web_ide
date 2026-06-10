@@ -3,4 +3,6 @@
   <Project Path="WebIde.Model/WebIde.Model.csproj" />
   <Project Path="WebIde.DAL/WebIde.DAL.csproj" />
   <Project Path="WebIde.Frontend/WebIde.Frontend.csproj" />
+  <Project Path="WebIde.Worker/WebIde.Worker.csproj" />
+  <Project Path="WebIde.Tests/WebIde.Tests.csproj" />
 </Solution>

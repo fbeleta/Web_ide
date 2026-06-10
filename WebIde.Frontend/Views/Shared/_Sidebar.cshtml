@@ -3,21 +3,61 @@
 
     <!-- User identity block -->
     <div class="px-6 pb-6 mb-2 border-b-2 border-black/10">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 bg-black border-2 border-black flex items-center justify-center flex-shrink-0">
-                <span class="text-white font-black text-lg" style="font-family: 'Space Grotesk', sans-serif;">R</span>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            var displayName = User.FindFirst("webide:displayName")?.Value
+                           ?? User.Identity.Name
+                           ?? "USER";
+            var avatarUrl   = User.FindFirst("webide:avatarUrl")?.Value ?? "";
+            var initial     = displayName.Length > 0 ? displayName[0].ToString().ToUpper() : "?";
+
+            <div class="flex items-center gap-3 mb-4">
+                @if (!string.IsNullOrEmpty(avatarUrl))
+                {
+                    <img src="@avatarUrl" alt="@displayName"
+                         class="w-12 h-12 border-2 border-black object-cover flex-shrink-0" />
+                }
+                else
+                {
+                    <div class="w-12 h-12 bg-black border-2 border-black flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-black text-lg" style="font-family: 'Space Grotesk', sans-serif;">@initial</span>
+                    </div>
+                }
+                <div>
+                    <p class="font-black text-black text-sm leading-none" style="font-family: 'Space Grotesk', sans-serif;">@displayName.ToUpper()</p>
+                    <p class="text-xs font-bold text-primary mt-1" style="font-family: 'Space Grotesk', sans-serif;">STUDENT</p>
+                </div>
             </div>
-            <div>
-                <p class="font-black text-black text-sm leading-none" style="font-family: 'Space Grotesk', sans-serif;">ROOT_USER</p>
-                <p class="text-xs font-bold text-primary mt-1" style="font-family: 'Space Grotesk', sans-serif;">RANK: #1</p>
+
+            <form asp-controller="Auth" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit"
+                        class="block w-full text-center bg-surface-container-highest text-black font-bold uppercase py-2 border-2 border-black
+                               shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                               hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                               transition-all text-xs cursor-pointer"
+                        style="font-family: 'Space Grotesk', sans-serif;">LOGOUT</button>
+            </form>
+        }
+        else
+        {
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-surface-container-high border-2 border-black flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-outline text-xl">person</span>
+                </div>
+                <div>
+                    <p class="font-black text-black text-sm leading-none" style="font-family: 'Space Grotesk', sans-serif;">NOT_LOGGED_IN</p>
+                    <p class="text-xs font-bold text-outline mt-1" style="font-family: 'Space Grotesk', sans-serif;">GUEST</p>
+                </div>
             </div>
-        </div>
-        <a asp-controller="User" asp-action="Index"
-           class="block w-full text-center bg-secondary text-white font-bold uppercase py-2 border-2 border-black
-                  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                  hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-                  transition-all text-xs no-underline"
-           style="font-family: 'Space Grotesk', sans-serif;">UPGRADE_PRO</a>
+
+            <a asp-controller="Auth" asp-action="Login"
+               class="block w-full text-center bg-primary text-on-primary font-bold uppercase py-2 border-2 border-black
+                      shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                      hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                      transition-all text-xs no-underline"
+               style="font-family: 'Space Grotesk', sans-serif;">LOGIN_WITH_GITHUB</a>
+        }
     </div>
 
     <!-- Navigation items -->

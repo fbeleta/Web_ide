@@ -1,0 +1,34 @@
+@model WebIde.Model.Problem
+@{
+    ViewData["Title"] ??= $"DELETE: {Model.Title?.ToUpper()}";
+}
+
+<div class="max-w-xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-black uppercase mb-6 text-red-600" style="font-family:'Space Grotesk',sans-serif;">
+        Delete Problem
+    </h1>
+
+    <div class="border-4 border-red-600 p-6 mb-8">
+        <p class="font-bold mb-2">Are you sure you want to delete this problem?</p>
+        <p class="font-mono text-lg">@Model.Title</p>
+        <p class="text-sm text-gray-500 mt-2">This will also delete all attachments and cannot be undone.</p>
+    </div>
+
+    <div class="flex gap-4">
+        <form asp-action="DeleteConfirmed" asp-controller="Problem" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit"
+                    class="bg-red-600 text-white font-black uppercase px-8 py-3 border-2 border-red-700
+                           hover:bg-red-700 transition-none"
+                    style="font-family:'Space Grotesk',sans-serif;">
+                Yes, Delete
+            </button>
+        </form>
+        <a asp-action="Index" asp-controller="Problem"
+           class="font-black uppercase px-8 py-3 border-2 border-black hover:bg-black hover:text-white
+                  transition-none no-underline flex items-center"
+           style="font-family:'Space Grotesk',sans-serif;">
+            Cancel
+        </a>
+    </div>
+</div>

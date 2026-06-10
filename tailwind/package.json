@@ -1,0 +1,9 @@
+{
+  "name": "webide-tailwind",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.0"
+  }
+}
