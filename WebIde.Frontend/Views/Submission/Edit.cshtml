@@ -1,0 +1,138 @@
+@using WebIde.Model.Enums
+@model WebIde.Frontend.Models.SubmissionEditModel
+@{
+    ViewData["Title"] = "EDIT SUBMISSION";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-2xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+                style="font-family:'Space Grotesk',sans-serif;">EDIT SUBMISSION #@Model.Id</h1>
+            <div class="h-2 w-24 bg-secondary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family:'Space Grotesk',sans-serif;">
+                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                <span class="mx-2 text-outline">/</span>
+                <a asp-controller="Submission" asp-action="Index" class="text-primary hover:underline no-underline">SUBMISSIONS</a>
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">EDIT</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+            <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <!-- User autocomplete -->
+                <div class="mb-5">
+                    @{
+                        ViewData["FieldName"]   = "UserId";
+                        ViewData["Label"]       = "USER *";
+                        ViewData["SearchUrl"]   = "/users/search";
+                        ViewData["InitialText"] = Model.UserDisplayName;
+                        ViewData["InitialIds"]  = Model.UserId.ToString();
+                        ViewData["IsMulti"]     = false;
+                        ViewData["Required"]    = true;
+                    }
+                    @await Html.PartialAsync("_AutocompleteDropdown")
+                    <span asp-validation-for="UserId" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <!-- Problem autocomplete -->
+                <div class="mb-5">
+                    @{
+                        ViewData["FieldName"]   = "ProblemId";
+                        ViewData["Label"]       = "PROBLEM *";
+                        ViewData["SearchUrl"]   = "/problems/search";
+                        ViewData["InitialText"] = Model.ProblemTitle;
+                        ViewData["InitialIds"]  = Model.ProblemId.ToString();
+                        ViewData["IsMulti"]     = false;
+                        ViewData["Required"]    = true;
+                    }
+                    @await Html.PartialAsync("_AutocompleteDropdown")
+                    <span asp-validation-for="ProblemId" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label asp-for="Language" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">LANGUAGE *</label>
+                        <input asp-for="Language"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                        <span asp-validation-for="Language" class="text-xs text-error font-bold mt-1 block"
+                              style="font-family:'Space Grotesk',sans-serif;"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Status" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">STATUS</label>
+                        <select asp-for="Status"
+                                asp-items="Html.GetEnumSelectList<SubmissionStatus>()"
+                                class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-5">
+                    <div>
+                        <label asp-for="Score" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">SCORE (0-100)</label>
+                        <input asp-for="Score" type="number"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                        <span asp-validation-for="Score" class="text-xs text-error font-bold mt-1 block"
+                              style="font-family:'Space Grotesk',sans-serif;"></span>
+                    </div>
+                    <div>
+                        <label asp-for="WallTimeMs" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">WALL TIME (ms)</label>
+                        <input asp-for="WallTimeMs" type="number"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                    </div>
+                    <div>
+                        <label asp-for="PeakMemoryKb" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">PEAK MEM (KB)</label>
+                        <input asp-for="PeakMemoryKb" type="number"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    @{
+                        ViewData["FieldName"] = "SubmittedAt";
+                        ViewData["Label"]     = "SUBMITTED AT";
+                        ViewData["Value"]     = Model.SubmittedAt as DateTime?;
+                        ViewData["Required"]  = true;
+                    }
+                    @await Html.PartialAsync("_DatePicker")
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="SourceCode" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">SOURCE CODE *</label>
+                    <textarea asp-for="SourceCode" rows="10"
+                              class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary resize-none"></textarea>
+                    <span asp-validation-for="SourceCode" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="submit"
+                            class="bg-primary text-white font-black uppercase px-6 py-2 border-2 border-black
+                                   shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                                   hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm"
+                            style="font-family:'Space Grotesk',sans-serif;">SAVE CHANGES</button>
+                    <a asp-controller="Submission" asp-action="Index"
+                       class="bg-white font-black uppercase px-6 py-2 border-2 border-black
+                              shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                              hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm no-underline"
+                       style="font-family:'Space Grotesk',sans-serif;">CANCEL</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

@@ -1,6 +1,60 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "PRIVACY_POLICY";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<main class="pt-28 px-6 pb-24 min-h-screen max-w-3xl mx-auto">
+    <div class="mb-10">
+        <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+            style="font-family: 'Space Grotesk', sans-serif;">PRIVACY_POLICY</h1>
+        <div class="h-2 w-24 bg-primary border-2 border-black"></div>
+        <p class="text-xs font-bold uppercase text-outline mt-3"
+           style="font-family: 'Space Grotesk', sans-serif;">LAST_UPDATED: 2026-06-06</p>
+    </div>
+
+    <div class="space-y-8 text-sm leading-relaxed">
+
+        <section class="border-l-4 border-black pl-6">
+            <h2 class="font-black uppercase text-base mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">1. WHAT_WE_COLLECT</h2>
+            <p>When you log in via GitHub OAuth, we receive your <strong>GitHub user ID</strong>, <strong>username</strong>, <strong>display name</strong>, <strong>public email address</strong>, and <strong>avatar URL</strong> from GitHub. We store these in our database to create and maintain your account.</p>
+            <p class="mt-2">We also store every <strong>code submission</strong> you make: the source code, language, timestamp, and execution result. Submissions are associated with your account and are visible to other users on the submissions page.</p>
+        </section>
+
+        <section class="border-l-4 border-black pl-6">
+            <h2 class="font-black uppercase text-base mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">2. HOW_WE_USE_IT</h2>
+            <ul class="list-disc list-inside space-y-1">
+                <li>To identify you across sessions via a secure cookie.</li>
+                <li>To display your username and avatar in the UI.</li>
+                <li>To show your submission history and score on the leaderboard.</li>
+                <li>To judge submitted code in isolated sandbox containers (see §3).</li>
+            </ul>
+            <p class="mt-2">We do not sell your data. We do not use it for advertising.</p>
+        </section>
+
+        <section class="border-l-4 border-black pl-6">
+            <h2 class="font-black uppercase text-base mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">3. CODE_EXECUTION</h2>
+            <p>Submitted code runs inside a <strong>network-isolated, read-only Docker container</strong> with strict resource limits (CPU, memory, process count). Your code cannot access the internet, write to persistent storage, or interact with other users' submissions. Source code is written to a temporary directory on the server and deleted after the container exits.</p>
+        </section>
+
+        <section class="border-l-4 border-black pl-6">
+            <h2 class="font-black uppercase text-base mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">4. DATA_RETENTION</h2>
+            <p>Your account and submission history are retained for as long as your account exists. To request deletion of your data, open an issue on the project's GitHub repository.</p>
+        </section>
+
+        <section class="border-l-4 border-black pl-6">
+            <h2 class="font-black uppercase text-base mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">5. COOKIES</h2>
+            <p>We use a single session cookie (<code>class="font-mono">.AspNetCore.Cookies</code>) to keep you logged in for up to 14 days. No third-party tracking cookies are set.</p>
+        </section>
+
+        <section class="border-l-4 border-black pl-6">
+            <h2 class="font-black uppercase text-base mb-2"
+                style="font-family: 'Space Grotesk', sans-serif;">6. CONTACT</h2>
+            <p>Questions? Open an issue on the project repository or email the maintainer at <strong>@ViewData["ContactEmail"]</strong>.</p>
+        </section>
+
+    </div>
+</main>

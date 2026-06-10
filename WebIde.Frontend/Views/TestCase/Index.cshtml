@@ -1,0 +1,114 @@
+@model List<WebIde.Model.TestCase>
+@{
+    var problem = ViewData["Problem"] as WebIde.Model.Problem;
+    ViewData["Title"] = "TEST CASES";
+}
+
+@await Html.PartialAsync("_Sidebar")
+@await Html.PartialAsync("_DeleteModal")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+        @if (TempData["Flash"] != null)
+        {
+            <div id="flash-message"
+                 class="mb-6 px-5 py-3 border-2 border-black bg-tertiary-container text-on-tertiary-container
+                        font-bold text-sm flex justify-between items-center"
+                 style="font-family:'Space Grotesk',sans-serif;">
+                @TempData["Flash"]
+                <button onclick="this.parentElement.remove()" class="font-black hover:text-error ml-4">×</button>
+            </div>
+        }
+
+        <div class="mb-10 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+                    style="font-family:'Space Grotesk',sans-serif;">TEST CASES</h1>
+                @if (problem != null)
+                {
+                    <p class="text-sm font-bold text-outline mb-2" style="font-family:'Space Grotesk',sans-serif;">@problem.Title</p>
+                }
+                <div class="h-2 w-24 bg-secondary border-2 border-black"></div>
+                <nav class="text-xs font-bold uppercase mt-3" style="font-family:'Space Grotesk',sans-serif;">
+                    <a asp-controller="Problem" asp-action="Index" class="text-primary hover:underline no-underline">PROBLEMS</a>
+                    <span class="mx-2 text-outline">/</span>
+                    @if (problem != null)
+                    {
+                        <a asp-controller="Problem" asp-action="Details" asp-route-id="@problem.Id"
+                           class="text-primary hover:underline no-underline">@problem.Title</a>
+                        <span class="mx-2 text-outline">/</span>
+                    }
+                    <span class="text-on-surface-variant">TEST CASES</span>
+                </nav>
+            </div>
+            @if (problem != null)
+            {
+                <a asp-controller="TestCase" asp-action="Create" asp-route-problemId="@problem.Id"
+                   class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                          shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                          hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+                   style="font-family:'Space Grotesk',sans-serif;">+ ADD TEST CASE</a>
+            }
+        </div>
+
+        <div class="border-4 border-black bg-white overflow-x-auto shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-white border-b-4 border-black">
+                        <th class="p-4 text-xs font-black uppercase tracking-widest" style="font-family:'Space Grotesk',sans-serif;">#</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest" style="font-family:'Space Grotesk',sans-serif;">INPUT</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest" style="font-family:'Space Grotesk',sans-serif;">EXPECTED OUTPUT</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest" style="font-family:'Space Grotesk',sans-serif;">SAMPLE</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest" style="font-family:'Space Grotesk',sans-serif;">PTS</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest" style="font-family:'Space Grotesk',sans-serif;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="tc-tbody">
+                    @foreach (var tc in Model)
+                    {
+                        <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
+                            <td class="p-4 font-black text-sm" style="font-family:'Space Grotesk',sans-serif;">@tc.OrderIndex</td>
+                            <td class="p-4 font-mono text-xs max-w-xs truncate">@tc.InputArgs</td>
+                            <td class="p-4 font-mono text-xs max-w-xs truncate">@tc.ExpectedOutput</td>
+                            <td class="p-4">
+                                @if (tc.IsSample)
+                                {
+                                    <span class="bg-tertiary-container text-on-tertiary-container border-2 border-black px-2 py-0.5 text-xs font-black uppercase"
+                                          style="font-family:'Space Grotesk',sans-serif;">YES</span>
+                                }
+                                else
+                                {
+                                    <span class="text-xs text-outline font-bold" style="font-family:'Space Grotesk',sans-serif;">NO</span>
+                                }
+                            </td>
+                            <td class="p-4 font-bold text-sm">@tc.Points</td>
+                            <td class="p-4">
+                                <div class="flex gap-2">
+                                    @if (problem != null)
+                                    {
+                                        <a asp-controller="TestCase" asp-action="Edit"
+                                           asp-route-problemId="@problem.Id" asp-route-id="@tc.Id"
+                                           class="text-xs font-black uppercase px-3 py-1 border-2 border-black hover:bg-black hover:text-white transition-none no-underline"
+                                           style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                                        <button type="button"
+                                                onclick="openDeleteModal('@Url.Action("Delete", "TestCase", new { problemId = problem.Id, id = tc.Id })', 'TC#@tc.OrderIndex')"
+                                                class="text-xs font-black uppercase px-3 py-1 border-2 border-error text-error hover:bg-error hover:text-white transition-none"
+                                                style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-xs font-bold uppercase text-outline tracking-widest"
+                                style="font-family:'Space Grotesk',sans-serif;">NO TEST CASES YET</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

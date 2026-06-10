@@ -4,19 +4,45 @@
 }
 
 @await Html.PartialAsync("_Sidebar")
+@await Html.PartialAsync("_DeleteModal")
 
 <main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
     <div class="max-w-7xl mx-auto">
 
-        <div class="mb-10">
-            <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
-                style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</h1>
-            <div class="h-2 w-32 bg-primary border-2 border-black"></div>
-            <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
-                <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
-                <span class="mx-2 text-outline">/</span>
-                <span class="text-on-surface-variant">SUBMISSIONS</span>
-            </nav>
+        @if (TempData["Flash"] != null)
+        {
+            <div id="flash-message"
+                 class="mb-6 px-5 py-3 border-2 border-black bg-tertiary-container text-on-tertiary-container
+                        font-bold text-sm flex justify-between items-center"
+                 style="font-family:'Space Grotesk',sans-serif;">
+                @TempData["Flash"]
+                <button onclick="this.parentElement.remove()" class="font-black hover:text-error ml-4">×</button>
+            </div>
+        }
+
+        <div class="mb-8 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-6xl font-black uppercase tracking-tighter mb-2"
+                    style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</h1>
+                <div class="h-2 w-32 bg-primary border-2 border-black"></div>
+                <nav class="text-xs font-bold uppercase mt-3" style="font-family: 'Space Grotesk', sans-serif;">
+                    <a asp-controller="Home" asp-action="Index" class="text-primary hover:underline no-underline">HOME</a>
+                    <span class="mx-2 text-outline">/</span>
+                    <span class="text-on-surface-variant">SUBMISSIONS</span>
+                </nav>
+            </div>
+            <a asp-controller="Submission" asp-action="Create"
+               class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                      shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                      hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+               style="font-family:'Space Grotesk',sans-serif;">+ CREATE SUBMISSION</a>
+        </div>
+
+        <div class="mb-4">
+            <input type="text" id="sub-search" placeholder="SEARCH SUBMISSIONS..."
+                   class="w-full md:w-80 border-2 border-black px-4 py-2 bg-white text-black font-mono text-sm
+                          focus:outline-none focus:border-primary brutalist-input"
+                   style="font-family:'Space Grotesk',sans-serif;" />
         </div>
 
         @{
@@ -42,10 +68,10 @@
                         <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">
                             <a asp-action="Index" asp-route-sort="@NextDateSort()" class="text-white hover:text-primary no-underline">SUBMITTED@(currentSort == "date-desc" ? " ▼" : currentSort == "date-asc" ? " ▲" : "")</a>
                         </th>
-                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">DETAIL</th>
+                        <th class="p-4 font-black uppercase text-xs tracking-widest" style="font-family: 'Space Grotesk', sans-serif;">ACTIONS</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="sub-tbody">
                     @foreach (var sub in Model)
                     {
                         <tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">
@@ -74,6 +100,8 @@
                                         <span class="status-tle">TLE</span> break;
                                     case WebIde.Model.Enums.SubmissionStatus.CompileError:
                                         <span class="status-error">CE</span> break;
+                                    case WebIde.Model.Enums.SubmissionStatus.RuntimeError:
+                                        <span class="status-error">RE</span> break;
                                     default:
                                         <span class="status-error">@sub.Status.ToString().ToUpper()</span> break;
                                 }
@@ -83,10 +111,22 @@
                             <td class="p-4 font-bold" style="font-family: 'Space Grotesk', sans-serif;">@sub.PeakMemoryKb KB</td>
                             <td class="p-4 text-sm text-outline" style="font-family: 'Space Grotesk', sans-serif;">@sub.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
                             <td class="p-4">
-                                <a asp-controller="Submission" asp-action="Details" asp-route-id="@sub.Id"
-                                   class="border-2 border-black px-3 py-1 text-xs font-bold uppercase
-                                          hover:bg-black hover:text-white transition-none no-underline"
-                                   style="font-family: 'Space Grotesk', sans-serif;">VIEW</a>
+                                <div class="flex gap-2">
+                                    <a asp-controller="Submission" asp-action="Details" asp-route-id="@sub.Id"
+                                       class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                              shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
+                                              hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] transition-all no-underline"
+                                       style="font-family:'Space Grotesk',sans-serif;">VIEW</a>
+                                    <a asp-controller="Submission" asp-action="Edit" asp-route-id="@sub.Id"
+                                       class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                              hover:bg-black hover:text-white transition-none no-underline"
+                                       style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                                    <button type="button"
+                                            onclick="openDeleteModal('@Url.Action("Delete","Submission", new { id = sub.Id })', '#@sub.Id')"
+                                            class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
+                                                   hover:bg-error hover:text-white transition-none"
+                                            style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -96,3 +136,14 @@
 
     </div>
 </main>
+
+@section Scripts {
+<script>
+initAjaxSearch('sub-search', 'sub-tbody', '/submissions/search', function(s) {
+    return '<tr class="border-b-2 border-black hover:bg-surface-container-low transition-none">' +
+        '<td class="p-4 font-bold" style="font-family:\'Space Grotesk\',sans-serif;" colspan="8">' + s.label + '</td>' +
+        '<td class="p-4"><a href="/submissions/' + s.id + '" class="bg-primary text-white border-2 border-black px-3 py-1.5 font-bold uppercase text-xs no-underline" style="font-family:\'Space Grotesk\',sans-serif;">VIEW</a></td>' +
+        '</tr>';
+});
+</script>
+}

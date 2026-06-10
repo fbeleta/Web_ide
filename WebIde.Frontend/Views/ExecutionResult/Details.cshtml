@@ -1,0 +1,77 @@
+@model WebIde.Model.ExecutionResult
+@{
+    var submissionId = ViewData["SubmissionId"];
+    ViewData["Title"] = $"EXECUTION RESULT #{Model.Id}";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-3xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+                style="font-family:'Space Grotesk',sans-serif;">EXECUTION RESULT #@Model.Id</h1>
+            <div class="h-2 w-24 bg-secondary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family:'Space Grotesk',sans-serif;">
+                <a asp-controller="Submission" asp-action="Index" class="text-primary hover:underline no-underline">SUBMISSIONS</a>
+                @if (submissionId != null)
+                {
+                    <span class="mx-2 text-outline">/</span>
+                    <a asp-controller="Submission" asp-action="Details" asp-route-id="@submissionId"
+                       class="text-primary hover:underline no-underline">#@submissionId</a>
+                }
+                <span class="mx-2 text-outline">/</span>
+                <span class="text-on-surface-variant">RESULT</span>
+            </nav>
+        </div>
+
+        <!-- Status flags -->
+        <div class="flex gap-4 mb-8">
+            <div class="border-4 border-black px-6 py-4 @(Model.ExitCode == 0 ? "bg-tertiary-container" : "bg-error-container")">
+                <p class="text-xs font-bold uppercase tracking-widest"
+                   style="font-family:'Space Grotesk',sans-serif;">EXIT CODE</p>
+                <p class="text-4xl font-black" style="font-family:'Space Grotesk',sans-serif;">@Model.ExitCode</p>
+            </div>
+            @if (Model.TimedOut)
+            {
+                <div class="border-4 border-black px-6 py-4 bg-error-container">
+                    <p class="text-xs font-bold uppercase tracking-widest"
+                       style="font-family:'Space Grotesk',sans-serif;">TIMED OUT</p>
+                    <p class="text-2xl font-black text-error" style="font-family:'Space Grotesk',sans-serif;">YES</p>
+                </div>
+            }
+            @if (Model.MemoryExceeded)
+            {
+                <div class="border-4 border-black px-6 py-4 bg-error-container">
+                    <p class="text-xs font-bold uppercase tracking-widest"
+                       style="font-family:'Space Grotesk',sans-serif;">MEMORY EXCEEDED</p>
+                    <p class="text-2xl font-black text-error" style="font-family:'Space Grotesk',sans-serif;">YES</p>
+                </div>
+            }
+        </div>
+
+        <!-- Stdout -->
+        <div class="mb-6 border-4 border-black bg-white">
+            <div class="bg-black text-white px-4 py-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">terminal</span>
+                <span class="text-xs font-black uppercase tracking-widest"
+                      style="font-family:'Space Grotesk',sans-serif;">STDOUT</span>
+            </div>
+            <pre class="p-4 font-mono text-sm overflow-x-auto whitespace-pre-wrap text-on-surface">@(string.IsNullOrEmpty(Model.Stdout) ? "(empty)" : Model.Stdout)</pre>
+        </div>
+
+        <!-- Stderr -->
+        @if (!string.IsNullOrEmpty(Model.Stderr))
+        {
+            <div class="mb-6 border-4 border-error bg-white">
+                <div class="bg-error text-on-error px-4 py-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span class="text-xs font-black uppercase tracking-widest"
+                          style="font-family:'Space Grotesk',sans-serif;">STDERR</span>
+                </div>
+                <pre class="p-4 font-mono text-sm overflow-x-auto whitespace-pre-wrap text-error">@Model.Stderr</pre>
+            </div>
+        }
+    </div>
+</main>

@@ -1,0 +1,35 @@
+# Multi-stage build for WebIde.Worker (.NET Worker Service)
+# NOTE: WebIde.Worker project is created in Phase 2. This Dockerfile is correct
+# for when it exists. Building before Phase 2 will fail — that is expected.
+
+# ── Stage 1: Build ────────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+WORKDIR /src
+
+COPY WebIde.Model/WebIde.Model.csproj       WebIde.Model/
+COPY WebIde.DAL/WebIde.DAL.csproj           WebIde.DAL/
+COPY WebIde.Worker/WebIde.Worker.csproj     WebIde.Worker/
+RUN dotnet restore WebIde.Worker/WebIde.Worker.csproj
+
+COPY WebIde.Model/  WebIde.Model/
+COPY WebIde.DAL/    WebIde.DAL/
+COPY WebIde.Worker/ WebIde.Worker/
+
+RUN dotnet publish WebIde.Worker/WebIde.Worker.csproj \
+      -c Release \
+      -r linux-x64 \
+      --self-contained false \
+      -o /app/publish
+
+# ── Stage 2: Runtime image ────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+
+WORKDIR /app
+
+# Worker runs as the host deploy user (set via user: in compose) to access
+# /tmp/webide-src bind mount. Do not lock to appuser here.
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "WebIde.Worker.dll"]

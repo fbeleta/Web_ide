@@ -1,0 +1,98 @@
+@model WebIde.Frontend.Models.TestCaseCreateModel
+@{
+    var problem = ViewData["Problem"] as WebIde.Model.Problem;
+    ViewData["Title"] = "CREATE TEST CASE";
+}
+
+@await Html.PartialAsync("_Sidebar")
+
+<main class="lg:ml-64 pt-28 px-6 pb-24 min-h-screen">
+    <div class="max-w-xl mx-auto">
+
+        <div class="mb-10">
+            <h1 class="text-5xl font-black uppercase tracking-tighter mb-2"
+                style="font-family:'Space Grotesk',sans-serif;">CREATE TEST CASE</h1>
+            <div class="h-2 w-24 bg-primary border-2 border-black"></div>
+            <nav class="text-xs font-bold uppercase mt-3" style="font-family:'Space Grotesk',sans-serif;">
+                <a asp-controller="Problem" asp-action="Index" class="text-primary hover:underline no-underline">PROBLEMS</a>
+                <span class="mx-2 text-outline">/</span>
+                @if (problem != null)
+                {
+                    <a asp-controller="TestCase" asp-action="Index" asp-route-problemId="@problem.Id"
+                       class="text-primary hover:underline no-underline">TEST CASES</a>
+                    <span class="mx-2 text-outline">/</span>
+                }
+                <span class="text-on-surface-variant">CREATE</span>
+            </nav>
+        </div>
+
+        <div class="border-4 border-black bg-white p-8 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+            <form asp-action="Create" asp-route-problemId="@Model.ProblemId" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ProblemId" />
+
+                <div class="mb-5">
+                    <label asp-for="InputArgs" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">INPUT ARGS *</label>
+                    <textarea asp-for="InputArgs" rows="4"
+                              class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary resize-none"
+                              placeholder="stdin input..."></textarea>
+                    <span asp-validation-for="InputArgs" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="ExpectedOutput" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                           style="font-family:'Space Grotesk',sans-serif;">EXPECTED OUTPUT *</label>
+                    <textarea asp-for="ExpectedOutput" rows="4"
+                              class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary resize-none"
+                              placeholder="expected stdout..."></textarea>
+                    <span asp-validation-for="ExpectedOutput" class="text-xs text-error font-bold mt-1 block"
+                          style="font-family:'Space Grotesk',sans-serif;"></span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-5">
+                    <div>
+                        <label asp-for="OrderIndex" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">ORDER</label>
+                        <input asp-for="OrderIndex" type="number"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                        <span asp-validation-for="OrderIndex" class="text-xs text-error font-bold mt-1 block"
+                              style="font-family:'Space Grotesk',sans-serif;"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Points" class="block text-xs font-bold uppercase tracking-widest mb-1"
+                               style="font-family:'Space Grotesk',sans-serif;">POINTS</label>
+                        <input asp-for="Points" type="number"
+                               class="brutalist-input w-full border-2 border-black px-3 py-2 bg-white text-black font-mono text-sm focus:outline-none focus:border-primary" />
+                        <span asp-validation-for="Points" class="text-xs text-error font-bold mt-1 block"
+                              style="font-family:'Space Grotesk',sans-serif;"></span>
+                    </div>
+                    <div class="flex items-end pb-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input asp-for="IsSample" type="checkbox" class="w-5 h-5 border-2 border-black accent-primary" />
+                            <span class="text-xs font-bold uppercase tracking-widest"
+                                  style="font-family:'Space Grotesk',sans-serif;">SAMPLE</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="submit"
+                            class="bg-primary text-white font-black uppercase px-6 py-2 border-2 border-black
+                                   shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                                   hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm"
+                            style="font-family:'Space Grotesk',sans-serif;">CREATE</button>
+                    @if (problem != null)
+                    {
+                        <a asp-controller="TestCase" asp-action="Index" asp-route-problemId="@problem.Id"
+                           class="bg-white font-black uppercase px-6 py-2 border-2 border-black
+                                  shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                                  hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all text-sm no-underline"
+                           style="font-family:'Space Grotesk',sans-serif;">CANCEL</a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

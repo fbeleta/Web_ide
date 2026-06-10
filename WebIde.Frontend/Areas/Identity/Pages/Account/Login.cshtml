@@ -1,0 +1,51 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <h1 class="mb-4">Log in</h1>
+
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label"></label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" class="form-control" type="password" autocomplete="current-password" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
+        </form>
+
+        @if (Model.ExternalProviders.Any())
+        {
+            <hr />
+            <p class="text-center">Or sign in with</p>
+            <form method="post" asp-page-handler="ExternalLogin">
+                @foreach (var provider in Model.ExternalProviders)
+                {
+                    <button type="submit" name="provider" value="@provider.Name"
+                            class="btn btn-outline-secondary w-100 mb-2">
+                        @provider.DisplayName
+                    </button>
+                }
+            </form>
+        }
+
+        <hr />
+        <p>Don't have an account? <a asp-page="Register">Register</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,122 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  NAMESPACE: ${{ github.repository_owner }}/web_ide
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 1: Capture rollback target BEFORE any push
+      - name: Capture current :latest digest for rollback
+        id: rollback
+        run: |
+          PREV=$(docker buildx imagetools inspect \
+            ghcr.io/${{ env.NAMESPACE }}/app:latest \
+            --format '{{json .Manifest.Digest}}' 2>/dev/null || echo '""')
+          # Strip quotes if present
+          PREV=$(echo "$PREV" | tr -d '"')
+          echo "digest=$PREV" >> "$GITHUB_OUTPUT"
+
+      # Step 2: Build and push :sha-X ONLY (no :latest yet)
+      - name: Build and push app image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.app
+          push: true
+          tags: ghcr.io/${{ env.NAMESPACE }}/app:sha-${{ github.sha }}
+
+      - name: Build and push worker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.worker
+          push: true
+          tags: ghcr.io/${{ env.NAMESPACE }}/worker:sha-${{ github.sha }}
+
+      # Steps 3–6: SSH deploy, migrate, health check, promote or rollback
+      - name: Deploy to Hetzner
+        uses: appleboy/ssh-action@v1
+        env:
+          IMAGE_TAG: sha-${{ github.sha }}
+          PREV_DIGEST: ${{ steps.rollback.outputs.digest }}
+          NAMESPACE: ${{ env.NAMESPACE }}
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: IMAGE_TAG,PREV_DIGEST,NAMESPACE
+          script: |
+            set -euo pipefail
+            cd /opt/webide
+
+            IMAGE_TAG=$IMAGE_TAG docker compose pull webide-app webide-worker
+
+            # Run EF migrations before bringing up the new app
+            docker run --rm \
+              --env-file .env \
+              --network webide_webide-net \
+              ghcr.io/$NAMESPACE/app:$IMAGE_TAG \
+              dotnet ef database update --no-build
+
+            IMAGE_TAG=$IMAGE_TAG docker compose up -d webide-app webide-worker
+
+            # Poll /health/ready for up to 60s
+            SUCCESS=0
+            for i in $(seq 1 30); do
+              if curl -fsS -k https://localhost/health/ready > /dev/null 2>&1; then
+                SUCCESS=1
+                break
+              fi
+              sleep 2
+            done
+
+            if [ "$SUCCESS" -eq 0 ]; then
+              echo "Health check failed — rolling back to $PREV_DIGEST"
+              if [ -n "$PREV_DIGEST" ]; then
+                IMAGE_TAG=$PREV_DIGEST docker compose up -d webide-app webide-worker
+              fi
+              exit 1
+            fi
+
+      # Step 5 (success path): promote :sha-X to :latest
+      - name: Promote :latest
+        if: success()
+        run: |
+          docker buildx imagetools create \
+            --tag ghcr.io/${{ env.NAMESPACE }}/app:latest \
+            ghcr.io/${{ env.NAMESPACE }}/app:sha-${{ github.sha }}
+          docker buildx imagetools create \
+            --tag ghcr.io/${{ env.NAMESPACE }}/worker:latest \
+            ghcr.io/${{ env.NAMESPACE }}/worker:sha-${{ github.sha }}
+
+      - name: Prune old images on server
+        if: success()
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: docker image prune -f

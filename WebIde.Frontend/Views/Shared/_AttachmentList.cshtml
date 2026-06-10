@@ -1,0 +1,57 @@
+@model List<WebIde.Model.Attachment>
+@Html.AntiForgeryToken()
+
+@if (!Model.Any())
+{
+    <p class="text-sm text-gray-400 mt-2">No attachments yet.</p>
+}
+else
+{
+    <table class="w-full border-2 border-black text-sm mt-2">
+        <thead class="bg-black text-white">
+            <tr>
+                <th class="px-3 py-2 text-left font-bold uppercase" style="font-family:'Space Grotesk',sans-serif;">File</th>
+                <th class="px-3 py-2 text-right font-bold uppercase" style="font-family:'Space Grotesk',sans-serif;">Size</th>
+                <th class="px-3 py-2 text-center font-bold uppercase" style="font-family:'Space Grotesk',sans-serif;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr class="border-t-2 border-black">
+                    <td class="px-3 py-2">
+                        <a href="/uploads/problems/@a.ProblemId/@a.StoredFileName" target="_blank"
+                           class="font-mono text-blue-700 hover:underline">@a.FileName</a>
+                    </td>
+                    <td class="px-3 py-2 text-right font-mono">@(a.FileSize / 1024) KB</td>
+                    <td class="px-3 py-2 text-center">
+                        <button type="button"
+                                onclick="deleteAttachment(@a.ProblemId, @a.Id)"
+                                class="bg-red-600 text-white font-bold uppercase px-3 py-1 text-xs
+                                       border border-red-700 hover:bg-red-700 transition-none cursor-pointer">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    function deleteAttachment(problemId, attachmentId) {
+        if (!confirm('Delete this attachment?')) return;
+        fetch('/problems/' + problemId + '/attachments/' + attachmentId + '/delete', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        }).then(() => {
+            fetch('/problems/' + problemId + '/attachments')
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById('attachment-list').innerHTML = html;
+                });
+        });
+    }
+</script>
