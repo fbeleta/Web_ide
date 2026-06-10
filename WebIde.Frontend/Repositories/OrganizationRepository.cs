@@ -33,6 +33,17 @@ public class OrganizationRepository
 
     public void Add(Organization org) { _db.Organizations.Add(org); _db.SaveChanges(); }
 
+    public bool AddMember(int orgId, int userId)
+    {
+        var org = _db.Organizations.Include(o => o.Members).FirstOrDefault(o => o.Id == orgId);
+        var user = _db.DomainUsers.Find(userId);
+        if (org is null || user is null) return false;
+        if (org.Members.Any(m => m.Id == userId)) return false;
+        org.Members.Add(user);
+        _db.SaveChanges();
+        return true;
+    }
+
     public void Update() => _db.SaveChanges();
 
     public void SoftDelete(int id)

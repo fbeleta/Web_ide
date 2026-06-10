@@ -32,6 +32,7 @@ public class SubmissionController : Controller
     }
 
     [Route("")]
+    [Authorize]
     public IActionResult Index(string? sort)
     {
         var submissions = _repo.GetAll();
@@ -51,6 +52,7 @@ public class SubmissionController : Controller
     }
 
     [Route("{id:int}")]
+    [Authorize]
     public IActionResult Details(int id)
     {
         var submission = _repo.GetById(id);
@@ -103,6 +105,7 @@ public class SubmissionController : Controller
 
     [Route("create")]
     [HttpGet]
+    [Authorize]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE SUBMISSION";
@@ -111,6 +114,7 @@ public class SubmissionController : Controller
 
     [Route("create")]
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public IActionResult CreateAdmin(SubmissionCreateModel model)
     {
@@ -144,6 +148,7 @@ public class SubmissionController : Controller
 
     [Route("{id:int}/edit")]
     [HttpGet, ActionName("Edit")]
+    [Authorize]
     public IActionResult EditGet(int id)
     {
         var s = _repo.GetById(id);
@@ -168,6 +173,7 @@ public class SubmissionController : Controller
 
     [Route("{id:int}/edit")]
     [HttpPost, ActionName("Edit")]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public IActionResult EditPost(int id, SubmissionEditModel model)
     {
@@ -195,6 +201,7 @@ public class SubmissionController : Controller
 
     [Route("{id:int}/delete")]
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public IActionResult Delete(int id)
     {

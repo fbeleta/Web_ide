@@ -63,10 +63,15 @@ builder.Services.AddScoped<ExecutionResultRepository>();
 // AddAuthentication configures the default scheme (GitHub cookie).
 // We use AddIdentityCore (not AddDefaultIdentity) so Identity does NOT override
 // the DefaultScheme — that would break the existing GitHub OAuth flow.
-builder.Services.AddAuthentication(options =>
+var githubClientId = config["GitHub:ClientId"] ?? "";
+var googleClientId = config["Google:ClientId"] ?? "";
+
+var authBuilder = builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme          = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GitHubAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = string.IsNullOrEmpty(githubClientId)
+        ? CookieAuthenticationDefaults.AuthenticationScheme
+        : GitHubAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
 {
@@ -79,34 +84,6 @@ builder.Services.AddAuthentication(options =>
     options.SlidingExpiration  = true;
     options.LoginPath          = "/auth/github/login";
     options.LogoutPath         = "/auth/logout";
-})
-.AddGitHub(options =>
-{
-    options.ClientId     = config["GitHub:ClientId"] ?? "";
-    options.ClientSecret = config["GitHub:ClientSecret"] ?? "";
-    options.CallbackPath = "/auth/github/callback";
-    options.Scope.Add("user:email");
-
-    options.Events.OnCreatingTicket = async ctx =>
-    {
-        var githubId    = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
-        var username    = ctx.Principal.FindFirstValue(ClaimTypes.Name) ?? githubId;
-        var displayName = ctx.Principal.FindFirstValue("urn:github:name")
-                       ?? ctx.Principal.FindFirstValue(ClaimTypes.Name)
-                       ?? username;
-        var email       = ctx.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
-        var avatarUrl   = ctx.Principal.FindFirstValue("urn:github:avatar_url") ?? "";
-
-        await using var scope   = ctx.HttpContext.RequestServices.CreateAsyncScope();
-        var userRepo            = scope.ServiceProvider.GetRequiredService<UserRepository>();
-        var user                = await userRepo.UpsertGitHubUserAsync(githubId, username, displayName, email, avatarUrl);
-
-        var identity = new ClaimsIdentity();
-        identity.AddClaim(new Claim("webide:userId",      user.Id.ToString()));
-        identity.AddClaim(new Claim("webide:avatarUrl",   user.AvatarUrl ?? ""));
-        identity.AddClaim(new Claim("webide:displayName", user.DisplayName));
-        ctx.Principal!.AddIdentity(identity);
-    };
 })
 // ── Identity cookies (ApplicationScheme, ExternalScheme, 2FA) ─────────────────
 // These three are required by SignInManager. They coexist with the GitHub
@@ -124,13 +101,49 @@ builder.Services.AddAuthentication(options =>
     options.LogoutPath         = "/Identity/Account/Logout";
 })
 .AddCookie(IdentityConstants.ExternalScheme)
-.AddCookie(IdentityConstants.TwoFactorUserIdScheme)
-.AddGoogle(options =>
+.AddCookie(IdentityConstants.TwoFactorUserIdScheme);
+
+if (!string.IsNullOrEmpty(githubClientId))
 {
-    options.ClientId     = config["Google:ClientId"] ?? "";
-    options.ClientSecret = config["Google:ClientSecret"] ?? "";
-    options.SignInScheme  = IdentityConstants.ExternalScheme;
-});
+    authBuilder.AddGitHub(options =>
+    {
+        options.ClientId     = githubClientId;
+        options.ClientSecret = config["GitHub:ClientSecret"] ?? "";
+        options.CallbackPath = "/auth/github/callback";
+        options.Scope.Add("user:email");
+
+        options.Events.OnCreatingTicket = async ctx =>
+        {
+            var ghId        = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+            var username    = ctx.Principal.FindFirstValue(ClaimTypes.Name) ?? ghId;
+            var displayName = ctx.Principal.FindFirstValue("urn:github:name")
+                           ?? ctx.Principal.FindFirstValue(ClaimTypes.Name)
+                           ?? username;
+            var email       = ctx.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
+            var avatarUrl   = ctx.Principal.FindFirstValue("urn:github:avatar_url") ?? "";
+
+            await using var scope   = ctx.HttpContext.RequestServices.CreateAsyncScope();
+            var userRepo            = scope.ServiceProvider.GetRequiredService<UserRepository>();
+            var user                = await userRepo.UpsertGitHubUserAsync(ghId, username, displayName, email, avatarUrl);
+
+            var identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim("webide:userId",      user.Id.ToString()));
+            identity.AddClaim(new Claim("webide:avatarUrl",   user.AvatarUrl ?? ""));
+            identity.AddClaim(new Claim("webide:displayName", user.DisplayName));
+            ctx.Principal!.AddIdentity(identity);
+        };
+    });
+}
+
+if (!string.IsNullOrEmpty(googleClientId))
+{
+    authBuilder.AddGoogle(options =>
+    {
+        options.ClientId     = googleClientId;
+        options.ClientSecret = config["Google:ClientSecret"] ?? "";
+        options.SignInScheme  = IdentityConstants.ExternalScheme;
+    });
+}
 
 // ── Identity — services only (no AddAuthentication override) ──────────────────
 builder.Services.AddIdentityCore<AppUser>(options =>
@@ -172,6 +185,9 @@ builder.Services.AddRateLimiter(o =>
 
 // ── Antiforgery ───────────────────────────────────────────────────────────────
 builder.Services.AddAntiforgery();
+
+// ── Background services ───────────────────────────────────────────────────────
+builder.Services.AddHostedService<RedisSubscriptionService>();
 
 // ── Health checks ─────────────────────────────────────────────────────────────
 builder.Services.AddHealthChecks()

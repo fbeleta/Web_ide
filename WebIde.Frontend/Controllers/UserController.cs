@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -61,6 +62,7 @@ public class UserController : Controller
 
     [Route("{id:int}/edit")]
     [HttpGet, ActionName("Edit")]
+    [Authorize]
     public IActionResult EditGet(int id)
     {
         var user = _repo.GetById(id);
@@ -79,6 +81,7 @@ public class UserController : Controller
 
     [Route("{id:int}/edit")]
     [HttpPost, ActionName("Edit")]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public IActionResult EditPost(int id, UserEditModel model)
     {
@@ -101,6 +104,7 @@ public class UserController : Controller
 
     [Route("{id:int}/delete")]
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public IActionResult Delete(int id)
     {
