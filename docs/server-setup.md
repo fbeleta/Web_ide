@@ -526,7 +526,7 @@ docker system df
 | Run migrations | Step 8 above | |
 | Start stack | Step 9 above | |
 | Add GitHub secrets for CI/CD | Step 10 above | |
-| Implement Phase 5 CI/CD workflows | Future work | `.github/workflows/deploy.yml` |
+| Implement Phase 5 CI/CD workflows | ✅ Done | `ci.yml`, `deploy.yml`, `sandbox.yml` in `.github/workflows/` |
 | Implement Phase 2 Worker service | Future work | Code execution pipeline |
 | Choose + configure backup offsite target | Future work | Hetzner Storage Box / B2 / S3 |
 | Quarterly backup restore drill | Ongoing | See `deployment-handoff.md §11c` |
