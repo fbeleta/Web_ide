@@ -9,7 +9,7 @@
 #   bash scripts/server-init.sh
 #
 # Requires:
-#   - .env exists and contains WEBIDE_DB_PASSWORD
+#   - .env exists and contains POSTGRES_PASSWORD
 #   - docker and docker compose are installed
 #   - Port 443 is already set up (nginx / certbot)
 
@@ -29,7 +29,7 @@ die()   { echo -e "${RED}[error] $*${NC}"; exit 1; }
 [[ -f .env ]] || die ".env not found. Copy .env.template and fill in secrets first."
 # shellcheck disable=SC1091
 set -a; source .env; set +a
-[[ -n "${WEBIDE_DB_PASSWORD:-}" ]] || die "WEBIDE_DB_PASSWORD is not set in .env"
+[[ -n "${POSTGRES_PASSWORD:-}" ]] || die "POSTGRES_PASSWORD is not set in .env"
 
 # ── Step 1: Build sandbox images ──────────────────────────────────────────────
 step "Building sandbox images..."
@@ -61,7 +61,7 @@ done
 echo "  postgres is ready."
 
 step "Running EF migrations..."
-CONN_STR="Host=postgres;Port=5432;Database=webide;Username=webide;Password=${WEBIDE_DB_PASSWORD}"
+CONN_STR="Host=postgres;Port=5432;Database=webide;Username=webide;Password=${POSTGRES_PASSWORD}"
 # Determine the docker network name (project name prefix varies by compose version)
 NETWORK=$(docker network ls --format '{{.Name}}' | grep -E 'webide.webide-net|webide_webide-net' | head -1)
 [[ -n "$NETWORK" ]] || die "Could not find webide network. Is docker compose up for postgres/redis?"
