@@ -390,7 +390,6 @@ namespace WebIde.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("WebIde.Model.Submission", b =>
@@ -411,11 +410,8 @@ namespace WebIde.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ExecutionResult");
 
-                    b.Navigation("Problem");
 
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebIde.Model.TestCase", b =>
@@ -426,30 +422,17 @@ namespace WebIde.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Problem");
-                });
-
-            modelBuilder.Entity("WebIde.Model.Organization", b =>
-                {
-                    b.Navigation("Members");
-
-                    b.Navigation("ProblemSets");
                 });
 
             modelBuilder.Entity("WebIde.Model.Problem", b =>
                 {
-                    b.Navigation("Submissions");
 
-                    b.Navigation("Tags");
 
-                    b.Navigation("TestCases");
                 });
 
             modelBuilder.Entity("WebIde.Model.User", b =>
                 {
-                    b.Navigation("Organizations");
 
-                    b.Navigation("Submissions");
                 });
 #pragma warning restore 612, 618
         }

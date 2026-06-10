@@ -424,6 +424,9 @@ namespace WebIde.DAL.Migrations
                     b.Property<bool>("MemoryExceeded")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("PeakMemoryKb")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Stderr")
                         .IsRequired()
                         .HasColumnType("text");
@@ -432,10 +435,24 @@ namespace WebIde.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("SubmissionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TestCaseId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("TimedOut")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Verdict")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WallTimeMs")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TestCaseId");
 
                     b.ToTable("ExecutionResults");
 
@@ -445,72 +462,112 @@ namespace WebIde.DAL.Migrations
                             Id = 1,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "[0,1]",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 2,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "3",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 3,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "2.0",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 4,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "[0,1]",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 5,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "",
-                            TimedOut = true
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = true,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 6,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "2.5",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 7,
                             ExitCode = 0,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "[0,1]",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         },
                         new
                         {
                             Id = 8,
                             ExitCode = 1,
                             MemoryExceeded = false,
+                            PeakMemoryKb = 0,
                             Stderr = "",
                             Stdout = "",
-                            TimedOut = false
+                            SubmissionId = 0,
+                            TestCaseId = 0,
+                            TimedOut = false,
+                            Verdict = 0,
+                            WallTimeMs = 0
                         });
                 });
 
@@ -767,7 +824,8 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExecutionResultId");
+                    b.HasIndex("ExecutionResultId")
+                        .IsUnique();
 
                     b.HasIndex("ProblemId");
 
@@ -1160,6 +1218,44 @@ namespace WebIde.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DomainUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DisplayName = "Ana Kovač",
+                            Email = "ana@example.com",
+                            RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Role = 2,
+                            Username = "ana_k"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DisplayName = "Mario Blažić",
+                            Email = "mario@example.com",
+                            RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Role = 2,
+                            Username = "mario_b"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DisplayName = "Prof. Horvat",
+                            Email = "prof@example.com",
+                            RegisteredAt = new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Role = 1,
+                            Username = "prof_hr"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DisplayName = "Admin",
+                            Email = "admin@webide.io",
+                            RegisteredAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Role = 0,
+                            Username = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1269,6 +1365,17 @@ namespace WebIde.DAL.Migrations
                     b.Navigation("Problem");
                 });
 
+            modelBuilder.Entity("WebIde.Model.ExecutionResult", b =>
+                {
+                    b.HasOne("WebIde.Model.TestCase", "TestCase")
+                        .WithMany()
+                        .HasForeignKey("TestCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestCase");
+                });
+
             modelBuilder.Entity("WebIde.Model.ProblemSet", b =>
                 {
                     b.HasOne("WebIde.Model.Organization", "Organization")
@@ -1283,8 +1390,8 @@ namespace WebIde.DAL.Migrations
             modelBuilder.Entity("WebIde.Model.Submission", b =>
                 {
                     b.HasOne("WebIde.Model.ExecutionResult", "ExecutionResult")
-                        .WithMany()
-                        .HasForeignKey("ExecutionResultId");
+                        .WithOne("Submission")
+                        .HasForeignKey("WebIde.Model.Submission", "ExecutionResultId");
 
                     b.HasOne("WebIde.Model.Problem", "Problem")
                         .WithMany("Submissions")
@@ -1314,6 +1421,12 @@ namespace WebIde.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Problem");
+                });
+
+            modelBuilder.Entity("WebIde.Model.ExecutionResult", b =>
+                {
+                    b.Navigation("Submission")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebIde.Model.Organization", b =>

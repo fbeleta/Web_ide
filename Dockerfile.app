@@ -55,7 +55,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
 # Non-root user for defense-in-depth
-RUN adduser --disabled-password --gecos "" appuser
+RUN useradd -r -s /bin/false appuser
 USER appuser
 
 COPY --from=build /app/publish .

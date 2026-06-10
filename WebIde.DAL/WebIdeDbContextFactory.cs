@@ -9,7 +9,7 @@ public class WebIdeDbContextFactory : IDesignTimeDbContextFactory<WebIdeDbContex
     {
         var options = new DbContextOptionsBuilder<WebIdeDbContext>()
             .UseNpgsql(
-                "Host=localhost;Port=5432;Database=webide;Username=postgres;Password=postgres",
+                "Host=postgres;Port=5432;Database=webide;Username=webide;Password=ch2excrkZC7UgO5VMXINuTVT5UEh/lbS7bu/aLE5JnI=",
                 o => o.MigrationsAssembly("WebIde.DAL"))
             .Options;
 
