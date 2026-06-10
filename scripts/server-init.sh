@@ -66,6 +66,8 @@ CONN_STR="Host=postgres;Port=5432;Database=webide;Username=webide;Password=${POS
 NETWORK=$(docker network ls --format '{{.Name}}' | grep -E 'webide.webide-net|webide_webide-net' | head -1)
 [[ -n "$NETWORK" ]] || die "Could not find webide network. Is docker compose up for postgres/redis?"
 
+# Build + migrate in a single SDK container run. No --no-build: the source
+# directory has no pre-compiled artifacts, so we must build first.
 docker run --rm \
   --network "$NETWORK" \
   -v "$(pwd):/src" -w /src \
@@ -73,8 +75,7 @@ docker run --rm \
   mcr.microsoft.com/dotnet/sdk:10.0 \
   bash -c "dotnet tool restore && dotnet ef database update \
     --project WebIde.DAL/WebIde.DAL.csproj \
-    --startup-project WebIde.Frontend/WebIde.Frontend.csproj \
-    --no-build"
+    --startup-project WebIde.Frontend/WebIde.Frontend.csproj"
 
 # ── Step 3: Start full stack ──────────────────────────────────────────────────
 step "Starting full stack..."
