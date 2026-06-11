@@ -1,3 +1,4 @@
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -10,6 +11,11 @@ namespace WebIde.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Recreate as unique (one submission → one summary execution result)
+            migrationBuilder.DropIndex(
+                name: "IX_Submissions_ExecutionResultId",
+                table: "Submissions");
+
             migrationBuilder.AddColumn<int>(
                 name: "PeakMemoryKb",
                 table: "ExecutionResults",
@@ -46,14 +52,36 @@ namespace WebIde.DAL.Migrations
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Submissions_ExecutionResultId",
+                table: "Submissions",
+                column: "ExecutionResultId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ExecutionResults_TestCaseId",
                 table: "ExecutionResults",
                 column: "TestCaseId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ExecutionResults_TestCases_TestCaseId",
+                table: "ExecutionResults",
+                column: "TestCaseId",
+                principalTable: "TestCases",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_ExecutionResults_TestCases_TestCaseId",
+                table: "ExecutionResults");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Submissions_ExecutionResultId",
+                table: "Submissions");
+
             migrationBuilder.DropIndex(
                 name: "IX_ExecutionResults_TestCaseId",
                 table: "ExecutionResults");
@@ -77,6 +105,11 @@ namespace WebIde.DAL.Migrations
             migrationBuilder.DropColumn(
                 name: "WallTimeMs",
                 table: "ExecutionResults");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Submissions_ExecutionResultId",
+                table: "Submissions",
+                column: "ExecutionResultId");
         }
     }
 }

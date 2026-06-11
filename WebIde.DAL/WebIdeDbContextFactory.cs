@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace WebIde.DAL;
 
@@ -8,10 +9,11 @@ public class WebIdeDbContextFactory : IDesignTimeDbContextFactory<WebIdeDbContex
     public WebIdeDbContext CreateDbContext(string[] args)
     {
         var connStr = Environment.GetEnvironmentVariable("ConnectionStrings__WebIdeDb")
-                      ?? "Host=localhost;Port=5432;Database=webide;Username=postgres;Password=postgres";
+                      ?? "Host=localhost;Port=5432;Database=webide;Username=webide;Password=webide_dev";
 
         var options = new DbContextOptionsBuilder<WebIdeDbContext>()
             .UseNpgsql(connStr, o => o.MigrationsAssembly("WebIde.DAL"))
+            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
         return new WebIdeDbContext(options);

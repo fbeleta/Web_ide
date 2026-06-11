@@ -1,0 +1,46 @@
+name: webide-dev
+
+# Local dev: starts only redis. Postgres is assumed to be running locally on port 5432.
+# If you don't have a local postgres, uncomment the postgres service below.
+# Credentials match appsettings.Development.json defaults.
+
+networks:
+  webide-dev-net:
+    driver: bridge
+
+volumes:
+  redis-dev-data:
+
+  # Uncomment if you don't have a local postgres:
+  # postgres-dev-data:
+
+services:
+  # Uncomment if you don't have a local postgres running on 5432:
+  # postgres:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: webide
+  #     POSTGRES_DB: webide
+  #     POSTGRES_PASSWORD: webide_dev
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-dev-data:/var/lib/postgresql/data
+  #   networks:
+  #     - webide-dev-net
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U webide"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+
+  redis:
+    image: redis:7-alpine
+    # No password — matches Redis:ConnectionString = "localhost:6379" in appsettings.Development.json
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-dev-data:/data
+    networks:
+      - webide-dev-net
