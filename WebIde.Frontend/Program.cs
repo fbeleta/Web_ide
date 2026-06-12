@@ -39,7 +39,8 @@ builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(sp =>
             sp.GetRequiredService<IConnectionMultiplexer>())));
 
 // ── MVC + SignalR + Razor Pages ───────────────────────────────────────────────
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter()));
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString);
 

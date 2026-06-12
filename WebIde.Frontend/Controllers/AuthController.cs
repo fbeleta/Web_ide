@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -8,6 +9,7 @@ namespace WebIde.Web.Controllers;
 
 [Route("auth")]
 [EnableRateLimiting("auth")]
+[AllowAnonymous]
 public class AuthController : Controller
 {
     [HttpGet("github/login")]
