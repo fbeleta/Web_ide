@@ -306,7 +306,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasIndex("ProblemId");
 
-                    b.ToTable("Attachments");
+                    b.ToTable("Attachments", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.ExecutionResult", b =>
@@ -353,7 +353,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasIndex("TestCaseId");
 
-                    b.ToTable("ExecutionResults");
+                    b.ToTable("ExecutionResults", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.Organization", b =>
@@ -377,7 +377,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.Problem", b =>
@@ -420,7 +420,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Problems");
+                    b.ToTable("Problems", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.ProblemSet", b =>
@@ -458,7 +458,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("ProblemSets");
+                    b.ToTable("ProblemSets", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.Submission", b =>
@@ -513,7 +513,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Submissions");
+                    b.ToTable("Submissions", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.Tag", b =>
@@ -533,7 +533,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.TestCase", b =>
@@ -571,7 +571,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasIndex("ProblemId");
 
-                    b.ToTable("TestCases");
+                    b.ToTable("TestCases", (string)null);
                 });
 
             modelBuilder.Entity("WebIde.Model.User", b =>
@@ -611,7 +611,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DomainUsers");
+                    b.ToTable("DomainUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

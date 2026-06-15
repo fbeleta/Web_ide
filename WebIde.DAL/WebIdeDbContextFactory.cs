@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace WebIde.DAL;
 
@@ -13,7 +12,6 @@ public class WebIdeDbContextFactory : IDesignTimeDbContextFactory<WebIdeDbContex
 
         var options = new DbContextOptionsBuilder<WebIdeDbContext>()
             .UseNpgsql(connStr, o => o.MigrationsAssembly("WebIde.DAL"))
-            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
         return new WebIdeDbContext(options);

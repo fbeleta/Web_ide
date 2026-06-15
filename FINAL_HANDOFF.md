@@ -117,39 +117,16 @@ Wrap `.AddGitHub(...)` and `.AddGoogle(...)` blocks with `if (!string.IsNullOrEm
 
 ---
 
-### 6. Add Missing EF Migration for ExecutionResults Columns
+### 6. ~~Add Missing EF Migration for ExecutionResults Columns~~ — DONE
 
-The columns `PeakMemoryKb`, `SubmissionId`, `TestCaseId`, `Verdict`, `WallTimeMs` were added to the DB manually via `psql`. A proper migration file is missing, so `dotnet ef database update` thinks the DB is up to date but the migration history is incomplete.
+**Resolved.** The migration chain was squashed to a single clean baseline
+(`WebIde.DAL/Migrations/*_InitialCreate.cs`) generated from the model. It now includes the
+`ExecutionResults` columns (`PeakMemoryKb`, `SubmissionId`, `TestCaseId`, `Verdict`, `WallTimeMs`),
+the `Problems.FloatTolerance` column, and the ASP.NET Identity tables — with **no seed data**.
 
-Create `WebIde.DAL/Migrations/20260611000000_AddExecutionResultColumns.cs`:
-```csharp
-public partial class AddExecutionResultColumns : Migration
-{
-    protected override void Up(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.AddColumn<int>("PeakMemoryKb", "ExecutionResults", nullable: false, defaultValue: 0);
-        migrationBuilder.AddColumn<int>("SubmissionId",  "ExecutionResults", nullable: false, defaultValue: 0);
-        migrationBuilder.AddColumn<int>("TestCaseId",    "ExecutionResults", nullable: false, defaultValue: 0);
-        migrationBuilder.AddColumn<int>("Verdict",       "ExecutionResults", nullable: false, defaultValue: 0);
-        migrationBuilder.AddColumn<int>("WallTimeMs",    "ExecutionResults", nullable: false, defaultValue: 0);
-        migrationBuilder.CreateIndex("IX_ExecutionResults_TestCaseId", "ExecutionResults", "TestCaseId");
-    }
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.DropIndex("IX_ExecutionResults_TestCaseId", "ExecutionResults");
-        migrationBuilder.DropColumn("PeakMemoryKb", "ExecutionResults");
-        migrationBuilder.DropColumn("SubmissionId",  "ExecutionResults");
-        migrationBuilder.DropColumn("TestCaseId",    "ExecutionResults");
-        migrationBuilder.DropColumn("Verdict",       "ExecutionResults");
-        migrationBuilder.DropColumn("WallTimeMs",    "ExecutionResults");
-    }
-}
-```
-Insert a row into `__EFMigrationsHistory` on the server so EF doesn't try to re-apply it:
-```bash
-docker compose exec postgres psql -U webide -d webide -c \
-  "INSERT INTO \"__EFMigrationsHistory\" VALUES ('20260611000000_AddExecutionResultColumns', '9.0.16');"
-```
+Do **not** add columns via `psql` or hand-insert `__EFMigrationsHistory` rows anymore. A fresh
+`dotnet ef database update` (or `scripts/server-init.sh`) produces the correct schema with no
+manual steps.
 
 ---
 

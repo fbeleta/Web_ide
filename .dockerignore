@@ -1,0 +1,38 @@
+# Keep build context small and prevent secrets/artifacts from being baked into images.
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Secrets / environment
+.env
+.env.*
+!.env.template
+certs/
+*.key
+*.pem
+*.crt
+
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# Node / frontend tooling
+**/node_modules/
+tailwind/node_modules/
+dist/
+.vite/
+
+# IDE / OS
+.vs/
+.idea/
+*.user
+.DS_Store
+
+# Docs, plans, local-only files
+docs/
+*.md
+plans/

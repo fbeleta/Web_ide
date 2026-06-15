@@ -40,15 +40,7 @@ dotnet tool run dotnet-ef database update \
   --startup-project WebIde.Frontend/WebIde.Frontend.csproj
 ```
 
-### 4. Add FloatTolerance column (one-time fix)
-
-This column was lost during a migration cleanup and must be added manually:
-
-```bash
-psql -U webide webide -c 'ALTER TABLE "Problems" ADD COLUMN IF NOT EXISTS "FloatTolerance" double precision;'
-```
-
-### 5. Run the app
+### 4. Run the app
 
 ```bash
 ASPNETCORE_ENVIRONMENT=Development dotnet run --project WebIde.Frontend/WebIde.Frontend.csproj

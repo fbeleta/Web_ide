@@ -18,6 +18,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Build a self-contained EF migration bundle from THIS commit so the
+      # schema applied on the server always matches the image being deployed.
+      # (The runtime app image has no SDK / dotnet-ef, so it cannot migrate itself.)
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build EF migration bundle
+        run: |
+          dotnet tool restore
+          dotnet ef migrations bundle --force --self-contained -r linux-x64 \
+            --project WebIde.DAL/WebIde.DAL.csproj \
+            --startup-project WebIde.Frontend/WebIde.Frontend.csproj \
+            -o efbundle
+
       - name: Log in to ghcr.io
         uses: docker/login-action@v3
         with:
@@ -56,6 +72,16 @@ jobs:
           push: true
           tags: ghcr.io/${{ env.NAMESPACE }}/worker:sha-${{ github.sha }}
 
+      # Ship the migration bundle to the server before the deploy script runs it.
+      - name: Copy migration bundle to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          source: efbundle
+          target: /opt/webide
+
       # Steps 3–6: SSH deploy, migrate, health check, promote or rollback
       - name: Deploy to Hetzner
         uses: appleboy/ssh-action@v1
@@ -74,12 +100,17 @@ jobs:
 
             IMAGE_TAG=$IMAGE_TAG docker compose pull webide-app webide-worker
 
-            # Run EF migrations before bringing up the new app
+            # Run EF migrations before bringing up the new app, using the
+            # self-contained bundle shipped from CI. It runs inside the webide
+            # network so it can reach postgres by hostname; runtime-deps supplies
+            # the native libs the self-contained binary needs (no SDK required).
+            set -a; . ./.env; set +a
+            chmod +x efbundle
             docker run --rm \
-              --env-file .env \
               --network webide_webide-net \
-              ghcr.io/$NAMESPACE/app:$IMAGE_TAG \
-              dotnet ef database update --no-build
+              -v /opt/webide/efbundle:/efbundle:ro \
+              mcr.microsoft.com/dotnet/runtime-deps:10.0 \
+              /efbundle --connection "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
 
             IMAGE_TAG=$IMAGE_TAG docker compose up -d webide-app webide-worker
 

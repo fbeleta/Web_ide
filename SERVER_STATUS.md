@@ -1,5 +1,13 @@
 # Server Status — pick up here tomorrow
 
+> **UPDATE (2026-06-15): The migration chain has been fixed.** The migrations were squashed to a
+> single clean `InitialCreate` baseline (includes `FloatTolerance`, the `ExecutionResults`
+> columns, and Identity tables; no seed data). The manual `psql` column fixes and
+> `__EFMigrationsHistory` inserts described below are **obsolete** — do not run them. For a clean
+> server, just run `bash scripts/server-init.sh` (wipes the DB and applies the single migration).
+> The CI deploy now ships a self-contained EF migration bundle instead of running `dotnet ef`
+> inside the runtime image. The text below is kept for historical context only.
+
 **Date:** 2026-06-11  
 **Branch:** server-fixes (pushed, up to date)  
 **Site:** https://zetesis.cc

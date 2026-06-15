@@ -58,9 +58,7 @@ services:
       dockerfile: Dockerfile.app
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
-      ConnectionStrings__WebIdeDb: >-
-        Host=postgres;Port=5432;Database=${POSTGRES_DB};
-        Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__WebIdeDb: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
       GitHub__ClientId:     ${GITHUB_CLIENT_ID}
       GitHub__ClientSecret: ${GITHUB_CLIENT_SECRET}
@@ -96,9 +94,7 @@ services:
     user: "${DEPLOY_UID:-1000}:${DEPLOY_GID:-1000}"
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
-      ConnectionStrings__WebIdeDb: >-
-        Host=postgres;Port=5432;Database=${POSTGRES_DB};
-        Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__WebIdeDb: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
       Worker__MaxConcurrentSandboxes: ${WORKER__MAXCONCURRENTSANDBOXES:-2}
       Worker__SandboxMemMb:           ${WORKER__SANDBOXMEMMB:-512}

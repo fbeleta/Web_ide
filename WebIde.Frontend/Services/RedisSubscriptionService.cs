@@ -11,33 +11,47 @@ public sealed class RedisSubscriptionService(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var subscriber = redis.GetSubscriber();
+        // A failure here must not bring down the whole web host: BackgroundService
+        // exceptions default to StopHost, so a transient Redis hiccup at startup
+        // would otherwise crash the app. Log and exit the loop instead.
+        ISubscriber? subscriber = null;
+        try
+        {
+            subscriber = redis.GetSubscriber();
 
-        await subscriber.SubscribeAsync(
-            RedisChannel.Pattern("execution:*"),
-            async (channel, message) =>
-            {
-                var channelStr = channel.ToString();
-                // channel format: "execution:{submissionId}"
-                var parts = channelStr.Split(':');
-                if (parts.Length != 2 || string.IsNullOrEmpty(message))
-                    return;
-
-                var submissionId = parts[1];
-                try
+            await subscriber.SubscribeAsync(
+                RedisChannel.Pattern("execution:*"),
+                async (channel, message) =>
                 {
-                    await hubContext.Clients
-                        .Group($"submission:{submissionId}")
-                        .SendAsync("result", message.ToString(), stoppingToken);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Failed to forward result for submission {SubmissionId}", submissionId);
-                }
-            });
+                    var channelStr = channel.ToString();
+                    // channel format: "execution:{submissionId}"
+                    var parts = channelStr.Split(':');
+                    if (parts.Length != 2 || string.IsNullOrEmpty(message))
+                        return;
 
-        await Task.Delay(Timeout.Infinite, stoppingToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+                    var submissionId = parts[1];
+                    try
+                    {
+                        await hubContext.Clients
+                            .Group($"submission:{submissionId}")
+                            .SendAsync("result", message.ToString(), stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failed to forward result for submission {SubmissionId}", submissionId);
+                    }
+                });
 
-        await subscriber.UnsubscribeAsync(RedisChannel.Pattern("execution:*"));
+            await Task.Delay(Timeout.Infinite, stoppingToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "RedisSubscriptionService stopped: could not subscribe to execution channel.");
+        }
+        finally
+        {
+            if (subscriber is not null)
+                await subscriber.UnsubscribeAsync(RedisChannel.Pattern("execution:*"));
+        }
     }
 }

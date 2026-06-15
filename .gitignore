@@ -35,6 +35,12 @@ WebIde.Frontend/wwwroot/css/site.tailwind.css
 # nginx htpasswd (generated on server, never committed)
 nginx/htpasswd
 
+# TLS certs / private keys — provisioned out-of-band, never committed
+certs/
+*.key
+*.pem
+*.crt
+
 # npm
 tailwind/node_modules/
 tailwind/package-lock.json

@@ -65,6 +65,23 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 .Returns(1);
             redisMock.Setup(r => r.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
                 .Returns(dbMock.Object);
+
+            // RedisSubscriptionService (a hosted BackgroundService) calls GetSubscriber()
+            // on startup; without this it returns null and the host is torn down.
+            var subscriberMock = new Mock<ISubscriber>();
+            subscriberMock.Setup(s => s.SubscribeAsync(
+                    It.IsAny<RedisChannel>(),
+                    It.IsAny<Action<RedisChannel, RedisValue>>(),
+                    It.IsAny<CommandFlags>()))
+                .Returns(Task.CompletedTask);
+            subscriberMock.Setup(s => s.UnsubscribeAsync(
+                    It.IsAny<RedisChannel>(),
+                    It.IsAny<Action<RedisChannel, RedisValue>>(),
+                    It.IsAny<CommandFlags>()))
+                .Returns(Task.CompletedTask);
+            redisMock.Setup(r => r.GetSubscriber(It.IsAny<object>()))
+                .Returns(subscriberMock.Object);
+
             services.AddSingleton<IConnectionMultiplexer>(redisMock.Object);
 
             // ── Authentication → TestAuthHandler ─────────────────────────────────
