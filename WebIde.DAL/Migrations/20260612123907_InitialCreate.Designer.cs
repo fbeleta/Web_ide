@@ -12,18 +12,150 @@ using WebIde.DAL;
 namespace WebIde.DAL.Migrations
 {
     [DbContext(typeof(WebIdeDbContext))]
-    [Migration("20260522074523_SyncModel")]
-    partial class SyncModel
+    [Migration("20260612123907_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.16")
+                .HasAnnotation("ProductVersion", "9.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
 
             modelBuilder.Entity("OrganizationUser", b =>
                 {
@@ -171,6 +303,116 @@ namespace WebIde.DAL.Migrations
                         });
                 });
 
+            modelBuilder.Entity("WebIde.DAL.AppUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JMBG")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("OIB")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("WebIde.Model.Attachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ProblemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProblemId");
+
+                    b.ToTable("Attachments");
+                });
+
             modelBuilder.Entity("WebIde.Model.ExecutionResult", b =>
                 {
                     b.Property<int>("Id")
@@ -185,6 +427,9 @@ namespace WebIde.DAL.Migrations
                     b.Property<bool>("MemoryExceeded")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("PeakMemoryKb")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Stderr")
                         .IsRequired()
                         .HasColumnType("text");
@@ -193,86 +438,26 @@ namespace WebIde.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("SubmissionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TestCaseId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("TimedOut")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Verdict")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WallTimeMs")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.ToTable("ExecutionResults");
+                    b.HasIndex("TestCaseId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "[0,1]",
-                            TimedOut = false
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "3",
-                            TimedOut = false
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "2.0",
-                            TimedOut = false
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "[0,1]",
-                            TimedOut = false
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "",
-                            TimedOut = true
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "2.5",
-                            TimedOut = false
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ExitCode = 0,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "[0,1]",
-                            TimedOut = false
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ExitCode = 1,
-                            MemoryExceeded = false,
-                            Stderr = "",
-                            Stdout = "",
-                            TimedOut = false
-                        });
+                    b.ToTable("ExecutionResults");
                 });
 
             modelBuilder.Entity("WebIde.Model.Organization", b =>
@@ -338,6 +523,9 @@ namespace WebIde.DAL.Migrations
                     b.Property<int>("Difficulty")
                         .HasColumnType("integer");
 
+                    b.Property<double?>("FloatTolerance")
+                        .HasColumnType("double precision");
+
                     b.Property<int>("MemoryLimitKb")
                         .HasColumnType("integer");
 
@@ -357,7 +545,7 @@ namespace WebIde.DAL.Migrations
                         {
                             Id = 1,
                             AuthorUsername = "admin",
-                            CreatedAt = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.",
                             Difficulty = 0,
                             MemoryLimitKb = 65536,
@@ -368,7 +556,7 @@ namespace WebIde.DAL.Migrations
                         {
                             Id = 2,
                             AuthorUsername = "admin",
-                            CreatedAt = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Given a string s, find the length of the longest substring without duplicate characters.",
                             Difficulty = 1,
                             MemoryLimitKb = 65536,
@@ -379,7 +567,7 @@ namespace WebIde.DAL.Migrations
                         {
                             Id = 3,
                             AuthorUsername = "admin",
-                            CreatedAt = new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays. The overall run time complexity should be O(log(m+n)).",
                             Difficulty = 2,
                             MemoryLimitKb = 131072,
@@ -390,7 +578,7 @@ namespace WebIde.DAL.Migrations
                         {
                             Id = 4,
                             AuthorUsername = "prof_hr",
-                            CreatedAt = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
                             Difficulty = 0,
                             MemoryLimitKb = 32768,
@@ -401,7 +589,7 @@ namespace WebIde.DAL.Migrations
                         {
                             Id = 5,
                             AuthorUsername = "prof_hr",
-                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "There are numCourses courses you have to take. Some courses have prerequisites. Given the total number of courses and a list of prerequisite pairs, determine if it is possible to finish all courses.",
                             Difficulty = 1,
                             MemoryLimitKb = 65536,
@@ -451,7 +639,7 @@ namespace WebIde.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Array manipulation and hashing basics.",
                             IsPublic = true,
                             OrderIndex = 1,
@@ -461,7 +649,7 @@ namespace WebIde.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Dynamic programming, graph traversal, and advanced search techniques.",
                             IsPublic = false,
                             OrderIndex = 2,
@@ -471,7 +659,7 @@ namespace WebIde.DAL.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 12, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Quick 2-hour sprint with easy and medium problems. Open to all club members.",
                             IsPublic = true,
                             OrderIndex = 1,
@@ -525,7 +713,8 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExecutionResultId");
+                    b.HasIndex("ExecutionResultId")
+                        .IsUnique();
 
                     b.HasIndex("ProblemId");
 
@@ -537,112 +726,104 @@ namespace WebIde.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            ExecutionResultId = 1,
                             Language = "cpp",
                             PeakMemoryKb = 2048,
                             ProblemId = 1,
                             Score = 100,
                             SourceCode = "// correct two sum",
                             Status = 2,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 55, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 55, 0, 0, DateTimeKind.Utc),
                             UserId = 1,
                             WallTimeMs = 45
                         },
                         new
                         {
                             Id = 2,
-                            ExecutionResultId = 2,
                             Language = "cpp",
                             PeakMemoryKb = 4096,
                             ProblemId = 2,
                             Score = 100,
                             SourceCode = "// sliding window",
                             Status = 2,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 50, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 50, 0, 0, DateTimeKind.Utc),
                             UserId = 1,
                             WallTimeMs = 120
                         },
                         new
                         {
                             Id = 3,
-                            ExecutionResultId = 3,
                             Language = "cpp",
                             PeakMemoryKb = 8192,
                             ProblemId = 3,
                             Score = 60,
                             SourceCode = "// binary search attempt",
                             Status = 3,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 45, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 45, 0, 0, DateTimeKind.Utc),
                             UserId = 1,
                             WallTimeMs = 200
                         },
                         new
                         {
                             Id = 4,
-                            ExecutionResultId = 4,
                             Language = "cpp",
                             PeakMemoryKb = 2048,
                             ProblemId = 1,
                             Score = 100,
                             SourceCode = "// brute force O(n^2)",
                             Status = 2,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 40, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 40, 0, 0, DateTimeKind.Utc),
                             UserId = 2,
                             WallTimeMs = 980
                         },
                         new
                         {
                             Id = 5,
-                            ExecutionResultId = 5,
                             Language = "cpp",
                             PeakMemoryKb = 4096,
                             ProblemId = 2,
                             Score = 0,
                             SourceCode = "// naive TLE",
                             Status = 4,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 35, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 35, 0, 0, DateTimeKind.Utc),
                             UserId = 2,
                             WallTimeMs = 2001
                         },
                         new
                         {
                             Id = 6,
-                            ExecutionResultId = 6,
                             Language = "cpp",
                             PeakMemoryKb = 4096,
                             ProblemId = 3,
                             Score = 100,
                             SourceCode = "// correct binary search",
                             Status = 2,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 30, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 30, 0, 0, DateTimeKind.Utc),
                             UserId = 2,
                             WallTimeMs = 55
                         },
                         new
                         {
                             Id = 7,
-                            ExecutionResultId = 7,
                             Language = "cpp",
                             PeakMemoryKb = 1024,
                             ProblemId = 1,
                             Score = 100,
                             SourceCode = "// optimal hash map",
                             Status = 2,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 25, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 25, 0, 0, DateTimeKind.Utc),
                             UserId = 3,
                             WallTimeMs = 32
                         },
                         new
                         {
                             Id = 8,
-                            ExecutionResultId = 8,
                             Language = "cpp",
                             PeakMemoryKb = 0,
                             ProblemId = 3,
                             Score = 0,
                             SourceCode = "// compile error",
                             Status = 6,
-                            SubmittedAt = new DateTime(2026, 5, 6, 23, 20, 0, 0, DateTimeKind.Unspecified),
+                            SubmittedAt = new DateTime(2026, 5, 6, 23, 20, 0, 0, DateTimeKind.Utc),
                             UserId = 3,
                             WallTimeMs = 0
                         });
@@ -888,6 +1069,9 @@ namespace WebIde.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -897,6 +1081,9 @@ namespace WebIde.DAL.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GitHubId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("RegisteredAt")
@@ -911,7 +1098,7 @@ namespace WebIde.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("DomainUsers");
 
                     b.HasData(
                         new
@@ -919,7 +1106,7 @@ namespace WebIde.DAL.Migrations
                             Id = 1,
                             DisplayName = "Ana Kovač",
                             Email = "ana@example.com",
-                            RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Role = 2,
                             Username = "ana_k"
                         },
@@ -928,7 +1115,7 @@ namespace WebIde.DAL.Migrations
                             Id = 2,
                             DisplayName = "Mario Blažić",
                             Email = "mario@example.com",
-                            RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Role = 2,
                             Username = "mario_b"
                         },
@@ -937,7 +1124,7 @@ namespace WebIde.DAL.Migrations
                             Id = 3,
                             DisplayName = "Prof. Horvat",
                             Email = "prof@example.com",
-                            RegisteredAt = new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RegisteredAt = new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Role = 1,
                             Username = "prof_hr"
                         },
@@ -946,10 +1133,61 @@ namespace WebIde.DAL.Migrations
                             Id = 4,
                             DisplayName = "Admin",
                             Email = "admin@webide.io",
-                            RegisteredAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RegisteredAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Role = 0,
                             Username = "admin"
                         });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("WebIde.DAL.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("WebIde.DAL.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebIde.DAL.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("WebIde.DAL.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OrganizationUser", b =>
@@ -997,6 +1235,28 @@ namespace WebIde.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WebIde.Model.Attachment", b =>
+                {
+                    b.HasOne("WebIde.Model.Problem", "Problem")
+                        .WithMany("Attachments")
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Problem");
+                });
+
+            modelBuilder.Entity("WebIde.Model.ExecutionResult", b =>
+                {
+                    b.HasOne("WebIde.Model.TestCase", "TestCase")
+                        .WithMany()
+                        .HasForeignKey("TestCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestCase");
+                });
+
             modelBuilder.Entity("WebIde.Model.ProblemSet", b =>
                 {
                     b.HasOne("WebIde.Model.Organization", "Organization")
@@ -1011,8 +1271,8 @@ namespace WebIde.DAL.Migrations
             modelBuilder.Entity("WebIde.Model.Submission", b =>
                 {
                     b.HasOne("WebIde.Model.ExecutionResult", "ExecutionResult")
-                        .WithMany()
-                        .HasForeignKey("ExecutionResultId");
+                        .WithOne("Submission")
+                        .HasForeignKey("WebIde.Model.Submission", "ExecutionResultId");
 
                     b.HasOne("WebIde.Model.Problem", "Problem")
                         .WithMany("Submissions")
@@ -1044,6 +1304,12 @@ namespace WebIde.DAL.Migrations
                     b.Navigation("Problem");
                 });
 
+            modelBuilder.Entity("WebIde.Model.ExecutionResult", b =>
+                {
+                    b.Navigation("Submission")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("WebIde.Model.Organization", b =>
                 {
                     b.Navigation("ProblemSets");
@@ -1051,6 +1317,8 @@ namespace WebIde.DAL.Migrations
 
             modelBuilder.Entity("WebIde.Model.Problem", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("Submissions");
 
                     b.Navigation("TestCases");

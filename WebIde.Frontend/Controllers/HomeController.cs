@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Model.Enums;
 using WebIde.Web.Models;
@@ -7,7 +6,6 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
-[AllowAnonymous]
 public class HomeController : Controller
 {
     private readonly ProblemRepository _problems;

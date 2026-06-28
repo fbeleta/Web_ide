@@ -41,7 +41,7 @@ public class WebIdeDbContext : IdentityDbContext<AppUser>
             .WithMany(u => u.Organizations)
             .UsingEntity("OrganizationUser", j => j.ToTable("OrganizationMembers"));
 
-        // ── Seed data ─────────────────────────────────────────────────────────
+        // ── Seed data (demo/testing — remove before public launch) ────────────
 
         // Tags
         modelBuilder.Entity<Tag>().HasData(
@@ -55,19 +55,19 @@ public class WebIdeDbContext : IdentityDbContext<AppUser>
 
         // Users
         modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "ana_k",   Email = "ana@example.com",   DisplayName = "Ana Kovač",    Role = UserRole.Student,    RegisteredAt = new DateTime(2025, 9, 1) },
-            new User { Id = 2, Username = "mario_b", Email = "mario@example.com", DisplayName = "Mario Blažić", Role = UserRole.Student,    RegisteredAt = new DateTime(2025, 9, 1) },
-            new User { Id = 3, Username = "prof_hr", Email = "prof@example.com",  DisplayName = "Prof. Horvat", Role = UserRole.Instructor, RegisteredAt = new DateTime(2024, 6, 15) },
-            new User { Id = 4, Username = "admin",   Email = "admin@webide.io",   DisplayName = "Admin",        Role = UserRole.Admin,      RegisteredAt = new DateTime(2024, 1, 1) }
+            new User { Id = 1, Username = "ana_k",   Email = "ana@example.com",   DisplayName = "Ana Kovač",    Role = UserRole.Student,    RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new User { Id = 2, Username = "mario_b", Email = "mario@example.com", DisplayName = "Mario Blažić", Role = UserRole.Student,    RegisteredAt = new DateTime(2025, 9, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new User { Id = 3, Username = "prof_hr", Email = "prof@example.com",  DisplayName = "Prof. Horvat", Role = UserRole.Instructor, RegisteredAt = new DateTime(2024, 6, 15, 0, 0, 0, DateTimeKind.Utc) },
+            new User { Id = 4, Username = "admin",   Email = "admin@webide.io",   DisplayName = "Admin",        Role = UserRole.Admin,      RegisteredAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
         );
 
         // Problems
         modelBuilder.Entity<Problem>().HasData(
-            new Problem { Id = 1, Title = "Two Sum", Description = "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.", Difficulty = DifficultyLevel.Easy,   TimeLimitMs = 1000, MemoryLimitKb = 65536,  CreatedAt = new DateTime(2025, 1, 10),  AuthorUsername = "admin" },
-            new Problem { Id = 2, Title = "Longest Substring Without Repeating Characters", Description = "Given a string s, find the length of the longest substring without duplicate characters.", Difficulty = DifficultyLevel.Medium, TimeLimitMs = 2000, MemoryLimitKb = 65536,  CreatedAt = new DateTime(2025, 2, 5),   AuthorUsername = "admin" },
-            new Problem { Id = 3, Title = "Median of Two Sorted Arrays", Description = "Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays. The overall run time complexity should be O(log(m+n)).", Difficulty = DifficultyLevel.Hard,   TimeLimitMs = 3000, MemoryLimitKb = 131072, CreatedAt = new DateTime(2025, 3, 20),  AuthorUsername = "admin" },
-            new Problem { Id = 4, Title = "Climbing Stairs", Description = "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?", Difficulty = DifficultyLevel.Easy,   TimeLimitMs = 1000, MemoryLimitKb = 32768,  CreatedAt = new DateTime(2025, 4, 1),   AuthorUsername = "prof_hr" },
-            new Problem { Id = 5, Title = "Course Schedule", Description = "There are numCourses courses you have to take. Some courses have prerequisites. Given the total number of courses and a list of prerequisite pairs, determine if it is possible to finish all courses.", Difficulty = DifficultyLevel.Medium, TimeLimitMs = 2000, MemoryLimitKb = 65536,  CreatedAt = new DateTime(2025, 5, 15),  AuthorUsername = "prof_hr" }
+            new Problem { Id = 1, Title = "Two Sum", Description = "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.", Difficulty = DifficultyLevel.Easy,   TimeLimitMs = 1000, MemoryLimitKb = 65536,  CreatedAt = new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc),  AuthorUsername = "admin" },
+            new Problem { Id = 2, Title = "Longest Substring Without Repeating Characters", Description = "Given a string s, find the length of the longest substring without duplicate characters.", Difficulty = DifficultyLevel.Medium, TimeLimitMs = 2000, MemoryLimitKb = 65536,  CreatedAt = new DateTime(2025, 2, 5, 0, 0, 0, DateTimeKind.Utc),   AuthorUsername = "admin" },
+            new Problem { Id = 3, Title = "Median of Two Sorted Arrays", Description = "Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays. The overall run time complexity should be O(log(m+n)).", Difficulty = DifficultyLevel.Hard,   TimeLimitMs = 3000, MemoryLimitKb = 131072, CreatedAt = new DateTime(2025, 3, 20, 0, 0, 0, DateTimeKind.Utc),  AuthorUsername = "admin" },
+            new Problem { Id = 4, Title = "Climbing Stairs", Description = "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?", Difficulty = DifficultyLevel.Easy,   TimeLimitMs = 1000, MemoryLimitKb = 32768,  CreatedAt = new DateTime(2025, 4, 1, 0, 0, 0, DateTimeKind.Utc),   AuthorUsername = "prof_hr" },
+            new Problem { Id = 5, Title = "Course Schedule", Description = "There are numCourses courses you have to take. Some courses have prerequisites. Given the total number of courses and a list of prerequisite pairs, determine if it is possible to finish all courses.", Difficulty = DifficultyLevel.Medium, TimeLimitMs = 2000, MemoryLimitKb = 65536,  CreatedAt = new DateTime(2025, 5, 15, 0, 0, 0, DateTimeKind.Utc),  AuthorUsername = "prof_hr" }
         );
 
         // Problem <-> Tag (join table seed)
@@ -116,9 +116,9 @@ public class WebIdeDbContext : IdentityDbContext<AppUser>
 
         // ProblemSets
         modelBuilder.Entity<ProblemSet>().HasData(
-            new ProblemSet { Id = 1, OrganizationId = 1, Title = "Week 1 — Fundamentals",  Description = "Array manipulation and hashing basics.",                                                         CreatedAt = new DateTime(2025, 10, 1),  IsPublic = true,  OrderIndex = 1 },
-            new ProblemSet { Id = 2, OrganizationId = 1, Title = "Advanced Algorithms",     Description = "Dynamic programming, graph traversal, and advanced search techniques.",                          CreatedAt = new DateTime(2025, 11, 1),  IsPublic = false, OrderIndex = 2 },
-            new ProblemSet { Id = 3, OrganizationId = 2, Title = "OSC Sprint #1",           Description = "Quick 2-hour sprint with easy and medium problems. Open to all club members.",                   CreatedAt = new DateTime(2025, 12, 1),  IsPublic = true,  OrderIndex = 1 }
+            new ProblemSet { Id = 1, OrganizationId = 1, Title = "Week 1 — Fundamentals",  Description = "Array manipulation and hashing basics.",                                                         CreatedAt = new DateTime(2025, 10, 1, 0, 0, 0, DateTimeKind.Utc),  IsPublic = true,  OrderIndex = 1 },
+            new ProblemSet { Id = 2, OrganizationId = 1, Title = "Advanced Algorithms",     Description = "Dynamic programming, graph traversal, and advanced search techniques.",                          CreatedAt = new DateTime(2025, 11, 1, 0, 0, 0, DateTimeKind.Utc),  IsPublic = false, OrderIndex = 2 },
+            new ProblemSet { Id = 3, OrganizationId = 2, Title = "OSC Sprint #1",           Description = "Quick 2-hour sprint with easy and medium problems. Open to all club members.",                   CreatedAt = new DateTime(2025, 12, 1, 0, 0, 0, DateTimeKind.Utc),  IsPublic = true,  OrderIndex = 1 }
         );
 
         // ProblemSet <-> Problem (join table seed)
@@ -132,28 +132,16 @@ public class WebIdeDbContext : IdentityDbContext<AppUser>
             new { ProblemSetId = 3, ProblemsId = 4 }
         );
 
-        // ExecutionResults
-        modelBuilder.Entity<ExecutionResult>().HasData(
-            new ExecutionResult { Id = 1, Stdout = "[0,1]", Stderr = "", ExitCode = 0, TimedOut = false, MemoryExceeded = false },
-            new ExecutionResult { Id = 2, Stdout = "3",     Stderr = "", ExitCode = 0, TimedOut = false, MemoryExceeded = false },
-            new ExecutionResult { Id = 3, Stdout = "2.0",   Stderr = "", ExitCode = 0, TimedOut = false, MemoryExceeded = false },
-            new ExecutionResult { Id = 4, Stdout = "[0,1]", Stderr = "", ExitCode = 0, TimedOut = false, MemoryExceeded = false },
-            new ExecutionResult { Id = 5, Stdout = "",      Stderr = "", ExitCode = 0, TimedOut = true,  MemoryExceeded = false },
-            new ExecutionResult { Id = 6, Stdout = "2.5",   Stderr = "", ExitCode = 0, TimedOut = false, MemoryExceeded = false },
-            new ExecutionResult { Id = 7, Stdout = "[0,1]", Stderr = "", ExitCode = 0, TimedOut = false, MemoryExceeded = false },
-            new ExecutionResult { Id = 8, Stdout = "",      Stderr = "", ExitCode = 1, TimedOut = false, MemoryExceeded = false }
-        );
-
-        // Submissions
+        // Submissions (no ExecutionResultId — worker populates these)
         modelBuilder.Entity<Submission>().HasData(
-            new Submission { Id = 1, UserId = 1, ProblemId = 1, ExecutionResultId = 1, SourceCode = "// correct two sum", Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs =  45, PeakMemoryKb = 2048, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-5)  },
-            new Submission { Id = 2, UserId = 1, ProblemId = 2, ExecutionResultId = 2, SourceCode = "// sliding window",  Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs = 120, PeakMemoryKb = 4096, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-10) },
-            new Submission { Id = 3, UserId = 1, ProblemId = 3, ExecutionResultId = 3, SourceCode = "// binary search attempt", Language = "cpp", Status = SubmissionStatus.WrongAnswer,  Score =  60, WallTimeMs = 200, PeakMemoryKb = 8192, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-15) },
-            new Submission { Id = 4, UserId = 2, ProblemId = 1, ExecutionResultId = 4, SourceCode = "// brute force O(n^2)", Language = "cpp", Status = SubmissionStatus.Accepted,        Score = 100, WallTimeMs = 980, PeakMemoryKb = 2048, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-20) },
-            new Submission { Id = 5, UserId = 2, ProblemId = 2, ExecutionResultId = 5, SourceCode = "// naive TLE",        Language = "cpp", Status = SubmissionStatus.TimeLimitExceeded, Score =   0, WallTimeMs = 2001, PeakMemoryKb = 4096, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-25) },
-            new Submission { Id = 6, UserId = 2, ProblemId = 3, ExecutionResultId = 6, SourceCode = "// correct binary search", Language = "cpp", Status = SubmissionStatus.Accepted,     Score = 100, WallTimeMs =  55, PeakMemoryKb = 4096, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-30) },
-            new Submission { Id = 7, UserId = 3, ProblemId = 1, ExecutionResultId = 7, SourceCode = "// optimal hash map", Language = "cpp", Status = SubmissionStatus.Accepted,          Score = 100, WallTimeMs =  32, PeakMemoryKb = 1024, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-35) },
-            new Submission { Id = 8, UserId = 3, ProblemId = 3, ExecutionResultId = 8, SourceCode = "// compile error",    Language = "cpp", Status = SubmissionStatus.CompileError,      Score =   0, WallTimeMs =   0, PeakMemoryKb =    0, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0).AddMinutes(-40) }
+            new Submission { Id = 1, UserId = 1, ProblemId = 1, SourceCode = "// correct two sum",      Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs =  45, PeakMemoryKb = 2048, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-5)  },
+            new Submission { Id = 2, UserId = 1, ProblemId = 2, SourceCode = "// sliding window",        Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs = 120, PeakMemoryKb = 4096, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-10) },
+            new Submission { Id = 3, UserId = 1, ProblemId = 3, SourceCode = "// binary search attempt", Language = "cpp", Status = SubmissionStatus.WrongAnswer,        Score =  60, WallTimeMs = 200, PeakMemoryKb = 8192, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-15) },
+            new Submission { Id = 4, UserId = 2, ProblemId = 1, SourceCode = "// brute force O(n^2)",    Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs = 980, PeakMemoryKb = 2048, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-20) },
+            new Submission { Id = 5, UserId = 2, ProblemId = 2, SourceCode = "// naive TLE",             Language = "cpp", Status = SubmissionStatus.TimeLimitExceeded, Score =   0, WallTimeMs = 2001, PeakMemoryKb = 4096, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-25) },
+            new Submission { Id = 6, UserId = 2, ProblemId = 3, SourceCode = "// correct binary search", Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs =  55, PeakMemoryKb = 4096, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-30) },
+            new Submission { Id = 7, UserId = 3, ProblemId = 1, SourceCode = "// optimal hash map",      Language = "cpp", Status = SubmissionStatus.Accepted,           Score = 100, WallTimeMs =  32, PeakMemoryKb = 1024, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-35) },
+            new Submission { Id = 8, UserId = 3, ProblemId = 3, SourceCode = "// compile error",         Language = "cpp", Status = SubmissionStatus.CompileError,       Score =   0, WallTimeMs =   0, PeakMemoryKb =    0, SubmittedAt = new DateTime(2026, 5, 7, 0, 0, 0, DateTimeKind.Utc).AddMinutes(-40) }
         );
     }
 }

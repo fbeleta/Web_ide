@@ -125,13 +125,15 @@ builder.Services.AddAuthentication(options =>
     options.LogoutPath         = "/Identity/Account/Logout";
 })
 .AddCookie(IdentityConstants.ExternalScheme)
-.AddCookie(IdentityConstants.TwoFactorUserIdScheme)
-.AddGoogle(options =>
-{
-    options.ClientId     = config["Google:ClientId"] ?? "";
-    options.ClientSecret = config["Google:ClientSecret"] ?? "";
-    options.SignInScheme  = IdentityConstants.ExternalScheme;
-});
+.AddCookie(IdentityConstants.TwoFactorUserIdScheme);
+// Google OAuth disabled — add Google:ClientId and Google:ClientSecret to enable
+// .AddGoogle(options =>
+// {
+//     options.ClientId     = config["Google:ClientId"] ?? "";
+//     options.ClientSecret = config["Google:ClientSecret"] ?? "";
+//     options.SignInScheme  = IdentityConstants.ExternalScheme;
+// });
+
 
 // ── Identity — services only (no AddAuthentication override) ──────────────────
 builder.Services.AddIdentityCore<AppUser>(options =>
@@ -147,7 +149,7 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 .AddSignInManager()
 .AddDefaultTokenProviders();
 
-// ── Rate limiter ──────────────────────────────────────────────────────────────
+// ── Rate limiter (inner defense — nginx has outer limits in nginx.conf) ───────
 builder.Services.AddRateLimiter(o =>
 {
     o.AddFixedWindowLimiter("submission", opt =>

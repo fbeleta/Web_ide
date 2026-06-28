@@ -1,6 +1,6 @@
 # Server Setup & Deployment Guide
 
-**Audience:** You, deploying WebIde to Hetzner for the first time (replacing an existing repo).  
+**Audience:** You, deploying WebIde to Hetzner for the first time (replacing an existing repo).
 **Assumes:** Domain is already pointed at the server. You have SSH access as root or a sudo user.
 
 ---
@@ -8,12 +8,12 @@
 ## Overview of what this guide covers
 
 1. [Prep the server](#1-prep-the-server) — Docker, deploy user, directories
-2. [GitHub OAuth app](#2-github-oauth-app) — create it, get the credentials
-3. [Clone the repo](#3-clone-the-repo-onto-the-server) — replacing whatever is running now
-4. [Configure secrets](#4-configure-secrets-env-file) — fill in `.env`
-5. [Generate Seq basic-auth password](#5-generate-seq-basic-auth-htpasswd)
+2. [Server hardening](#2-server-hardening) — Firewall, SSH, fail2ban
+3. [GitHub OAuth app](#3-github-oauth-app) — create it, get the credentials
+4. [Clone the repo](#4-clone-the-repo-onto-the-server) — replacing whatever is running now
+5. [Configure secrets](#5-configure-secrets-env-file) — fill in `.env`
 6. [Get the TLS certificate](#6-get-the-tls-certificate) — Let's Encrypt via certbot
-7. [Build the app image](#7-build-the-app-image)
+7. [Build images](#7-build-images)
 8. [Run migrations](#8-run-database-migrations)
 9. [Start the stack](#9-start-the-stack)
 10. [Set up GitHub Actions CI/CD](#10-github-actions-cicd)
@@ -68,7 +68,46 @@ chown -R deploy:deploy /home/deploy/.ssh
 
 ---
 
-## 2. GitHub OAuth App
+## 2. Server hardening
+
+### Hetzner Cloud Firewall
+
+In the Hetzner Cloud Console, create a firewall allowing only:
+- **TCP 22** (SSH)
+- **TCP 80** (HTTP — for ACME challenges and redirect)
+- **TCP 443** (HTTPS)
+
+Attach it to your server.
+
+### SSH hardening
+
+Edit `/etc/ssh/sshd_config`:
+
+```bash
+PasswordAuthentication no
+PermitRootLogin no
+```
+
+Then reload: `systemctl reload sshd`
+
+### fail2ban
+
+```bash
+apt install -y fail2ban
+systemctl enable fail2ban
+systemctl start fail2ban
+```
+
+### Unattended security upgrades
+
+```bash
+apt install -y unattended-upgrades
+dpkg-reconfigure -plow unattended-upgrades
+```
+
+---
+
+## 3. GitHub OAuth App
 
 1. Go to **github.com → Settings → Developer settings → OAuth Apps → New OAuth App**
 2. Fill in:
@@ -79,11 +118,11 @@ chown -R deploy:deploy /home/deploy/.ssh
 4. On the next screen, copy the **Client ID**
 5. Click **Generate a new client secret**, copy it immediately (shown once)
 
-Keep these two values — you'll paste them into `.env` in step 4.
+Keep these two values — you'll paste them into `.env` in step 5.
 
 ---
 
-## 2b. Google OAuth App (optional)
+## 3b. Google OAuth App (optional)
 
 Google login is optional. If you don't want it, leave `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` blank in `.env` and skip this — the GitHub and local-account logins still work.
 
@@ -95,11 +134,11 @@ To enable it:
 4. Under **Authorized redirect URIs**, add: `https://YOUR_DOMAIN/signin-google`
 5. Click **Create**, then copy the **Client ID** and **Client secret**
 
-Paste both into `.env` (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`) in step 4.
+Paste both into `.env` (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`) in step 5.
 
 ---
 
-## 3. Clone the repo onto the server
+## 4. Clone the repo onto the server
 
 ### Stop and remove whatever is currently running
 
@@ -136,7 +175,7 @@ git clone https://github.com/fbeleta/Web_ide.git .
 
 ---
 
-## 4. Configure secrets (.env file)
+## 5. Configure secrets (.env file)
 
 ```bash
 # Still as deploy user in /opt/webide
@@ -162,15 +201,12 @@ POSTGRES_PASSWORD=                          # generate: openssl rand -base64 32
 REDIS_PASSWORD=                             # generate: openssl rand -base64 32
 
 # ── GitHub OAuth ──────────────────────────────────────────────────────────────
-GITHUB_CLIENT_ID=                           # from step 2
-GITHUB_CLIENT_SECRET=                       # from step 2
+GITHUB_CLIENT_ID=                           # from step 3
+GITHUB_CLIENT_SECRET=                       # from step 3
 
 # ── Google OAuth ──────────────────────────────────────────────────────────────
-GOOGLE_CLIENT_ID=                           # from step 2b (optional — leave blank to disable Google login)
-GOOGLE_CLIENT_SECRET=                       # from step 2b
-
-# ── Seq ───────────────────────────────────────────────────────────────────────
-SEQ_FIRSTRUN_ADMINPASSWORD=                 # a strong password you'll use to log into Seq UI
+GOOGLE_CLIENT_ID=                           # from step 3b (optional — leave blank to disable Google login)
+GOOGLE_CLIENT_SECRET=                       # from step 3b
 
 # ── Worker ───────────────────────────────────────────────────────────────────
 WORKER__MAXCONCURRENTSANDBOXES=2
@@ -194,25 +230,7 @@ Generate passwords in one go:
 ```bash
 echo "POSTGRES_PASSWORD=$(openssl rand -base64 32)"
 echo "REDIS_PASSWORD=$(openssl rand -base64 32)"
-echo "SEQ_FIRSTRUN_ADMINPASSWORD=$(openssl rand -base64 24)"
 ```
-
----
-
-## 5. Generate Seq basic-auth htpasswd
-
-The nginx config puts `/seq/` behind HTTP basic auth. Generate the credentials:
-
-```bash
-# Install apache2-utils if not present
-apt-get install -y apache2-utils   # run as root
-
-# Generate htpasswd file — you'll be prompted for a password
-htpasswd -B -c /opt/webide/nginx/htpasswd ops
-# 'ops' is the username; change it if you want
-```
-
-> This file is not committed to the repo (it's in `.gitignore`). It lives only on the server.
 
 ---
 
@@ -259,23 +277,24 @@ sed -i 's|server_name _;|server_name YOUR_DOMAIN;|g' nginx/nginx.conf
 
 ---
 
-## 7. Build the app image
+## 7. Build images
 
-The app image is built locally on the server (or via CI — see step 10). For the first deploy, build it manually:
+The images are built locally on the server (or via CI — see step 10). For the first deploy, build them manually:
 
 ```bash
 cd /opt/webide
 
-# Build the app image (this takes 2-3 minutes — downloads SDK, compiles .NET, runs Tailwind)
+# Build the app image (includes migration bundle)
 docker build -t ghcr.io/fbeleta/web_ide/app:latest -f Dockerfile.app .
 
-# Build sandbox images (needed for code execution — can do later if worker isn't ready)
+# Build the worker image
+docker build -t ghcr.io/fbeleta/web_ide/worker:latest -f Dockerfile.worker .
+
+# Build sandbox images (needed for code execution)
 docker build -t webide-sandbox-python -f sandbox/python.Dockerfile sandbox/
 docker build -t webide-sandbox-gcc    -f sandbox/gcc.Dockerfile    sandbox/
 docker build -t webide-sandbox-node   -f sandbox/node.Dockerfile   sandbox/
 ```
-
-> The worker image (`Dockerfile.worker`) requires the `WebIde.Worker` project which is Phase 2. Skip it for now — start the stack without the worker service.
 
 ---
 
@@ -286,31 +305,18 @@ Run migrations before starting the app so the schema is ready:
 ```bash
 cd /opt/webide
 
-# Run migrations against the postgres container
-# (start postgres first if not running)
+# Start postgres first
 docker compose up -d postgres
 sleep 5   # wait for postgres to be ready
 
+# Run the migration bundle
 docker run --rm \
   --network webide_webide-net \
   --env-file .env \
   -e ConnectionStrings__WebIdeDb="Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}" \
   ghcr.io/fbeleta/web_ide/app:latest \
-  dotnet ef database update --project WebIde.DAL --no-build 2>/dev/null \
-  || echo "Migrations ran (or already up to date)"
+  /app/efbundle --connection "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
 ```
-
-> If the above fails because the image doesn't have EF tools, run migrations from the SDK image:
-> ```bash
-> docker run --rm \
->   --network webide_webide-net \
->   -v /opt/webide:/src \
->   -w /src \
->   mcr.microsoft.com/dotnet/sdk:10.0 \
->   sh -c "dotnet tool install -g dotnet-ef && dotnet ef database update \
->          --project WebIde.DAL --startup-project WebIde.Frontend \
->          --connection 'Host=postgres;Database=webide;Username=webide;Password=YOUR_PASSWORD'"
-> ```
 
 ---
 
@@ -319,11 +325,11 @@ docker run --rm \
 ```bash
 cd /opt/webide
 
-# Start everything except the worker (worker needs Phase 2 image)
-docker compose up -d --scale webide-worker=0
+# Start everything
+docker compose up -d
 
 # Watch logs
-docker compose logs -f webide-app nginx
+docker compose logs -f webide-app webide-worker nginx
 
 # Verify health
 curl -sk https://localhost/health
@@ -380,7 +386,11 @@ WHERE u."Email" = 'you@example.com' AND r."Name" = 'Admin';
 
 ## 10. GitHub Actions CI/CD
 
-So that future pushes to `main` auto-deploy:
+Three workflows exist and are ready:
+
+- **ci.yml** — runs on push to `develop`/`main` and PRs to `main` (build + test)
+- **deploy.yml** — runs on push to `main` (build images, push to ghcr.io, SSH deploy with migration bundle, health check, rollback on failure)
+- **sandbox.yml** — builds and pushes sandbox images
 
 ### Add GitHub Secrets
 
@@ -396,12 +406,12 @@ In your GitHub repo: **Settings → Secrets and variables → Actions → New re
 
 **Settings → Branches → Add branch protection rule:**
 - Branch name pattern: `main`
-- ✅ Require a pull request before merging
-- ✅ Require status checks to pass before merging
-- ✅ Do not allow bypassing the above settings
-- ✅ Restrict who can push to matching branches
+- Require a pull request before merging
+- Require status checks to pass before merging
+- Do not allow bypassing the above settings
+- Restrict who can push to matching branches
 
-### Push to trigger CI
+### Push to trigger deploy
 
 ```bash
 # On your local machine:
@@ -410,21 +420,12 @@ git merge develop
 git push origin main
 ```
 
-The deploy workflow (once you create `.github/workflows/deploy.yml` in Phase 5) will:
-1. Build and push `app:sha-{SHA}` to `ghcr.io`
-2. SSH into the server and pull the new image
-3. Run migrations
-4. Restart the app container
+The deploy workflow will:
+1. Build and push `app:sha-{SHA}` and `worker:sha-{SHA}` to `ghcr.io`
+2. SSH into the server and pull the new images
+3. Run the EF migration bundle
+4. Restart the app and worker containers
 5. Health check → promote `:latest` on pass, rollback on fail
-
-> Phase 5 (CI/CD workflows) has not been implemented yet. Until then, deploy manually:
-> ```bash
-> # On server as deploy user:
-> cd /opt/webide
-> git pull origin main
-> docker build -t ghcr.io/fbeleta/web_ide/app:latest -f Dockerfile.app .
-> docker compose up -d webide-app
-> ```
 
 ---
 
@@ -437,16 +438,13 @@ Run these checks after the stack is up:
 curl -sk https://YOUR_DOMAIN/health
 # → Healthy
 
-# Health (readiness — checks postgres)
+# Health (readiness — checks postgres, redis, worker)
 curl -sk https://YOUR_DOMAIN/health/ready
 # → Healthy  (or Degraded if postgres slow to start)
 
 # App is reachable
 curl -sk https://YOUR_DOMAIN | grep CODE_COMPILER
 # → should find the page title
-
-# Seq log UI (prompts for basic auth — use the htpasswd credentials from step 5)
-open https://YOUR_DOMAIN/seq/
 
 # HTTPS redirect from HTTP
 curl -sI http://YOUR_DOMAIN | grep Location
@@ -471,7 +469,9 @@ docker run --rm --network none --read-only \
   --tmpfs /tmp:size=64m,mode=1777 \
   --memory 512m --memory-swap 512m --cpus 0.9 \
   --pids-limit 64 --user nobody:nogroup \
-  --security-opt no-new-privileges --cap-drop ALL \
+  --security-opt no-new-privileges \
+  --security-opt seccomp=sandbox/seccomp-profile.json \
+  --cap-drop ALL \
   --ulimit fsize=67108864 \
   -v /tmp/test-src:/code:ro \
   webide-sandbox-python /code/solution.py /code/cases.json
@@ -515,18 +515,16 @@ docker system df
 
 | Task | Status | Notes |
 |---|---|---|
-| Provision Hetzner server | ✅ Done | You have the server |
-| Point domain at server | ✅ Done | Domain is set up |
+| Provision Hetzner server | Done | You have the server |
+| Point domain at server | Done | Domain is set up |
 | Install Docker + create deploy user | Step 1 above | |
-| Create GitHub OAuth app | Step 2 above | Need Client ID + Secret |
-| Clone repo + configure `.env` | Steps 3–4 above | |
-| Generate Seq htpasswd | Step 5 above | |
+| Server hardening | Step 2 above | Firewall, SSH, fail2ban |
+| Create GitHub OAuth app | Step 3 above | Need Client ID + Secret |
+| Clone repo + configure `.env` | Steps 4–5 above | |
 | Get Let's Encrypt cert | Step 6 above | |
-| Build app image | Step 7 above | |
+| Build images | Step 7 above | App + worker + sandbox |
 | Run migrations | Step 8 above | |
 | Start stack | Step 9 above | |
-| Add GitHub secrets for CI/CD | Step 10 above | |
-| Implement Phase 5 CI/CD workflows | Future work | `.github/workflows/deploy.yml` |
-| Implement Phase 2 Worker service | Future work | Code execution pipeline |
+| Add GitHub secrets for CI/CD | Step 10 above | 3 workflows ready |
 | Choose + configure backup offsite target | Future work | Hetzner Storage Box / B2 / S3 |
 | Quarterly backup restore drill | Ongoing | See `deployment-handoff.md §11c` |

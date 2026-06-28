@@ -1,51 +1,29 @@
 @page
 @model LoginModel
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Login";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-5">
-        <h1 class="mb-4">Log in</h1>
-
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label"></label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Input.Password" class="form-label"></label>
-                <input asp-for="Input.Password" class="form-control" type="password" autocomplete="current-password" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
-        </form>
+<div class="flex items-center justify-center min-h-[70vh] px-4 py-12">
+    <div class="brutal-card hard-shadow-lg w-full max-w-md">
+        <h1 class="font-headline text-3xl font-black uppercase mb-2 tracking-tight">LOGIN_</h1>
+        <p class="font-body text-sm text-gray-500 mb-8">Sign in to compete.</p>
 
         @if (Model.ExternalProviders.Any())
         {
-            <hr />
-            <p class="text-center">Or sign in with</p>
-            <form method="post" asp-page-handler="ExternalLogin">
+            <form method="post" asp-page-handler="ExternalLogin" class="flex flex-col gap-3">
                 @foreach (var provider in Model.ExternalProviders)
                 {
                     <button type="submit" name="provider" value="@provider.Name"
-                            class="btn btn-outline-secondary w-100 mb-2">
-                        @provider.DisplayName
+                            class="bg-[#2752c7] text-[#f1f2ff] font-headline font-black uppercase text-sm px-6 py-4 hard-shadow hard-shadow-hover brutal-border tracking-widest w-full">
+                        @provider.DisplayName Login
                     </button>
                 }
             </form>
         }
-
-        <hr />
-        <p>Don't have an account? <a asp-page="Register">Register</a></p>
+        else
+        {
+            <p class="font-body text-sm text-red-600 font-bold">No login providers configured.</p>
+        }
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

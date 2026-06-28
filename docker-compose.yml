@@ -9,7 +9,6 @@ networks:
 volumes:
   postgres-data:
   redis-data:
-  seq-data:
   certbot-etc:
   certbot-var:
   acme-challenge:
@@ -35,8 +34,6 @@ services:
       - ./nginx/proxy_pass.conf:/etc/nginx/proxy_pass.conf:ro
       - certbot-etc:/etc/letsencrypt
       - acme-challenge:/var/www/acme
-      # htpasswd is generated on server; not committed to repo
-      - ./nginx/htpasswd:/etc/nginx/htpasswd:ro
       - ./nginx/generate-self-signed.sh:/docker-entrypoint.d/00-self-signed.sh:ro
     depends_on:
       - webide-app
@@ -64,16 +61,12 @@ services:
       Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
       GitHub__ClientId:     ${GITHUB_CLIENT_ID}
       GitHub__ClientSecret: ${GITHUB_CLIENT_SECRET}
-      Google__ClientId:     ${GOOGLE_CLIENT_ID}
-      Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
       PublicHostname:       ${PUBLIC_HOSTNAME}
-      Serilog__SeqUrl:      "http://seq:5341"
     volumes:
       - uploads-data:/app/wwwroot/uploads
     depends_on:
       - postgres
       - redis
-      - seq
     networks:
       - webide-net
     deploy:
@@ -85,9 +78,6 @@ services:
     restart: unless-stopped
 
   # ── .NET Worker Service ───────────────────────────────────────────────────────
-  # NOTE: WebIde.Worker project is created in Phase 2.
-  # This service definition is correct for Phase 2+. It will fail to pull/build
-  # until the image exists. That is expected in Phase 0.
   webide-worker:
     image: ghcr.io/fbeleta/web_ide/worker:${IMAGE_TAG:-latest}
     build:
@@ -106,14 +96,13 @@ services:
       Sandbox__GccDigest:    ${SANDBOX_GCC_DIGEST}
       Sandbox__PythonDigest: ${SANDBOX_PYTHON_DIGEST}
       Sandbox__NodeDigest:   ${SANDBOX_NODE_DIGEST}
-      Serilog__SeqUrl: "http://seq:5341"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/webide-src:/tmp/webide-src
+      - ./sandbox/seccomp-profile.json:/sandbox/seccomp-profile.json:ro
     depends_on:
       - postgres
       - redis
-      - seq
     networks:
       - webide-net
     deploy:
@@ -174,26 +163,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # ── Seq log aggregation ───────────────────────────────────────────────────────
-  # No ports: directive — accessed via nginx /seq/ with basic auth
-  seq:
-    image: datalust/seq:2024
-    environment:
-      ACCEPT_EULA:                  "Y"
-      SEQ_FIRSTRUN_ADMINPASSWORD:   ${SEQ_FIRSTRUN_ADMINPASSWORD}
-      SEQ_CACHE_SYSTEMRAMTARGET:    0.2
-    volumes:
-      - seq-data:/data
-    networks:
-      - webide-net
-    deploy:
-      resources:
-        limits:
-          cpus: "0.3"
-          memory: 512M
-    logging: *log-config
-    restart: unless-stopped
 
   # ── Postgres nightly backup ───────────────────────────────────────────────────
   postgres-backup:

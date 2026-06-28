@@ -74,7 +74,7 @@ public class SandboxOrchestrator(
                 MemorySwap  = memBytes,
                 NanoCPUs    = (long)(workerOpts.Value.SandboxCpus * 1_000_000_000),
                 PidsLimit   = 64,
-                SecurityOpt = new[] { "no-new-privileges" },
+                SecurityOpt = new[] { "no-new-privileges", "seccomp=/sandbox/seccomp-profile.json" },
                 CapDrop     = new[] { "ALL" },
                 Ulimits     = new[] { new Ulimit { Name = "fsize", Soft = 67108864, Hard = 67108864 } },
                 Mounts      = new List<Mount>

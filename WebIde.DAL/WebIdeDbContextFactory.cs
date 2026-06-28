@@ -7,10 +7,11 @@ public class WebIdeDbContextFactory : IDesignTimeDbContextFactory<WebIdeDbContex
 {
     public WebIdeDbContext CreateDbContext(string[] args)
     {
+        var connStr = Environment.GetEnvironmentVariable("WEBIDE_CONNECTION_STRING")
+            ?? "Host=localhost;Port=5432;Database=webide;Username=webide;Password=PLACEHOLDER";
+
         var options = new DbContextOptionsBuilder<WebIdeDbContext>()
-            .UseNpgsql(
-                "Host=localhost;Port=5432;Database=webide;Username=webide;Password=webide_dev",
-                o => o.MigrationsAssembly("WebIde.DAL"))
+            .UseNpgsql(connStr, o => o.MigrationsAssembly("WebIde.DAL"))
             .Options;
 
         return new WebIdeDbContext(options);

@@ -28,18 +28,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Step 1: Capture rollback target BEFORE any push
-      - name: Capture current :latest digest for rollback
-        id: rollback
-        run: |
-          PREV=$(docker buildx imagetools inspect \
-            ghcr.io/${{ env.NAMESPACE }}/app:latest \
-            --format '{{json .Manifest.Digest}}' 2>/dev/null || echo '""')
-          # Strip quotes if present
-          PREV=$(echo "$PREV" | tr -d '"')
-          echo "digest=$PREV" >> "$GITHUB_OUTPUT"
-
-      # Step 2: Build and push :sha-X ONLY (no :latest yet)
+      # Step 1: Build and push :sha-X
       - name: Build and push app image
         uses: docker/build-push-action@v5
         with:
@@ -56,37 +45,41 @@ jobs:
           push: true
           tags: ghcr.io/${{ env.NAMESPACE }}/worker:sha-${{ github.sha }}
 
-      # Steps 3–6: SSH deploy, migrate, health check, promote or rollback
+      # Steps 2–5: SSH deploy, migrate, health check, promote or rollback
       - name: Deploy to Hetzner
         uses: appleboy/ssh-action@v1
         env:
           IMAGE_TAG: sha-${{ github.sha }}
-          PREV_DIGEST: ${{ steps.rollback.outputs.digest }}
           NAMESPACE: ${{ env.NAMESPACE }}
         with:
           host: ${{ secrets.HETZNER_HOST }}
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: IMAGE_TAG,PREV_DIGEST,NAMESPACE
+          envs: IMAGE_TAG,NAMESPACE
           script: |
             set -euo pipefail
             cd /opt/webide
 
+            # Save current tag for rollback
+            PREV_TAG=$(grep '^IMAGE_TAG=' .env | cut -d= -f2)
+
             IMAGE_TAG=$IMAGE_TAG docker compose pull webide-app webide-worker
 
-            # Run EF migrations before bringing up the new app
+            # Run EF migration bundle before bringing up the new app
             docker run --rm \
               --env-file .env \
+              -e ConnectionStrings__WebIdeDb="Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}" \
               --network webide_webide-net \
               ghcr.io/$NAMESPACE/app:$IMAGE_TAG \
-              dotnet ef database update --no-build
+              /app/efbundle --connection "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
 
-            IMAGE_TAG=$IMAGE_TAG docker compose up -d webide-app webide-worker
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$IMAGE_TAG/" .env
+            docker compose up -d webide-app webide-worker
 
-            # Poll /health/ready for up to 60s
+            # Poll /health (liveness) for up to 60s
             SUCCESS=0
             for i in $(seq 1 30); do
-              if curl -fsS -k https://localhost/health/ready > /dev/null 2>&1; then
+              if curl -fsS -k https://localhost/health > /dev/null 2>&1; then
                 SUCCESS=1
                 break
               fi
@@ -94,14 +87,15 @@ jobs:
             done
 
             if [ "$SUCCESS" -eq 0 ]; then
-              echo "Health check failed — rolling back to $PREV_DIGEST"
-              if [ -n "$PREV_DIGEST" ]; then
-                IMAGE_TAG=$PREV_DIGEST docker compose up -d webide-app webide-worker
+              echo "Health check failed — rolling back to $PREV_TAG"
+              if [ -n "$PREV_TAG" ] && [ "$PREV_TAG" != "latest" ]; then
+                sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$PREV_TAG/" .env
+                docker compose up -d webide-app webide-worker
               fi
               exit 1
             fi
 
-      # Step 5 (success path): promote :sha-X to :latest
+      # Step 6 (success path): promote :sha-X to :latest
       - name: Promote :latest
         if: success()
         run: |

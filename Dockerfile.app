@@ -1,6 +1,7 @@
 # Multi-stage build:
 # Stage 1 (tailwind): Node 22 Alpine — compile Tailwind CSS from source
 # Stage 2 (build):    .NET SDK 10   — restore + publish ASP.NET app
+# Stage 2b (migrations): EF migration bundle for deploy-time schema updates
 # Stage 3 (runtime):  ASP.NET 10    — minimal runtime image
 
 # ── Stage 1: Tailwind CSS build ───────────────────────────────────────────────
@@ -49,6 +50,16 @@ RUN dotnet publish WebIde.Frontend/WebIde.Frontend.csproj \
       --self-contained false \
       -o /app/publish
 
+# ── Stage 2b: EF migration bundle ───────────────────────────────────────────
+FROM build AS migrations
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+RUN dotnet ef migrations bundle \
+      --project WebIde.DAL \
+      --startup-project WebIde.Frontend \
+      --configuration Release \
+      -o /app/efbundle
+
 # ── Stage 3: Runtime image ────────────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
@@ -59,6 +70,7 @@ RUN adduser --disabled-password --gecos "" appuser
 USER appuser
 
 COPY --from=build /app/publish .
+COPY --from=migrations /app/efbundle /app/efbundle
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
