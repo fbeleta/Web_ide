@@ -7,7 +7,7 @@ using WebIde.Web.Repositories;
 namespace WebIde.Web.Controllers;
 
 [Route("orgs")]
-[Authorize]
+[Authorize(Roles = "Admin,Instructor")]
 public class OrganizationController : Controller
 {
     private readonly OrganizationRepository _repo;
@@ -20,6 +20,7 @@ public class OrganizationController : Controller
     }
 
     [Route("")]
+    [AllowAnonymous]
     public IActionResult Index()
     {
         ViewData["Title"] = "ORGANIZATIONS";
@@ -27,6 +28,7 @@ public class OrganizationController : Controller
     }
 
     [Route("{id:int}")]
+    [AllowAnonymous]
     public IActionResult Details(int id)
     {
         var org = _repo.GetById(id);
@@ -90,6 +92,7 @@ public class OrganizationController : Controller
     [Route("{id:int}/delete")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);

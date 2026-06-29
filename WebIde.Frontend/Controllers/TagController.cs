@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -5,18 +6,21 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
+[Authorize(Roles = "Admin,Instructor")]
 public class TagController : Controller
 {
     private readonly TagRepository _repo;
 
     public TagController(TagRepository repo) => _repo = repo;
 
+    [AllowAnonymous]
     public IActionResult Index()
     {
         ViewData["Title"] = "TAGS";
         return View(_repo.GetAll());
     }
 
+    [AllowAnonymous]
     public IActionResult Details(int id)
     {
         var tag = _repo.GetById(id);
@@ -74,6 +78,7 @@ public class TagController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);
@@ -82,6 +87,7 @@ public class TagController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Search(string q)
     {
         var results = _repo.Search(q ?? "");

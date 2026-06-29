@@ -70,7 +70,7 @@ public class ProblemController : Controller
     // ── Create ────────────────────────────────────────────────────────────────
 
     [HttpGet("create")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Instructor")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE PROBLEM";
@@ -80,7 +80,7 @@ public class ProblemController : Controller
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Instructor")]
     public IActionResult Create(CreateProblemViewModel model)
     {
         if (!ModelState.IsValid)
@@ -118,7 +118,7 @@ public class ProblemController : Controller
     // ── Edit ──────────────────────────────────────────────────────────────────
 
     [HttpGet("{id:int}/edit")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Instructor")]
     public IActionResult Edit(int id)
     {
         var problem = _db.Problems.Include(p => p.Tags).Include(p => p.Attachments).FirstOrDefault(p => p.Id == id);
@@ -145,7 +145,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/edit")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Instructor")]
     public IActionResult Edit(int id, CreateProblemViewModel model)
     {
         var problem = _db.Problems.Include(p => p.Tags).FirstOrDefault(p => p.Id == id);
@@ -179,7 +179,7 @@ public class ProblemController : Controller
     // ── Delete (soft delete) ───────────────────────────────────────────────────
 
     [HttpGet("{id:int}/delete")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -190,7 +190,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteConfirmed(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -204,7 +204,7 @@ public class ProblemController : Controller
     // ── Dropzone attachment upload ─────────────────────────────────────────────
 
     [HttpPost("{id:int}/attachments")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Instructor")]
     public async Task<IActionResult> UploadAttachment(int id, IFormFile? file)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -261,7 +261,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/attachments/{attachmentId:int}/delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Instructor")]
     public IActionResult DeleteAttachment(int id, int attachmentId)
     {
         var attachment = _db.Attachments.FirstOrDefault(a => a.Id == attachmentId && a.ProblemId == id);

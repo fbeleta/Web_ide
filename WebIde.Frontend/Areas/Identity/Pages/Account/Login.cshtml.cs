@@ -73,6 +73,7 @@ public class LoginModel : PageModel
                 new("webide:userId",           domainUser.Id.ToString()),
                 new("webide:displayName",      domainUser.DisplayName),
                 new("webide:avatarUrl",        domainUser.AvatarUrl ?? ""),
+                new(ClaimTypes.Role,           domainUser.Role.ToString()),
             };
             var identity  = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);

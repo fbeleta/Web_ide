@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -6,6 +7,7 @@ using WebIde.Web.Repositories;
 namespace WebIde.Web.Controllers;
 
 [Route("problems/{problemId:int}/testcases")]
+[Authorize(Roles = "Admin,Instructor")]
 public class TestCaseController : Controller
 {
     private readonly TestCaseRepository _repo;
@@ -18,6 +20,7 @@ public class TestCaseController : Controller
     }
 
     [Route("")]
+    [AllowAnonymous]
     public IActionResult Index(int problemId)
     {
         var problem = _problems.GetById(problemId);
@@ -114,6 +117,7 @@ public class TestCaseController : Controller
     [Route("{id:int}/delete")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public IActionResult Delete(int problemId, int id)
     {
         _repo.SoftDelete(id);
@@ -123,6 +127,7 @@ public class TestCaseController : Controller
 
     [Route("search")]
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Search(int problemId, string q)
     {
         var results = _repo.Search(problemId, q ?? "");

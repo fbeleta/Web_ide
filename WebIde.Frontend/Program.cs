@@ -130,6 +130,7 @@ if (!string.IsNullOrEmpty(githubClientId))
             identity.AddClaim(new Claim("webide:userId",      user.Id.ToString()));
             identity.AddClaim(new Claim("webide:avatarUrl",   user.AvatarUrl ?? ""));
             identity.AddClaim(new Claim("webide:displayName", user.DisplayName));
+            identity.AddClaim(new Claim(ClaimTypes.Role,      user.Role.ToString()));
             ctx.Principal!.AddIdentity(identity);
         };
     });

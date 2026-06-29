@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -5,6 +6,7 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
+[Authorize(Roles = "Admin,Instructor")]
 public class ProblemSetController : Controller
 {
     private readonly ProblemSetRepository _repo;
@@ -16,12 +18,14 @@ public class ProblemSetController : Controller
         _orgs = orgs;
     }
 
+    [AllowAnonymous]
     public IActionResult Index()
     {
         ViewData["Title"] = "PROBLEM SETS";
         return View(_repo.GetAll());
     }
 
+    [AllowAnonymous]
     public IActionResult Details(int id)
     {
         var ps = _repo.GetById(id);
@@ -111,6 +115,7 @@ public class ProblemSetController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);
@@ -119,6 +124,7 @@ public class ProblemSetController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Search(string q)
     {
         var results = _repo.Search(q ?? "");
