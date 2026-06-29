@@ -167,6 +167,7 @@
         "unlink",
         "unlinkat",
         "utimensat",
+        "fork",
         "vfork",
         "wait4",
         "waitid",
