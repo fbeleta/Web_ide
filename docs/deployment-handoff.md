@@ -169,7 +169,7 @@ Every sandbox container runs with these exact Docker flags — **non-negotiable*
 docker run --rm \
   --network none \              # zero network access
   --read-only \                 # root filesystem immutable
-  --tmpfs /tmp:size=64m,mode=1777 \
+  --tmpfs /tmp:size=64m,mode=1777,exec \  # exec required — C/C++ runs /tmp/a.out (Docker tmpfs is noexec by default)
   --memory $MEMORY_MB \         # min(problem.MemoryLimitKb/1024, 512)
   --memory-swap $MEMORY_MB \    # disable swap (no swap escape)
   --cpus 0.9 \                  # matches §4 slot allocation

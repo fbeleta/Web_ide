@@ -106,6 +106,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/webide-src:/tmp/webide-src
+      - ./sandbox/seccomp-profile.json:/sandbox/seccomp-profile.json:ro
     depends_on:
       - postgres
       - redis

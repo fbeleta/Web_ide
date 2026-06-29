@@ -13,6 +13,13 @@ public class SandboxOptions
     public string PythonDigest { get; set; } = "";
     public string NodeDigest { get; set; } = "";
 
+    // Path (inside the worker container) to the custom seccomp profile.
+    // The Docker Engine API expects the profile JSON *content*, not a path
+    // (only the docker CLI resolves file paths), so the orchestrator reads
+    // this file and inlines its contents. If the file is missing (e.g. local
+    // `dotnet run` outside the container), the default Docker profile is used.
+    public string SeccompProfilePath { get; set; } = "/sandbox/seccomp-profile.json";
+
     public string GccImage    => Resolve("gcc",    GccDigest);
     public string PythonImage => Resolve("python", PythonDigest);
     public string NodeImage   => Resolve("node",   NodeDigest);
