@@ -1,4 +1,8 @@
-@* Left sidebar partial — inject on inner pages with @await Html.PartialAsync("_Sidebar") *@
+@* Left sidebar partial — inject on inner pages with @await Html.PartialAsync("_Sidebar").
+   Only shown to guests; logged-in users navigate via the top nav (the body gets the
+   `logged-in` class which neutralizes the `lg:ml-64` content offset). *@
+@if (User.Identity?.IsAuthenticated != true)
+{
 <aside class="fixed left-0 top-0 h-full w-64 bg-[#f6f6f6] border-r-4 border-black pt-24 hidden lg:flex flex-col z-40">
 
     <!-- User identity block -->
@@ -106,3 +110,4 @@
         </a>
     </nav>
 </aside>
+}
