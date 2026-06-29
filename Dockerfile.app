@@ -15,6 +15,7 @@ RUN cd tailwind && npm install --ignore-scripts 2>/dev/null || \
 
 COPY tailwind/ ./tailwind/
 COPY WebIde.Frontend/Views/ ./WebIde.Frontend/Views/
+COPY WebIde.Frontend/Areas/ ./WebIde.Frontend/Areas/
 COPY WebIde.Frontend/wwwroot/js/ ./WebIde.Frontend/wwwroot/js/
 
 RUN npx --prefix ./tailwind tailwindcss \

@@ -4,45 +4,80 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-5">
-        <h1 class="mb-4">Log in</h1>
+<div class="min-h-[calc(100vh-80px)] mt-20 px-4 py-10 flex items-start justify-center">
+    <div class="w-full max-w-md">
 
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 sm:p-8">
 
-            <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label"></label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
+            <h1 class="text-3xl font-black uppercase leading-none mb-1"
+                style="font-family: 'Space Grotesk', sans-serif;">LOG_IN</h1>
+            <p class="text-xs font-bold uppercase text-outline mb-6"
+               style="font-family: 'Space Grotesk', sans-serif;">ACCESS_YOUR_ACCOUNT</p>
 
-            <div class="mb-3">
-                <label asp-for="Input.Password" class="form-label"></label>
-                <input asp-for="Input.Password" class="form-control" type="password" autocomplete="current-password" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
+            <form method="post" class="space-y-5">
+                <div asp-validation-summary="ModelOnly"
+                     class="text-error text-xs font-bold uppercase"
+                     style="font-family: 'Space Grotesk', sans-serif;"></div>
 
-            <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
-        </form>
+                <div class="space-y-1">
+                    <label asp-for="Input.Email"
+                           class="block text-xs font-bold uppercase"
+                           style="font-family: 'Space Grotesk', sans-serif;"></label>
+                    <input asp-for="Input.Email" autocomplete="username"
+                           class="w-full border-2 border-black bg-white px-3 py-2 text-sm font-mono
+                                  focus:outline-none focus:ring-0 focus:border-primary" />
+                    <span asp-validation-for="Input.Email" class="text-error text-xs font-bold"></span>
+                </div>
 
-        @if (Model.ExternalProviders.Any())
-        {
-            <hr />
-            <p class="text-center">Or sign in with</p>
-            <form method="post" asp-page-handler="ExternalLogin">
-                @foreach (var provider in Model.ExternalProviders)
-                {
-                    <button type="submit" name="provider" value="@provider.Name"
-                            class="btn btn-outline-secondary w-100 mb-2">
-                        @provider.DisplayName
-                    </button>
-                }
+                <div class="space-y-1">
+                    <label asp-for="Input.Password"
+                           class="block text-xs font-bold uppercase"
+                           style="font-family: 'Space Grotesk', sans-serif;"></label>
+                    <input asp-for="Input.Password" type="password" autocomplete="current-password"
+                           class="w-full border-2 border-black bg-white px-3 py-2 text-sm font-mono
+                                  focus:outline-none focus:ring-0 focus:border-primary" />
+                    <span asp-validation-for="Input.Password" class="text-error text-xs font-bold"></span>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-primary text-on-primary font-black uppercase px-5 py-3 border-2 border-black
+                               shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                               hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                               transition-all cursor-pointer text-sm"
+                        style="font-family: 'Space Grotesk', sans-serif;">LOG_IN</button>
             </form>
-        }
 
-        <hr />
-        <p>Don't have an account? <a asp-page="Register">Register</a></p>
+            @if (Model.ExternalProviders.Any())
+            {
+                <div class="flex items-center gap-3 my-6">
+                    <span class="flex-1 border-t-2 border-black/20"></span>
+                    <span class="text-[10px] font-bold uppercase text-outline"
+                          style="font-family: 'Space Grotesk', sans-serif;">OR_SIGN_IN_WITH</span>
+                    <span class="flex-1 border-t-2 border-black/20"></span>
+                </div>
+
+                <form method="post" asp-page-handler="ExternalLogin" class="space-y-2">
+                    @foreach (var provider in Model.ExternalProviders)
+                    {
+                        <button type="submit" name="provider" value="@provider.Name"
+                                class="w-full bg-white text-black font-black uppercase px-5 py-3 border-2 border-black
+                                       shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                                       hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                                       transition-all cursor-pointer text-sm"
+                                style="font-family: 'Space Grotesk', sans-serif;">@provider.DisplayName</button>
+                    }
+                </form>
+            }
+
+            <div class="mt-6 pt-5 border-t-2 border-black/10 text-center">
+                <p class="text-xs font-bold uppercase text-outline"
+                   style="font-family: 'Space Grotesk', sans-serif;">
+                    NO_ACCOUNT?
+                    <a asp-page="Register" class="text-primary hover:underline no-underline ml-1">REGISTER</a>
+                </p>
+            </div>
+
+        </div>
     </div>
 </div>
 

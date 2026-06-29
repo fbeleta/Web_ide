@@ -2,6 +2,7 @@
 module.exports = {
   content: [
     "./WebIde.Frontend/Views/**/*.cshtml",
+    "./WebIde.Frontend/Areas/**/*.cshtml",
     "./WebIde.Frontend/wwwroot/js/**/*.js",
   ],
   darkMode: "class",
