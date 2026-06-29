@@ -27,7 +27,26 @@ public class SandboxOrchestrator(
 
     private readonly ConcurrentDictionary<int, byte> _active = new();
 
+    // Built once: ["no-new-privileges", "seccomp=<json content>"] — the Docker
+    // Engine API requires the seccomp profile *content*, not a file path.
+    private readonly string[] _securityOpts = BuildSecurityOpts(sandboxOpts.Value, logger);
+
     public IReadOnlyCollection<int> ActiveSubmissionIds => (IReadOnlyCollection<int>)_active.Keys;
+
+    private static string[] BuildSecurityOpts(SandboxOptions opts, ILogger logger)
+    {
+        var path = opts.SeccompProfilePath;
+        if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+        {
+            var json = File.ReadAllText(path);
+            return new[] { "no-new-privileges", $"seccomp={json}" };
+        }
+
+        logger.LogWarning(
+            "Seccomp profile not found at '{Path}'; falling back to Docker's default profile",
+            path);
+        return new[] { "no-new-privileges" };
+    }
 
     public async Task<SandboxRunResult> RunAsync(SubmissionJob job, Problem problem, IList<TestCase> testCases, CancellationToken ct)
     {
@@ -69,12 +88,15 @@ public class SandboxOrchestrator(
             {
                 NetworkMode    = "none",
                 ReadonlyRootfs = true,
-                Tmpfs = new Dictionary<string, string> { ["/tmp"] = "size=64m,mode=1777" },
+                // exec is required: the C/C++ wrapper compiles to /tmp/a.out and
+                // executes it. Docker mounts --tmpfs noexec by default, which would
+                // make every C/C++ submission fail with "Permission denied".
+                Tmpfs = new Dictionary<string, string> { ["/tmp"] = "size=64m,mode=1777,exec" },
                 Memory      = memBytes,
                 MemorySwap  = memBytes,
                 NanoCPUs    = (long)(workerOpts.Value.SandboxCpus * 1_000_000_000),
                 PidsLimit   = 64,
-                SecurityOpt = new[] { "no-new-privileges", "seccomp=/sandbox/seccomp-profile.json" },
+                SecurityOpt = _securityOpts,
                 CapDrop     = new[] { "ALL" },
                 Ulimits     = new[] { new Ulimit { Name = "fsize", Soft = 67108864, Hard = 67108864 } },
                 Mounts      = new List<Mount>

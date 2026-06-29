@@ -68,3 +68,27 @@ jobs:
         with:
           name: sandbox-digests
           path: sandbox-digests/
+
+  deploy-digests:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Update sandbox digests on server and restart worker
+        uses: appleboy/ssh-action@v1
+        env:
+          GCC_DIGEST:    ${{ needs.build-and-push.outputs.gcc-digest }}
+          PYTHON_DIGEST: ${{ needs.build-and-push.outputs.python-digest }}
+          NODE_DIGEST:   ${{ needs.build-and-push.outputs.node-digest }}
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: GCC_DIGEST,PYTHON_DIGEST,NODE_DIGEST
+          script: |
+            set -euo pipefail
+            cd /opt/webide
+            sed -i "s|^SANDBOX_GCC_DIGEST=.*|SANDBOX_GCC_DIGEST=$GCC_DIGEST|" .env
+            sed -i "s|^SANDBOX_PYTHON_DIGEST=.*|SANDBOX_PYTHON_DIGEST=$PYTHON_DIGEST|" .env
+            sed -i "s|^SANDBOX_NODE_DIGEST=.*|SANDBOX_NODE_DIGEST=$NODE_DIGEST|" .env
+            docker compose up -d webide-worker

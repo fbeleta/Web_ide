@@ -61,6 +61,8 @@ services:
       Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
       GitHub__ClientId:     ${GITHUB_CLIENT_ID}
       GitHub__ClientSecret: ${GITHUB_CLIENT_SECRET}
+      Google__ClientId:     ${GOOGLE_CLIENT_ID}
+      Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
       PublicHostname:       ${PUBLIC_HOSTNAME}
     volumes:
       - uploads-data:/app/wwwroot/uploads

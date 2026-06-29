@@ -65,6 +65,15 @@ jobs:
 
             IMAGE_TAG=$IMAGE_TAG docker compose pull webide-app webide-worker
 
+            # Ensure postgres is running before migration (first deploy: network doesn't exist yet)
+            docker compose up -d postgres
+            for i in $(seq 1 15); do
+              if docker compose exec -T postgres pg_isready -U "${POSTGRES_USER:-webide}" > /dev/null 2>&1; then
+                break
+              fi
+              sleep 2
+            done
+
             # Run EF migration bundle before bringing up the new app
             docker run --rm \
               --env-file .env \

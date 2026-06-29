@@ -81,29 +81,33 @@ while [ "$i" -lt "$CASE_COUNT" ]; do
   STDIN_DATA=$(jq -r ".cases[$i].stdin" "$CASES_JSON")
   EXPECTED=$(jq -r ".cases[$i].expected" "$CASES_JSON")
 
-  T_START=$(date +%s%3N)
-
-  ACTUAL_STDOUT=$( \
-    printf '%s' "$STDIN_DATA" \
-    | timeout "${TIMEOUT_SEC}s" /usr/bin/time -v node "$SOLUTION" 2>/tmp/_stderr_$$ \
-    ; true
-  )
+  # timeout(1) runs the interpreter directly (nothing in between) so the whole
+  # process is killed cleanly on TLE — no orphan can keep the container alive.
+  # stdin/stdout/stderr use files, never a live $() pipe.
+  printf '%s' "$STDIN_DATA" > /tmp/_stdin_$$
+  T_START=$(cut -d' ' -f1 /proc/uptime)
+  set +e
+  timeout "${TIMEOUT_SEC}s" node "$SOLUTION" </tmp/_stdin_$$ >/tmp/_stdout_$$ 2>/tmp/_stderr_$$
   RUN_EXIT=$?
+  set -e
+  T_END=$(cut -d' ' -f1 /proc/uptime)
+  ACTUAL_STDOUT=$(cat /tmp/_stdout_$$ 2>/dev/null || true)
   ACTUAL_STDERR=$(cat /tmp/_stderr_$$ 2>/dev/null || true)
 
-  T_END=$(date +%s%3N)
-  WALL_MS=$(( T_END - T_START ))
-
-  PEAK_KB=$(printf '%s' "$ACTUAL_STDERR" | grep 'Maximum resident set size' | awk '{print $NF}')
-  PEAK_KB=${PEAK_KB:-0}
-  ACTUAL_STDERR=$(printf '%s' "$ACTUAL_STDERR" | grep -v 'Command being timed\|wall clock\|Maximum resident\|Major.*page\|Minor.*page\|Voluntary\|Involuntary\|Swaps\|File system\|Socket\|Signals\|Page size\|Percent of CPU\|Elapsed.*wall\|Maximum.*kilobytes\|Average.*kilobytes\|Average.*shared\|Average.*unshared\|Average.*stack\|Average.*total\|Exit status' || true)
+  # Wall time (ms) from monotonic /proc/uptime; peak RSS (KB) from cgroup v2
+  # (memory.peak is container-wide + monotonic; submission peak = max over cases).
+  WALL_MS=$(awk -v a="$T_START" -v b="$T_END" 'BEGIN{d=(b-a)*1000; if(d<0)d=0; printf "%d",d}')
+  PEAK_BYTES=$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes 2>/dev/null || echo 0)
+  PEAK_KB=$(( PEAK_BYTES / 1024 ))
 
   ACTUAL_STDOUT=$(cap_output "$ACTUAL_STDOUT" "$STDOUT_CAP")
   ACTUAL_STDERR=$(cap_output "$ACTUAL_STDERR" "$STDERR_CAP")
 
-  if [ "$RUN_EXIT" -eq 137 ]; then
+  # Exit-code map (busybox): SIGKILL (9/137) = OOM => MLE; SIGTERM from
+  # timeout (143) or GNU timeout (124) => TLE; other nonzero => RuntimeError.
+  if [ "$RUN_EXIT" -eq 137 ] || [ "$RUN_EXIT" -eq 9 ]; then
     VERDICT="MemoryLimitExceeded"
-  elif [ "$RUN_EXIT" -eq 124 ]; then
+  elif [ "$RUN_EXIT" -eq 124 ] || [ "$RUN_EXIT" -eq 143 ]; then
     VERDICT="TimeLimitExceeded"
   elif [ "$RUN_EXIT" -ne 0 ]; then
     VERDICT="RuntimeError"
@@ -133,7 +137,7 @@ while [ "$i" -lt "$CASE_COUNT" ]; do
 
   RESULTS=$(printf '%s' "$RESULTS" | jq --argjson c "$CASE_RESULT" '. + [$c]')
 
-  rm -f /tmp/_stderr_$$
+  rm -f /tmp/_stdin_$$ /tmp/_stdout_$$ /tmp/_stderr_$$
   i=$(( i + 1 ))
 done
 

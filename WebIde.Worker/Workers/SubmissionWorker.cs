@@ -113,7 +113,7 @@ public class SubmissionWorker(
         var result = evaluator.Evaluate(run, testCases);
 
         // Persist
-        await PersistResultAsync(factory, job.SubmissionId, result);
+        await PersistResultAsync(factory, job.SubmissionId, result, testCases);
 
         // Publish final result to Redis for SignalR bridge
         var evt = new SubmissionResultEvent(
@@ -131,29 +131,104 @@ public class SubmissionWorker(
         logger.LogInformation("Submission {Id} completed: {Status}", job.SubmissionId, result.Status);
     }
 
-    private async Task PersistResultAsync(IDbContextFactory<WebIdeDbContext> factory, int submissionId, EvaluationResult result)
+    private const int DbFieldCap = 65_536; // 64 KB per §6a
+
+    private async Task PersistResultAsync(
+        IDbContextFactory<WebIdeDbContext> factory, int submissionId,
+        EvaluationResult result, IList<WebIde.Model.TestCase> testCases)
     {
         using var ctx = factory.CreateDbContext();
         var submission = await ctx.Submissions.FindAsync(submissionId);
         if (submission is null) return;
 
-        var execResult = new ExecutionResult
+        // ExecutionResult is per-test-case in the schema (TestCaseId is a required
+        // FK), so write one row per case with that case's verdict + output.
+        var execResults = new List<ExecutionResult>();
+        if (result.CaseResults.Count > 0)
         {
-            Stdout       = result.ResultJson,
-            Stderr       = result.Stderr,
-            ExitCode     = result.Status == SubmissionStatus.CompileError ? 2 : 0,
-            TimedOut     = result.Status == SubmissionStatus.TimeLimitExceeded,
-            MemoryExceeded = result.Status == SubmissionStatus.MemoryLimitExceeded,
-        };
-        ctx.ExecutionResults.Add(execResult);
-        await ctx.SaveChangesAsync();
+            foreach (var cr in result.CaseResults)
+            {
+                var verdict = MapVerdict(cr.Verdict);
+                execResults.Add(new ExecutionResult
+                {
+                    SubmissionId   = submissionId,
+                    TestCaseId     = cr.Id,
+                    Stdout         = Truncate(cr.Stdout ?? "", DbFieldCap),
+                    Stderr         = Truncate(cr.Stderr ?? "", DbFieldCap),
+                    ExitCode       = 0,
+                    WallTimeMs     = cr.WallMs,
+                    PeakMemoryKb   = cr.PeakKb,
+                    Verdict        = verdict,
+                    TimedOut       = verdict == Verdict.TimeLimitExceeded,
+                    MemoryExceeded = verdict == Verdict.MemoryLimitExceeded,
+                });
+            }
+        }
+        else if (testCases.Count > 0)
+        {
+            // No per-case results (compile error / internal error). Attach one
+            // diagnostic row to the first test case so the UI can surface stderr.
+            var verdict = result.Status == SubmissionStatus.CompileError
+                ? Verdict.CompileError : Verdict.RuntimeError;
+            execResults.Add(new ExecutionResult
+            {
+                SubmissionId   = submissionId,
+                TestCaseId     = testCases[0].Id,
+                Stdout         = "",
+                Stderr         = Truncate(result.Stderr ?? "", DbFieldCap),
+                ExitCode       = result.Status == SubmissionStatus.CompileError ? 2 : 1,
+                WallTimeMs     = 0,
+                PeakMemoryKb   = 0,
+                Verdict        = verdict,
+                TimedOut       = false,
+                MemoryExceeded = false,
+            });
+        }
+
+        if (execResults.Count > 0)
+        {
+            ctx.ExecutionResults.AddRange(execResults);
+            await ctx.SaveChangesAsync();
+            // Point the submission at the most representative (worst) case so the
+            // single-result UI shows the failing case.
+            var primary = execResults.OrderByDescending(er => VerdictRank(er.Verdict)).First();
+            submission.ExecutionResultId = primary.Id;
+        }
 
         submission.Status        = result.Status;
         submission.Score         = result.Score;
         submission.WallTimeMs    = result.WallTimeMs;
         submission.PeakMemoryKb  = result.PeakMemoryKb;
-        submission.ExecutionResultId = execResult.Id;
         await ctx.SaveChangesAsync();
+    }
+
+    private static Verdict MapVerdict(string v) => v switch
+    {
+        "Accepted"            => Verdict.Accepted,
+        "WrongAnswer"         => Verdict.WrongAnswer,
+        "TimeLimitExceeded"   => Verdict.TimeLimitExceeded,
+        "MemoryLimitExceeded" => Verdict.MemoryLimitExceeded,
+        "RuntimeError"        => Verdict.RuntimeError,
+        "CompileError"        => Verdict.CompileError,
+        _                     => Verdict.Pending,
+    };
+
+    private static int VerdictRank(Verdict v) => v switch
+    {
+        Verdict.MemoryLimitExceeded => 6,
+        Verdict.TimeLimitExceeded   => 5,
+        Verdict.RuntimeError        => 4,
+        Verdict.CompileError        => 4,
+        Verdict.WrongAnswer         => 3,
+        Verdict.Accepted            => 1,
+        _                           => 0,
+    };
+
+    private static string Truncate(string s, int maxBytes)
+    {
+        if (System.Text.Encoding.UTF8.GetByteCount(s) <= maxBytes) return s;
+        var bytes = System.Text.Encoding.UTF8.GetBytes(s);
+        return System.Text.Encoding.UTF8.GetString(bytes, 0, maxBytes) + "\n[truncated]";
     }
 
     private async Task UpdateStatusAsync(IDbContextFactory<WebIdeDbContext> factory, int submissionId, SubmissionStatus status)

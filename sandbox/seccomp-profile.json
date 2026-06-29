@@ -71,6 +71,7 @@
         "gettimeofday",
         "getuid",
         "ioctl",
+        "kill",
         "lseek",
         "madvise",
         "membarrier",

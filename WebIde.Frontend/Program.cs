@@ -126,13 +126,19 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie(IdentityConstants.ExternalScheme)
 .AddCookie(IdentityConstants.TwoFactorUserIdScheme);
-// Google OAuth disabled — add Google:ClientId and Google:ClientSecret to enable
-// .AddGoogle(options =>
-// {
-//     options.ClientId     = config["Google:ClientId"] ?? "";
-//     options.ClientSecret = config["Google:ClientSecret"] ?? "";
-//     options.SignInScheme  = IdentityConstants.ExternalScheme;
-// });
+
+// ── Google OAuth — only registered if credentials are configured ─────────────
+var googleClientId     = config["Google:ClientId"];
+var googleClientSecret = config["Google:ClientSecret"];
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+{
+    builder.Services.AddAuthentication().AddGoogle(options =>
+    {
+        options.ClientId     = googleClientId;
+        options.ClientSecret = googleClientSecret;
+        options.SignInScheme  = IdentityConstants.ExternalScheme;
+    });
+}
 
 
 // ── Identity — services only (no AddAuthentication override) ──────────────────
@@ -192,6 +198,15 @@ builder.Services.AddHealthChecks()
 
 // ── Build ─────────────────────────────────────────────────────────────────────
 var app = builder.Build();
+
+// ── Auto-migrate — idempotent; skips if already applied ──────────────────────
+// Skip for InMemory provider (used by test factory).
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<WebIdeDbContext>();
+    if (db.Database.IsRelational())
+        db.Database.Migrate();
+}
 
 // ── Seed roles ────────────────────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
