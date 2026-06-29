@@ -74,4 +74,31 @@ public class UserRepository
         await _db.SaveChangesAsync();
         return user;
     }
+
+    // Maps an Identity (email/password) AppUser onto a domain User so the rest of
+    // the site (navbar, submissions, hub) can key off webide:userId like GitHub users.
+    public async Task<User> UpsertLocalUserAsync(string email, string username, string displayName)
+    {
+        var user = await _db.DomainUsers
+            .FirstOrDefaultAsync(u => u.GitHubId == null && u.Email == email);
+        if (user is null)
+        {
+            user = new User
+            {
+                Username     = username,
+                DisplayName  = displayName,
+                Email        = email,
+                Role         = UserRole.Student,
+                RegisteredAt = DateTime.UtcNow,
+            };
+            _db.DomainUsers.Add(user);
+        }
+        else
+        {
+            user.Username    = username;
+            user.DisplayName = displayName;
+        }
+        await _db.SaveChangesAsync();
+        return user;
+    }
 }

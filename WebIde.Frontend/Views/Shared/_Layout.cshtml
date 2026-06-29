@@ -30,7 +30,7 @@
         .flatpickr-weekdays { background: #000; }
     </style>
 </head>
-<body class="bg-background text-on-background" style="font-family: 'Inter', sans-serif;">
+<body class="bg-background text-on-background @(User.Identity?.IsAuthenticated == true ? "logged-in" : "")" style="font-family: 'Inter', sans-serif;">
 
     <!-- ── Top Navigation ──────────────────────────────────────────── -->
     <nav class="fixed top-0 left-0 z-50 flex justify-between items-center w-full px-6 h-20
