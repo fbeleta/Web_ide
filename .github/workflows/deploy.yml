@@ -99,6 +99,12 @@ jobs:
             sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$IMAGE_TAG/" .env
             docker compose up -d webide-app webide-worker
 
+            # Recreating webide-app gives it a new IP on the docker network;
+            # nginx caches the old upstream IP and would 502. Reload nginx so it
+            # re-resolves before the health check (which goes through nginx).
+            sleep 3
+            docker compose exec -T nginx nginx -s reload || docker compose restart nginx
+
             # Poll /health (liveness) for up to 60s
             SUCCESS=0
             for i in $(seq 1 30); do
