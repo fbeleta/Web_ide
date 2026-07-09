@@ -3,9 +3,6 @@
     // Single source of truth for a problem table row — used by both the full list
     // (Index) and the AJAX search results, so the two always render identically.
     var isManager = await Context.IsIdentityManagerAsync();
-    // Delete is Admin-only (ProblemController.Delete requires Roles="Admin"); Managers
-    // get EDIT but not DEL, so the button matches what the controller will allow.
-    var isAdmin = await Context.IsIdentityAdminAsync();
     var hasAccepted = Model.Submissions.Any(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted);
     var rate = Model.Submissions.Count == 0 ? 0 :
         Math.Round((double)Model.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted) / Model.Submissions.Count * 100, 1);
@@ -77,14 +74,11 @@
                    class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
                           hover:bg-black hover:text-white transition-none no-underline"
                    style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
-                @if (isAdmin)
-                {
-                    <button type="button"
-                            onclick="openDeleteModal('@Url.Action("Delete","Problem", new { id = Model.Id })', '@Model.Title.Replace("'","\\'")')"
-                            class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
-                                   hover:bg-error hover:text-white transition-none"
-                            style="font-family:'Space Grotesk',sans-serif;">DEL</button>
-                }
+                <button type="button"
+                        onclick="openDeleteModal('@Url.Action("Delete","Problem", new { id = Model.Id })', '@Model.Title.Replace("'","\\'")')"
+                        class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
+                               hover:bg-error hover:text-white transition-none"
+                        style="font-family:'Space Grotesk',sans-serif;">DEL</button>
             }
         </div>
     </td>

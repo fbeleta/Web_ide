@@ -182,7 +182,7 @@ public class ProblemController : Controller
     // ── Delete (soft delete) ───────────────────────────────────────────────────
 
     [HttpGet("{id:int}/delete")]
-    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Delete(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -193,7 +193,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult DeleteConfirmed(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);

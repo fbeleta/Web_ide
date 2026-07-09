@@ -117,7 +117,7 @@ public class ProblemSetController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);
