@@ -1,5 +1,4 @@
 FROM alpine:3.20
-
 # gcc/g++ for compilation; jq for JSON parsing; procps for /usr/bin/time -v (peak memory)
 RUN apk add --no-cache gcc g++ musl-dev jq procps
 

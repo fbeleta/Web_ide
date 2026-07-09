@@ -91,4 +91,8 @@ jobs:
             sed -i "s|^SANDBOX_GCC_DIGEST=.*|SANDBOX_GCC_DIGEST=$GCC_DIGEST|" .env
             sed -i "s|^SANDBOX_PYTHON_DIGEST=.*|SANDBOX_PYTHON_DIGEST=$PYTHON_DIGEST|" .env
             sed -i "s|^SANDBOX_NODE_DIGEST=.*|SANDBOX_NODE_DIGEST=$NODE_DIGEST|" .env
+            # Pre-pull sandbox images so the first submission doesn't fail waiting for a pull
+            docker pull "ghcr.io/fbeleta/web_ide/sandbox-gcc@$GCC_DIGEST"
+            docker pull "ghcr.io/fbeleta/web_ide/sandbox-python@$PYTHON_DIGEST"
+            docker pull "ghcr.io/fbeleta/web_ide/sandbox-node@$NODE_DIGEST"
             docker compose up -d webide-worker
