@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Model.Enums;
 using WebIde.Web.Models;
@@ -6,6 +7,10 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
+// Landing page + error are public; without this the global AuthorizeFilter would
+// force a login, and after logout the GitHub challenge would silently re-log the
+// user in (github.com SSO) — i.e. logout would appear to do nothing.
+[AllowAnonymous]
 public class HomeController : Controller
 {
     private readonly ProblemRepository _problems;

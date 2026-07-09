@@ -111,9 +111,12 @@
     </nav>
 
     <!-- ── Page Content ─────────────────────────────────────────────── -->
-    <div>
+    <!-- Concrete minimum height so short pages fill the viewport and the footer
+         is pushed to the bottom instead of the content squishing up. Pages add
+         their own pt-* to clear the fixed 80px nav. -->
+    <main class="min-h-screen">
         @RenderBody()
-    </div>
+    </main>
 
     <!-- ── Footer ───────────────────────────────────────────────────── -->
     <footer class="w-full bg-black border-t-4 border-black">
