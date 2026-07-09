@@ -68,7 +68,7 @@
                     {
                         <label class="flex items-center gap-1 cursor-pointer">
                             <input type="checkbox" name="TagIds" value="@tag.Id"
-                                   @(Model.TagIds != null && Model.TagIds.Contains(tag.Id) ? "checked" : "") />
+                                   @(Model?.TagIds != null && Model.TagIds.Contains(tag.Id) ? "checked" : "") />
                             <span class="font-mono text-sm">@tag.Name</span>
                         </label>
                     }

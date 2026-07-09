@@ -78,7 +78,7 @@ public class ProblemController : Controller
     {
         ViewData["Title"] = "CREATE PROBLEM";
         ViewData["Tags"] = _db.Tags.OrderBy(t => t.Name).ToList();
-        return View();
+        return View(new CreateProblemViewModel());
     }
 
     [HttpPost("create")]
