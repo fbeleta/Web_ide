@@ -91,9 +91,10 @@ jobs:
             docker run --rm \
               --env-file .env \
               -e ConnectionStrings__WebIdeDb="Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}" \
+              --entrypoint /app/efbundle \
               --network webide_webide-net \
               ghcr.io/$NAMESPACE/app:$IMAGE_TAG \
-              /app/efbundle --connection "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+              --connection "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
 
             sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$IMAGE_TAG/" .env
             docker compose up -d webide-app webide-worker
