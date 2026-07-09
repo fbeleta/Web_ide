@@ -230,6 +230,7 @@
 
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@@0.47.0/min/vs/loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@8.0.0/dist/browser/signalr.min.js"></script>
 <script>
 (function () {
     const PROBLEM_ID = @Model.Id;
@@ -246,6 +247,54 @@
         python:     '# your code here\n',
         javascript: '// your code here\nconst lines = require("fs").readFileSync("/dev/stdin","utf8").trim().split("\\n");\n',
     };
+
+    // ── Live submission tracking via SignalR ────────────────────────────────
+    const TERMINAL = {
+        Accepted:            ['#106b00', 'ACCEPTED'],
+        WrongAnswer:         ['#b60055', 'WRONG_ANSWER'],
+        TimeLimitExceeded:   ['#b60055', 'TIME_LIMIT_EXCEEDED'],
+        MemoryLimitExceeded: ['#b60055', 'MEMORY_LIMIT_EXCEEDED'],
+        CompileError:        ['#b60055', 'COMPILE_ERROR'],
+        RuntimeError:        ['#b60055', 'RUNTIME_ERROR'],
+        InternalError:       ['#b60055', 'INTERNAL_ERROR'],
+    };
+    let liveConnection = null;
+
+    function trackSubmission(submissionId, consoleEl) {
+        const link = `<a href="/submissions/${submissionId}" class="text-primary underline">submission #${submissionId}</a>`;
+        consoleEl.innerHTML =
+            `<p style="color:#5f4600;font-family:'Space Grotesk',sans-serif;" class="font-bold">&gt;&gt;&gt; SUBMITTED — ID #${submissionId} — STATUS: PENDING…</p>`;
+
+        // Drop any previous connection from an earlier submit on this page.
+        if (liveConnection) { try { liveConnection.stop(); } catch (e) {} }
+
+        const conn = new signalR.HubConnectionBuilder()
+            .withUrl('/hubs/execution')
+            .withAutomaticReconnect()
+            .build();
+        liveConnection = conn;
+
+        conn.on('submissionUpdate', function (id, status, score, wallTimeMs, peakMemoryKb) {
+            if (id !== submissionId) return;
+            const terminal = TERMINAL[status];
+            if (!terminal) {
+                consoleEl.innerHTML =
+                    `<p style="color:#5f4600;font-family:'Space Grotesk',sans-serif;" class="font-bold">&gt;&gt;&gt; ${(status || 'RUNNING').toUpperCase()}… — ${link}</p>`;
+                return;
+            }
+            const [color, label] = terminal;
+            consoleEl.innerHTML =
+                `<p style="color:${color};font-family:'Space Grotesk',sans-serif;" class="font-bold">&gt;&gt;&gt; ${label} — SCORE ${score} — ${wallTimeMs}ms — ${peakMemoryKb}KB<br>View ${link} for full output.</p>`;
+            try { conn.stop(); } catch (e) {}
+        });
+
+        conn.start()
+            .then(function () { return conn.invoke('SubscribeToSubmission', submissionId); })
+            .catch(function () {
+                consoleEl.innerHTML =
+                    `<p style="color:#5f4600;font-family:'Space Grotesk',sans-serif;" class="font-bold">&gt;&gt;&gt; SUBMITTED — ID #${submissionId}. Live updates unavailable — open ${link} for results.</p>`;
+            });
+    }
 
     require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@@0.47.0/min/vs' } });
     require(['vs/editor/editor.main'], function () {
@@ -321,7 +370,7 @@
                 }
 
                 const { submissionId } = await res.json();
-                consoleEl.innerHTML = `<p style="color:#106b00;font-family:'Space Grotesk',sans-serif;" class="font-bold">&gt;&gt;&gt; SUBMITTED — ID #${submissionId} — STATUS: PENDING<br>Check <a href="/submissions/${submissionId}" class="text-primary underline">submission #${submissionId}</a> for results.</p>`;
+                trackSubmission(submissionId, consoleEl);
 
             } catch (e) {
                 consoleEl.innerHTML = `<p class="text-error font-bold">&gt;&gt;&gt; NETWORK_ERROR: ${e.message}</p>`;

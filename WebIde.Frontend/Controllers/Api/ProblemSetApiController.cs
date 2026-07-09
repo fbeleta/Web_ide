@@ -38,7 +38,7 @@ public class ProblemSetApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<ProblemSetDto> Create([FromBody] CreateProblemSetDto dto)
     {
         var problems = _db.Problems.Where(p => dto.ProblemIds.Contains(p.Id)).ToList();
@@ -57,7 +57,7 @@ public class ProblemSetApiController : BaseApiController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<ProblemSetDto> Update(int id, [FromBody] UpdateProblemSetDto dto)
     {
         var ps = _db.ProblemSets.Include(ps => ps.Problems).FirstOrDefault(ps => ps.Id == id);
@@ -75,7 +75,7 @@ public class ProblemSetApiController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var ps = _db.ProblemSets.FirstOrDefault(ps => ps.Id == id);

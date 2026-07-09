@@ -14,12 +14,12 @@ public class ExecutionResultApiController : BaseApiController
     public ExecutionResultApiController(WebIdeDbContext db) => _db = db;
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<IEnumerable<ExecutionResultDto>> GetAll() =>
         Ok(_db.ExecutionResults.OrderByDescending(e => e.Id).ToList().Select(ToDto));
 
     [HttpGet("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity)]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api)]
     public ActionResult<ExecutionResultDto> GetById(int id)
     {
         var er = _db.ExecutionResults.FirstOrDefault(e => e.Id == id);

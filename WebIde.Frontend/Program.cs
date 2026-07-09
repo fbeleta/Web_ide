@@ -44,6 +44,12 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString);
 
+// ── Redis → SignalR bridge ────────────────────────────────────────────────────
+// Forwards worker-published "execution:{id}" events to SignalR group
+// "submission:{id}". This is the only path that delivers live results to the
+// browser — see RedisSubscriptionService.
+builder.Services.AddHostedService<RedisSubscriptionService>();
+
 // ── Database ──────────────────────────────────────────────────────────────────
 builder.Services.AddDbContext<WebIdeDbContext>(options =>
     options.UseNpgsql(
@@ -125,7 +131,10 @@ builder.Services.AddAuthentication(options =>
     options.LogoutPath         = "/Identity/Account/Logout";
 })
 .AddCookie(IdentityConstants.ExternalScheme)
-.AddCookie(IdentityConstants.TwoFactorUserIdScheme);
+.AddCookie(IdentityConstants.TwoFactorUserIdScheme)
+// ── Personal Access Tokens — headless auth for /api (VS Code ext, MCP) ────────
+.AddScheme<AuthenticationSchemeOptions, WebIde.Web.Auth.PersonalAccessTokenAuthenticationHandler>(
+    WebIde.Web.Auth.PersonalAccessTokenAuthenticationHandler.SchemeName, _ => { });
 
 // ── Google OAuth — only registered if credentials are configured ─────────────
 var googleClientId     = config["Google:ClientId"];

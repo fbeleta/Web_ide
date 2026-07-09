@@ -1,7 +1,11 @@
 @model WebIde.Model.Submission
+@using WebIde.Model.Enums
 @{
     ViewData["Title"] = "SUBMISSION #" + Model.Id;
     var result = Model.ExecutionResult;
+    // A submission still in flight gets a live SignalR connection; a finished one
+    // is fully server-rendered and needs none.
+    var isLive = Model.Status is SubmissionStatus.Pending or SubmissionStatus.Running;
 }
 
 @await Html.PartialAsync("_Sidebar")
@@ -21,21 +25,23 @@
             <div class="flex justify-between items-start mb-6">
                 <h1 class="text-4xl font-black uppercase tracking-tighter"
                     style="font-family: 'Space Grotesk', sans-serif;">SUBMISSION_#@Model.Id</h1>
+                <span id="status-badge">
                 @switch (Model.Status)
                 {
-                    case WebIde.Model.Enums.SubmissionStatus.Accepted:
+                    case SubmissionStatus.Accepted:
                         <span class="status-accepted text-base px-4 py-2">ACCEPTED</span> break;
-                    case WebIde.Model.Enums.SubmissionStatus.WrongAnswer:
+                    case SubmissionStatus.WrongAnswer:
                         <span class="status-wrong text-base px-4 py-2">WRONG_ANSWER</span> break;
-                    case WebIde.Model.Enums.SubmissionStatus.TimeLimitExceeded:
+                    case SubmissionStatus.TimeLimitExceeded:
                         <span class="status-tle text-base px-4 py-2">TIME_LIMIT_EXCEEDED</span> break;
-                    case WebIde.Model.Enums.SubmissionStatus.CompileError:
+                    case SubmissionStatus.CompileError:
                         <span class="status-error text-base px-4 py-2">COMPILE_ERROR</span> break;
-                    case WebIde.Model.Enums.SubmissionStatus.RuntimeError:
+                    case SubmissionStatus.RuntimeError:
                         <span class="status-error text-base px-4 py-2">RUNTIME_ERROR</span> break;
                     default:
                         <span class="status-error text-base px-4 py-2">@Model.Status.ToString().ToUpper()</span> break;
                 }
+                </span>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -53,7 +59,7 @@
                 </div>
                 <div class="border-2 border-black p-4">
                     <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">SCORE</p>
-                    <p class="font-black text-2xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.Score</p>
+                    <p id="tile-score" class="font-black text-2xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.Score</p>
                 </div>
                 <div class="border-2 border-black p-4">
                     <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">LANGUAGE</p>
@@ -61,11 +67,11 @@
                 </div>
                 <div class="border-2 border-black p-4">
                     <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">WALL_TIME</p>
-                    <p class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.WallTimeMs ms</p>
+                    <p id="tile-walltime" class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.WallTimeMs ms</p>
                 </div>
                 <div class="border-2 border-black p-4">
                     <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">MEMORY</p>
-                    <p class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.PeakMemoryKb KB</p>
+                    <p id="tile-memory" class="font-black text-xl" style="font-family: 'Space Grotesk', sans-serif;">@Model.PeakMemoryKb KB</p>
                 </div>
                 <div class="border-2 border-black p-4 col-span-2">
                     <p class="text-xs font-bold uppercase text-outline mb-1" style="font-family: 'Space Grotesk', sans-serif;">SUBMITTED</p>
@@ -134,3 +140,65 @@
 
     </div>
 </main>
+
+@section Scripts {
+    @if (isLive)
+    {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@8.0.0/dist/browser/signalr.min.js"></script>
+    <script>
+    (function () {
+        const SUBMISSION_ID = @Model.Id;
+
+        // status name → { cssClass, label } — mirrors the server-side switch
+        const STATUS_MAP = {
+            Accepted:            { cls: 'status-accepted', label: 'ACCEPTED' },
+            WrongAnswer:         { cls: 'status-wrong',    label: 'WRONG_ANSWER' },
+            TimeLimitExceeded:   { cls: 'status-tle',      label: 'TIME_LIMIT_EXCEEDED' },
+            MemoryLimitExceeded: { cls: 'status-error',    label: 'MEMORY_LIMIT_EXCEEDED' },
+            CompileError:        { cls: 'status-error',    label: 'COMPILE_ERROR' },
+            RuntimeError:        { cls: 'status-error',    label: 'RUNTIME_ERROR' },
+            InternalError:       { cls: 'status-error',    label: 'INTERNAL_ERROR' },
+            Running:             { cls: 'status-running',  label: 'RUNNING' },
+            Pending:             { cls: 'status-running',  label: 'PENDING' },
+        };
+        const TERMINAL = new Set(['Accepted', 'WrongAnswer', 'TimeLimitExceeded',
+            'MemoryLimitExceeded', 'CompileError', 'RuntimeError', 'InternalError']);
+
+        function setText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        function updateBadge(status) {
+            const badge = document.getElementById('status-badge');
+            const info  = STATUS_MAP[status] || { cls: 'status-error', label: (status || '').toUpperCase() };
+            if (badge) badge.innerHTML =
+                '<span class="' + info.cls + ' text-base px-4 py-2">' + info.label + '</span>';
+        }
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/hubs/execution')
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('submissionUpdate', function (submissionId, status, score, wallTimeMs, peakMemoryKb) {
+            if (submissionId !== SUBMISSION_ID) return;
+            updateBadge(status);
+            setText('tile-score', score);
+            setText('tile-walltime', wallTimeMs + ' ms');
+            setText('tile-memory', peakMemoryKb + ' KB');
+
+            // On a final verdict, reload once to render the full execution result
+            // (stdout/stderr) that the server persisted to the database.
+            if (TERMINAL.has(status)) {
+                setTimeout(function () { window.location.reload(); }, 800);
+            }
+        });
+
+        connection.start()
+            .then(function () { return connection.invoke('SubscribeToSubmission', SUBMISSION_ID); })
+            .catch(function (err) { console.error('Live updates unavailable:', err); });
+    }());
+    </script>
+    }
+}

@@ -38,7 +38,7 @@ public class OrganizationApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<OrganizationDto> Create([FromBody] CreateOrganizationDto dto)
     {
         var org = new Organization { Name = dto.Name, Description = dto.Description };
@@ -48,7 +48,7 @@ public class OrganizationApiController : BaseApiController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<OrganizationDto> Update(int id, [FromBody] UpdateOrganizationDto dto)
     {
         var org = _db.Organizations.Include(o => o.Members).FirstOrDefault(o => o.Id == id);
@@ -60,7 +60,7 @@ public class OrganizationApiController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var org = _db.Organizations.FirstOrDefault(o => o.Id == id);

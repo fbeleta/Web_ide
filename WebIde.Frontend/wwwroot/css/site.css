@@ -148,6 +148,24 @@ a {
     display: inline-block;
 }
 
+.status-running, .status-pending {
+    background-color: #ffd84d;
+    color: #5f4600;
+    border: 2px solid #000;
+    padding: 1px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    display: inline-block;
+    animation: status-pulse 1s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.55; }
+}
+
 /* ── Code Block ───────────────────────────────────────────────────── */
 .code-block {
     background-color: #0e0e0e;

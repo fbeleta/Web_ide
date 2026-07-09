@@ -49,3 +49,7 @@ dist/
 
 # Lab sandbox execution outputs
 lab-2/
+
+# TLS/origin certs and private keys
+certs/
+*.key

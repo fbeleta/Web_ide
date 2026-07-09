@@ -32,7 +32,7 @@ public class TestCaseApiController : BaseApiController
 
     // Admin-only: includes expected output for judging configuration.
     [HttpGet("{id:int}/full")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<TestCaseDto> GetByIdFull(int id)
     {
         var tc = _db.TestCases.FirstOrDefault(t => t.Id == id);
@@ -40,7 +40,7 @@ public class TestCaseApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<TestCaseDto> Create([FromBody] CreateTestCaseDto dto)
     {
         var tc = new TestCase
@@ -58,7 +58,7 @@ public class TestCaseApiController : BaseApiController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<TestCaseDto> Update(int id, [FromBody] UpdateTestCaseDto dto)
     {
         var tc = _db.TestCases.FirstOrDefault(t => t.Id == id);
@@ -73,7 +73,7 @@ public class TestCaseApiController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var tc = _db.TestCases.FirstOrDefault(t => t.Id == id);
@@ -85,12 +85,14 @@ public class TestCaseApiController : BaseApiController
 
     private static TestCasePublicDto ToPublicDto(TestCase tc) => new()
     {
-        Id         = tc.Id,
-        InputArgs  = tc.InputArgs,
-        IsSample   = tc.IsSample,
-        OrderIndex = tc.OrderIndex,
-        Points     = tc.Points,
-        ProblemId  = tc.ProblemId,
+        Id             = tc.Id,
+        InputArgs      = tc.InputArgs,
+        IsSample       = tc.IsSample,
+        OrderIndex     = tc.OrderIndex,
+        Points         = tc.Points,
+        ProblemId      = tc.ProblemId,
+        // Only samples reveal expected output; hidden cases stay opaque.
+        ExpectedOutput = tc.IsSample ? tc.ExpectedOutput : null,
     };
 
     private static TestCaseDto ToDto(TestCase tc) => new()

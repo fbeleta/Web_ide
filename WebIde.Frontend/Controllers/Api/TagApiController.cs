@@ -34,7 +34,7 @@ public class TagApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<TagDto> Create([FromBody] CreateTagDto dto)
     {
         var tag = new Tag { Name = dto.Name };
@@ -44,7 +44,7 @@ public class TagApiController : BaseApiController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<TagDto> Update(int id, [FromBody] UpdateTagDto dto)
     {
         var tag = _db.Tags.FirstOrDefault(t => t.Id == id);
@@ -55,7 +55,7 @@ public class TagApiController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var tag = _db.Tags.FirstOrDefault(t => t.Id == id);

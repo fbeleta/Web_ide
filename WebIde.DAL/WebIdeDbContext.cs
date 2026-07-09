@@ -18,10 +18,22 @@ public class WebIdeDbContext : IdentityDbContext<AppUser>
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<ProblemSet> ProblemSets { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
+    public DbSet<ApiToken> ApiTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder); // sets up Identity tables
+
+        // Personal Access Tokens — one domain user has many; hash is looked up on
+        // every /api request so it must be indexed.
+        modelBuilder.Entity<ApiToken>(e =>
+        {
+            e.HasOne(t => t.User)
+             .WithMany()
+             .HasForeignKey(t => t.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(t => t.TokenHash).IsUnique();
+        });
 
         // N-N: Problem <-> Tag
         modelBuilder.Entity<Problem>()

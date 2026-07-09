@@ -36,7 +36,7 @@ public class UserApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<UserDto> Create([FromBody] CreateUserDto dto)
     {
         if (!Enum.TryParse<UserRole>(dto.Role, true, out var role)) role = UserRole.Student;
@@ -54,7 +54,7 @@ public class UserApiController : BaseApiController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<UserDto> Update(int id, [FromBody] UpdateUserDto dto)
     {
         var user = _db.DomainUsers.FirstOrDefault(u => u.Id == id);
@@ -68,7 +68,7 @@ public class UserApiController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var user = _db.DomainUsers.FirstOrDefault(u => u.Id == id);

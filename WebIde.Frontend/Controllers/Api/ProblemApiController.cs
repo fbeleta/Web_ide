@@ -40,7 +40,7 @@ public class ProblemApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<ProblemDto> Create([FromBody] CreateProblemDto dto)
     {
         if (!Enum.TryParse<DifficultyLevel>(dto.Difficulty, true, out var difficulty))
@@ -68,7 +68,7 @@ public class ProblemApiController : BaseApiController
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin,Manager")]
     public ActionResult<ProblemDto> Update(int id, [FromBody] UpdateProblemDto dto)
     {
         var problem = _db.Problems.Include(p => p.Tags).FirstOrDefault(p => p.Id == id);
@@ -92,7 +92,7 @@ public class ProblemApiController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);

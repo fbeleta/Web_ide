@@ -28,12 +28,12 @@ public class SubmissionApiController : BaseApiController
     }
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api, Roles = "Admin")]
     public ActionResult<IEnumerable<SubmissionDto>> GetAll() =>
         Ok(_repo.GetAll().Select(ToDto));
 
     [HttpGet("{id:int}")]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity)]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api)]
     public ActionResult<SubmissionDto> GetById(int id)
     {
         var s = _repo.GetById(id);
@@ -50,7 +50,7 @@ public class SubmissionApiController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Identity)]
+    [Authorize(AuthenticationSchemes = ApiAuthSchemes.Api)]
     [EnableRateLimiting("submission")]
     public async Task<ActionResult<SubmissionDto>> Create([FromBody] CreateSubmissionDto dto)
     {
