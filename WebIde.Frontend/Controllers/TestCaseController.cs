@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -5,7 +6,11 @@ using WebIde.Web.Repositories;
 
 namespace WebIde.Web.Controllers;
 
+// Test cases are the hidden judge data — the entire surface (including reads) is
+// admin/manager only. Nothing user-facing links here; the worker reads test data
+// straight from the database, not through this controller.
 [Route("problems/{problemId:int}/testcases")]
+[Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
 public class TestCaseController : Controller
 {
     private readonly TestCaseRepository _repo;

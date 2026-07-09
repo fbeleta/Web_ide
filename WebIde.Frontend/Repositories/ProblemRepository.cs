@@ -29,6 +29,7 @@ public class ProblemRepository
         _db.Problems
             .Where(p => p.DeletedAt == null && p.Title.ToLower().Contains(q.ToLower()))
             .Include(p => p.Tags)
+            .Include(p => p.Submissions)
             .OrderBy(p => p.Title)
             .Take(20)
             .ToList();

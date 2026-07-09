@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using StackExchange.Redis;
 using WebIde.Frontend.Models;
 using WebIde.Model;
+using WebIde.Web.Auth;
 using WebIde.Web.Models;
 using WebIde.Web.Repositories;
 
@@ -101,8 +102,11 @@ public class SubmissionController : Controller
         return Ok(new { submissionId = submission.Id });
     }
 
+    // Admin data-entry form — lets an admin author a submission with arbitrary
+    // UserId/Status/Score. Admin-only (see also EditGet/EditPost below).
     [Route("create")]
     [HttpGet]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE SUBMISSION";
@@ -112,6 +116,7 @@ public class SubmissionController : Controller
     [Route("create")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult CreateAdmin(SubmissionCreateModel model)
     {
         if (!ModelState.IsValid)
@@ -144,6 +149,7 @@ public class SubmissionController : Controller
 
     [Route("{id:int}/edit")]
     [HttpGet, ActionName("Edit")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult EditGet(int id)
     {
         var s = _repo.GetById(id);
@@ -169,6 +175,7 @@ public class SubmissionController : Controller
     [Route("{id:int}/edit")]
     [HttpPost, ActionName("Edit")]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult EditPost(int id, SubmissionEditModel model)
     {
         if (!ModelState.IsValid)
@@ -193,11 +200,20 @@ public class SubmissionController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    // A submission may be deleted by its owner (GitHub user, via webide:userId)
+    // or by an admin. Everyone else is forbidden.
     [Route("{id:int}/delete")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
+        var s = _repo.GetById(id);
+        if (s is null) return NotFound();
+
+        var isOwner = int.TryParse(User.FindFirstValue("webide:userId"), out var uid) && uid == s.UserId;
+        var isAdmin = await HttpContext.IsIdentityAdminAsync();
+        if (!isOwner && !isAdmin) return Forbid();
+
         _repo.SoftDelete(id);
         TempData["Flash"] = "Submission deleted.";
         return RedirectToAction(nameof(Index));

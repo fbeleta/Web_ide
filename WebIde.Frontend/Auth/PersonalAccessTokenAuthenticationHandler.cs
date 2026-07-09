@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using WebIde.DAL;
-using WebIde.Model.Enums;
 using WebIde.Web.Services;
 
 namespace WebIde.Web.Auth;
@@ -69,18 +68,10 @@ public sealed class PersonalAccessTokenAuthenticationHandler(
             new("webide:displayName",      user.DisplayName),
         };
 
-        // Map the domain role onto the role names the API's [Authorize(Roles=...)]
-        // checks ("Admin", "Manager").
-        var roleName = user.Role switch
-        {
-            UserRole.Admin      => "Admin",
-            UserRole.Instructor => "Manager",
-            _                   => null,
-        };
-        if (roleName is not null)
-            claims.Add(new Claim(ClaimTypes.Role, roleName));
-
         var identity  = new ClaimsIdentity(claims, SchemeName);
+        // Map the domain role onto the role names [Authorize(Roles=...)] checks
+        // ("Admin", "Manager") — same mapping used by the GitHub OAuth flow.
+        DomainRoleClaims.AddRoleClaim(identity, user.Role);
         var principal = new ClaimsPrincipal(identity);
         return AuthenticateResult.Success(new AuthenticationTicket(principal, SchemeName));
     }

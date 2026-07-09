@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -16,6 +17,7 @@ public class ProblemSetController : Controller
         _orgs = orgs;
     }
 
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Index()
     {
         ViewData["Title"] = "PROBLEM SETS";
@@ -31,6 +33,7 @@ public class ProblemSetController : Controller
     }
 
     [HttpGet]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE PROBLEM SET";
@@ -39,6 +42,7 @@ public class ProblemSetController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create(ProblemSetCreateModel model)
     {
         if (!ModelState.IsValid)
@@ -68,6 +72,7 @@ public class ProblemSetController : Controller
     }
 
     [HttpGet, ActionName("Edit")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult EditGet(int id)
     {
         var ps = _repo.GetById(id);
@@ -88,6 +93,7 @@ public class ProblemSetController : Controller
 
     [HttpPost, ActionName("Edit")]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult EditPost(int id, ProblemSetEditModel model)
     {
         if (!ModelState.IsValid)
@@ -111,6 +117,7 @@ public class ProblemSetController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);

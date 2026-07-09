@@ -16,6 +16,9 @@ public class AuthController : Controller
     public IActionResult Login(string? returnUrl = "/")
     {
         if (!Url.IsLocalUrl(returnUrl)) returnUrl = "/";
+        // Already signed in — don't re-run the OAuth flow, just go back.
+        if (User.Identity?.IsAuthenticated == true)
+            return LocalRedirect(returnUrl!);
         var props = new AuthenticationProperties { RedirectUri = returnUrl };
         return Challenge(props, "GitHub");
     }

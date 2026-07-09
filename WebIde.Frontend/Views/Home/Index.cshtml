@@ -1,6 +1,8 @@
 @model WebIde.Web.Models.HomeViewModel
 @{
     ViewData["Title"] = "HOME";
+    // Org/Set/Tag/User browsing are admin/manager surfaces.
+    var isManager = await Context.IsIdentityManagerAsync();
 }
 
 <section class="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center text-center px-6
@@ -155,37 +157,40 @@
             </div>
         </div>
 
-        <div class="md:col-span-6 border-4 border-black bg-secondary p-8
-                    shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white relative overflow-hidden">
-            <div class="relative z-10">
-                <h3 class="text-3xl font-black uppercase tracking-tighter mb-4"
-                    style="font-family: 'Space Grotesk', sans-serif;">EXPLORE_ALL</h3>
-                <p class="font-bold uppercase text-base mb-6">
-                    Browse organizations, problem sets, tags, and full submission history.
-                </p>
-                <div class="flex flex-wrap gap-3">
-                    <a asp-controller="Organization" asp-action="Index"
-                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
-                              hover:bg-black hover:text-white transition-none no-underline text-sm"
-                       style="font-family: 'Space Grotesk', sans-serif;">ORGS</a>
-                    <a asp-controller="ProblemSet" asp-action="Index"
-                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
-                              hover:bg-black hover:text-white transition-none no-underline text-sm"
-                       style="font-family: 'Space Grotesk', sans-serif;">SETS</a>
-                    <a asp-controller="Tag" asp-action="Index"
-                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
-                              hover:bg-black hover:text-white transition-none no-underline text-sm"
-                       style="font-family: 'Space Grotesk', sans-serif;">TAGS</a>
-                    <a asp-controller="User" asp-action="Index"
-                       class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
-                              hover:bg-black hover:text-white transition-none no-underline text-sm"
-                       style="font-family: 'Space Grotesk', sans-serif;">USERS</a>
+        @if (isManager)
+        {
+            <div class="md:col-span-6 border-4 border-black bg-secondary p-8
+                        shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-3xl font-black uppercase tracking-tighter mb-4"
+                        style="font-family: 'Space Grotesk', sans-serif;">EXPLORE_ALL</h3>
+                    <p class="font-bold uppercase text-base mb-6">
+                        Browse organizations, problem sets, tags, and full submission history.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <a asp-controller="Organization" asp-action="Index"
+                           class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                                  hover:bg-black hover:text-white transition-none no-underline text-sm"
+                           style="font-family: 'Space Grotesk', sans-serif;">ORGS</a>
+                        <a asp-controller="ProblemSet" asp-action="Index"
+                           class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                                  hover:bg-black hover:text-white transition-none no-underline text-sm"
+                           style="font-family: 'Space Grotesk', sans-serif;">SETS</a>
+                        <a asp-controller="Tag" asp-action="Index"
+                           class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                                  hover:bg-black hover:text-white transition-none no-underline text-sm"
+                           style="font-family: 'Space Grotesk', sans-serif;">TAGS</a>
+                        <a asp-controller="User" asp-action="Index"
+                           class="bg-white text-secondary font-black uppercase px-5 py-3 border-2 border-black
+                                  hover:bg-black hover:text-white transition-none no-underline text-sm"
+                           style="font-family: 'Space Grotesk', sans-serif;">USERS</a>
+                    </div>
                 </div>
+                <span class="material-symbols-outlined text-[10rem] absolute -bottom-8 -right-8 opacity-20 pointer-events-none">
+                    rocket_launch
+                </span>
             </div>
-            <span class="material-symbols-outlined text-[10rem] absolute -bottom-8 -right-8 opacity-20 pointer-events-none">
-                rocket_launch
-            </span>
-        </div>
+        }
 
     </div>
 </section>

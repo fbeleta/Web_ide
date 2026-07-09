@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -13,6 +14,7 @@ public class OrganizationController : Controller
     public OrganizationController(OrganizationRepository repo) => _repo = repo;
 
     [Route("")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Index()
     {
         ViewData["Title"] = "ORGANIZATIONS";
@@ -30,6 +32,7 @@ public class OrganizationController : Controller
 
     [Route("create")]
     [HttpGet]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE ORG";
@@ -39,6 +42,7 @@ public class OrganizationController : Controller
     [Route("create")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create(OrganizationCreateModel model)
     {
         if (!ModelState.IsValid)
@@ -53,6 +57,7 @@ public class OrganizationController : Controller
 
     [Route("{id:int}/edit")]
     [HttpGet, ActionName("Edit")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult EditGet(int id)
     {
         var org = _repo.GetById(id);
@@ -64,6 +69,7 @@ public class OrganizationController : Controller
     [Route("{id:int}/edit")]
     [HttpPost, ActionName("Edit")]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult EditPost(int id, OrganizationEditModel model)
     {
         if (!ModelState.IsValid)
@@ -83,6 +89,7 @@ public class OrganizationController : Controller
     [Route("{id:int}/delete")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);

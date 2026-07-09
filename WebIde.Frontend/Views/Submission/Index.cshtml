@@ -1,6 +1,10 @@
 @model List<WebIde.Model.Submission>
 @{
     ViewData["Title"] = "SUBMISSIONS";
+    // Admin data-entry (create/edit arbitrary verdict/score) is Admin-only.
+    // Deleting is allowed for the submission's owner or an admin.
+    var isAdmin = await Context.IsIdentityAdminAsync();
+    var currentUserId = User.FindFirst("webide:userId")?.Value;
 }
 
 @await Html.PartialAsync("_Sidebar")
@@ -31,11 +35,14 @@
                     <span class="text-on-surface-variant">SUBMISSIONS</span>
                 </nav>
             </div>
-            <a asp-controller="Submission" asp-action="Create"
-               class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
-                      shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
-                      hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
-               style="font-family:'Space Grotesk',sans-serif;">+ CREATE SUBMISSION</a>
+            @if (isAdmin)
+            {
+                <a asp-controller="Submission" asp-action="Create"
+                   class="bg-primary text-white font-black uppercase px-6 py-3 border-2 border-black
+                          shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
+                          hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] transition-all no-underline text-sm"
+                   style="font-family:'Space Grotesk',sans-serif;">+ CREATE SUBMISSION</a>
+            }
         </div>
 
         <div class="mb-4">
@@ -117,15 +124,21 @@
                                               shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px]
                                               hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] transition-all no-underline"
                                        style="font-family:'Space Grotesk',sans-serif;">VIEW</a>
-                                    <a asp-controller="Submission" asp-action="Edit" asp-route-id="@sub.Id"
-                                       class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
-                                              hover:bg-black hover:text-white transition-none no-underline"
-                                       style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
-                                    <button type="button"
-                                            onclick="openDeleteModal('@Url.Action("Delete","Submission", new { id = sub.Id })', '#@sub.Id')"
-                                            class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
-                                                   hover:bg-error hover:text-white transition-none"
-                                            style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                    @if (isAdmin)
+                                    {
+                                        <a asp-controller="Submission" asp-action="Edit" asp-route-id="@sub.Id"
+                                           class="border-2 border-black px-3 py-1.5 font-bold uppercase text-xs
+                                                  hover:bg-black hover:text-white transition-none no-underline"
+                                           style="font-family:'Space Grotesk',sans-serif;">EDIT</a>
+                                    }
+                                    @if (isAdmin || (currentUserId != null && sub.UserId.ToString() == currentUserId))
+                                    {
+                                        <button type="button"
+                                                onclick="openDeleteModal('@Url.Action("Delete","Submission", new { id = sub.Id })', '#@sub.Id')"
+                                                class="border-2 border-error text-error px-3 py-1.5 font-bold uppercase text-xs
+                                                       hover:bg-error hover:text-white transition-none"
+                                                style="font-family:'Space Grotesk',sans-serif;">DEL</button>
+                                    }
                                 </div>
                             </td>
                         </tr>

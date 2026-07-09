@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -11,6 +12,7 @@ public class TagController : Controller
 
     public TagController(TagRepository repo) => _repo = repo;
 
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Index()
     {
         ViewData["Title"] = "TAGS";
@@ -26,6 +28,7 @@ public class TagController : Controller
     }
 
     [HttpGet]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE TAG";
@@ -34,6 +37,7 @@ public class TagController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create(TagCreateModel model)
     {
         if (!ModelState.IsValid)
@@ -47,6 +51,7 @@ public class TagController : Controller
     }
 
     [HttpGet, ActionName("Edit")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult EditGet(int id)
     {
         var tag = _repo.GetById(id);
@@ -57,6 +62,7 @@ public class TagController : Controller
 
     [HttpPost, ActionName("Edit")]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult EditPost(int id, TagEditModel model)
     {
         if (!ModelState.IsValid)
@@ -74,6 +80,7 @@ public class TagController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);

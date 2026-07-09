@@ -34,9 +34,17 @@ public class LoginModel : PageModel
         public string Password { get; set; } = "";
     }
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
+        // Already signed in as an Identity user — no reason to show the login form.
+        // Authenticate the Identity scheme explicitly: the default request principal
+        // comes from the GitHub cookie, so IsSignedIn(User) wouldn't see it.
+        var identityAuth = await HttpContext.AuthenticateAsync(IdentityConstants.ApplicationScheme);
+        if (identityAuth.Succeeded)
+            return LocalRedirect(Url.Content("~/"));
+
         ExternalProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)

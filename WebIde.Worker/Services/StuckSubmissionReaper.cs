@@ -15,30 +15,39 @@ public class StuckSubmissionReaper(
 {
     public async Task StartAsync(CancellationToken ct)
     {
-        using var scope = scopeFactory.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IDbContextFactory<WebIdeDbContext>>()
-                      .CreateDbContext();
-
-        // Any Running submission not in the active set and older than 5 min is stuck.
-        var cutoff = DateTime.UtcNow.AddMinutes(-5);
-        var stuck = await db.Submissions
-            .Where(s => s.Status == SubmissionStatus.Running && s.SubmittedAt < cutoff)
-            .ToListAsync(ct);
-
-        var active = orchestrator.ActiveSubmissionIds;
-        var reaped = 0;
-
-        foreach (var s in stuck)
+        // Best-effort cleanup only — never let a transient DB blip at startup
+        // crash the whole worker. The reaper is not startup-critical.
+        try
         {
-            if (active.Contains(s.Id)) continue;
-            s.Status = SubmissionStatus.InternalError;
-            reaped++;
+            using var scope = scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<IDbContextFactory<WebIdeDbContext>>()
+                          .CreateDbContext();
+
+            // Any Running submission not in the active set and older than 5 min is stuck.
+            var cutoff = DateTime.UtcNow.AddMinutes(-5);
+            var stuck = await db.Submissions
+                .Where(s => s.Status == SubmissionStatus.Running && s.SubmittedAt < cutoff)
+                .ToListAsync(ct);
+
+            var active = orchestrator.ActiveSubmissionIds;
+            var reaped = 0;
+
+            foreach (var s in stuck)
+            {
+                if (active.Contains(s.Id)) continue;
+                s.Status = SubmissionStatus.InternalError;
+                reaped++;
+            }
+
+            if (reaped > 0)
+            {
+                await db.SaveChangesAsync(ct);
+                logger.LogWarning("Reaped {Count} stuck Running submission(s)", reaped);
+            }
         }
-
-        if (reaped > 0)
+        catch (Exception ex)
         {
-            await db.SaveChangesAsync(ct);
-            logger.LogWarning("Reaped {Count} stuck Running submission(s)", reaped);
+            logger.LogWarning(ex, "StuckSubmissionReaper failed at startup; skipping reap");
         }
     }
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebIde.Frontend.Models;
 using WebIde.Model;
@@ -14,6 +15,7 @@ public class UserController : Controller
     public UserController(UserRepository repo) => _repo = repo;
 
     [Route("")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Index()
     {
         ViewData["Title"] = "USERS";
@@ -31,6 +33,7 @@ public class UserController : Controller
 
     [Route("create")]
     [HttpGet]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE USER";
@@ -40,6 +43,7 @@ public class UserController : Controller
     [Route("create")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Create(UserCreateModel model)
     {
         if (!ModelState.IsValid)
@@ -61,6 +65,7 @@ public class UserController : Controller
 
     [Route("{id:int}/edit")]
     [HttpGet, ActionName("Edit")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult EditGet(int id)
     {
         var user = _repo.GetById(id);
@@ -80,6 +85,7 @@ public class UserController : Controller
     [Route("{id:int}/edit")]
     [HttpPost, ActionName("Edit")]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult EditPost(int id, UserEditModel model)
     {
         if (!ModelState.IsValid)
@@ -102,6 +108,7 @@ public class UserController : Controller
     [Route("{id:int}/delete")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _repo.SoftDelete(id);

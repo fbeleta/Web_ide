@@ -1,3 +1,7 @@
+@{
+    // Admin surface lives behind the Identity login (see IdentityRoleExtensions).
+    var isManager = await Context.IsIdentityManagerAsync();
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,12 +50,15 @@
                 <a asp-controller="Leaderboard" asp-action="Index"
                    class="font-bold uppercase tracking-tighter text-black hover:bg-primary hover:text-white px-3 py-1 transition-none h-20 flex items-center"
                    style="font-family: 'Space Grotesk', sans-serif;">LEADERBOARD</a>
-                <a asp-controller="Organization" asp-action="Index"
-                   class="font-bold uppercase tracking-tighter text-black hover:bg-primary hover:text-white px-3 py-1 transition-none h-20 flex items-center"
-                   style="font-family: 'Space Grotesk', sans-serif;">ORGS</a>
-                <a asp-controller="Tag" asp-action="Index"
-                   class="font-bold uppercase tracking-tighter text-black hover:bg-primary hover:text-white px-3 py-1 transition-none h-20 flex items-center"
-                   style="font-family: 'Space Grotesk', sans-serif;">TAGS</a>
+                @if (isManager)
+                {
+                    <a asp-controller="Organization" asp-action="Index"
+                       class="font-bold uppercase tracking-tighter text-black hover:bg-primary hover:text-white px-3 py-1 transition-none h-20 flex items-center"
+                       style="font-family: 'Space Grotesk', sans-serif;">ORGS</a>
+                    <a asp-controller="Tag" asp-action="Index"
+                       class="font-bold uppercase tracking-tighter text-black hover:bg-primary hover:text-white px-3 py-1 transition-none h-20 flex items-center"
+                       style="font-family: 'Space Grotesk', sans-serif;">TAGS</a>
+                }
                 <a asp-controller="Submission" asp-action="Index"
                    class="font-bold uppercase tracking-tighter text-black hover:bg-primary hover:text-white px-3 py-1 transition-none h-20 flex items-center"
                    style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS</a>
@@ -120,9 +127,12 @@
                 <a asp-controller="Problem" asp-action="Index"
                    class="text-xs font-bold uppercase tracking-widest text-white hover:text-[#32ff00] no-underline transition-none"
                    style="font-family: 'Space Grotesk', sans-serif;">PROBLEMS</a>
-                <a asp-controller="User" asp-action="Index"
-                   class="text-xs font-bold uppercase tracking-widest text-white hover:text-[#32ff00] no-underline transition-none"
-                   style="font-family: 'Space Grotesk', sans-serif;">USERS</a>
+                @if (isManager)
+                {
+                    <a asp-controller="User" asp-action="Index"
+                       class="text-xs font-bold uppercase tracking-widest text-white hover:text-[#32ff00] no-underline transition-none"
+                       style="font-family: 'Space Grotesk', sans-serif;">USERS</a>
+                }
                 <a asp-controller="Leaderboard" asp-action="Index"
                    class="text-xs font-bold uppercase tracking-widest text-white hover:text-[#32ff00] no-underline transition-none"
                    style="font-family: 'Space Grotesk', sans-serif;">LEADERBOARD</a>

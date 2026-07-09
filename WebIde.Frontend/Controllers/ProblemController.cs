@@ -36,6 +36,7 @@ public class ProblemController : Controller
             "difficulty-asc"  => problems.OrderBy(p => p.Difficulty).ToList(),
             "difficulty-desc" => problems.OrderByDescending(p => p.Difficulty).ToList(),
             "title"           => problems.OrderBy(p => p.Title).ToList(),
+            "title-desc"      => problems.OrderByDescending(p => p.Title).ToList(),
             "acceptance-asc"  => problems.OrderBy(p =>
                 p.Submissions.Count == 0 ? 0 : (double)p.Submissions.Count(s => s.Status == SubmissionStatus.Accepted) / p.Submissions.Count).ToList(),
             "acceptance-desc" => problems.OrderByDescending(p =>
@@ -59,18 +60,20 @@ public class ProblemController : Controller
 
     // ── Search (AJAX autocomplete) ─────────────────────────────────────────────
 
+    // Returns server-rendered rows (the shared _ProblemRow partial) so the search
+    // results render identically to the full list.
     [Route("search")]
     [HttpGet]
     public IActionResult Search(string q)
     {
         var results = _repo.Search(q ?? "");
-        return Json(results.Select(p => new { id = p.Id, label = p.Title }));
+        return PartialView("_ProblemRows", results);
     }
 
     // ── Create ────────────────────────────────────────────────────────────────
 
     [HttpGet("create")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create()
     {
         ViewData["Title"] = "CREATE PROBLEM";
@@ -80,7 +83,7 @@ public class ProblemController : Controller
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Create(CreateProblemViewModel model)
     {
         if (!ModelState.IsValid)
@@ -118,7 +121,7 @@ public class ProblemController : Controller
     // ── Edit ──────────────────────────────────────────────────────────────────
 
     [HttpGet("{id:int}/edit")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Edit(int id)
     {
         var problem = _db.Problems.Include(p => p.Tags).Include(p => p.Attachments).FirstOrDefault(p => p.Id == id);
@@ -145,7 +148,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/edit")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult Edit(int id, CreateProblemViewModel model)
     {
         var problem = _db.Problems.Include(p => p.Tags).FirstOrDefault(p => p.Id == id);
@@ -179,7 +182,7 @@ public class ProblemController : Controller
     // ── Delete (soft delete) ───────────────────────────────────────────────────
 
     [HttpGet("{id:int}/delete")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -190,7 +193,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin")]
     public IActionResult DeleteConfirmed(int id)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -204,7 +207,7 @@ public class ProblemController : Controller
     // ── Dropzone attachment upload ─────────────────────────────────────────────
 
     [HttpPost("{id:int}/attachments")]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public async Task<IActionResult> UploadAttachment(int id, IFormFile? file)
     {
         var problem = _db.Problems.FirstOrDefault(p => p.Id == id);
@@ -261,7 +264,7 @@ public class ProblemController : Controller
 
     [HttpPost("{id:int}/attachments/{attachmentId:int}/delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(AuthenticationSchemes = "Identity.Application", Roles = "Admin,Manager")]
+    [Authorize(AuthenticationSchemes = WebAuthSchemes.Cookies, Roles = "Admin,Manager")]
     public IActionResult DeleteAttachment(int id, int attachmentId)
     {
         var attachment = _db.Attachments.FirstOrDefault(a => a.Id == attachmentId && a.ProblemId == id);

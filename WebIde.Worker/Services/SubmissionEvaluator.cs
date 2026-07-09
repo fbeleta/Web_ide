@@ -31,25 +31,27 @@ public class SubmissionEvaluator
                 Stderr  = Truncate(run.Stderr, DbJsonCap),
             };
 
-        // Wrapper crash or worker hard timeout
+        // Wrapper crash or worker hard timeout. Capture the reason (exit code +
+        // stderr) so an InternalError isn't opaque — it is persisted to the
+        // execution result and logged by the worker.
         if (run.ExitCode != 0 && run.ExitCode != 124)
-            return new EvaluationResult { Status = SubmissionStatus.InternalError };
+            return InternalError($"wrapper exited with code {run.ExitCode}", run);
 
         if (string.IsNullOrWhiteSpace(run.Stdout))
-            return new EvaluationResult { Status = SubmissionStatus.InternalError };
+            return InternalError($"empty stdout (exit {run.ExitCode})", run);
 
         List<SandboxCaseResult>? cases;
         try
         {
             cases = JsonSerializer.Deserialize<List<SandboxCaseResult>>(run.Stdout);
         }
-        catch
+        catch (Exception ex)
         {
-            return new EvaluationResult { Status = SubmissionStatus.InternalError };
+            return InternalError($"could not parse sandbox JSON (exit {run.ExitCode}): {ex.Message}", run);
         }
 
         if (cases is null || cases.Count == 0)
-            return new EvaluationResult { Status = SubmissionStatus.InternalError };
+            return InternalError($"sandbox returned no case results (exit {run.ExitCode})", run);
 
         var pointsById = testCases.ToDictionary(tc => tc.Id, tc => tc.Points);
         var status     = SubmissionStatus.Accepted;
@@ -77,6 +79,18 @@ public class SubmissionEvaluator
             PeakMemoryKb = peakKb,
             CaseResults = cases,
             ResultJson  = resultJson,
+        };
+    }
+
+    // Builds an InternalError result that carries a human-readable reason plus the
+    // sandbox stderr/stdout, so the failure can be diagnosed after the fact.
+    private static EvaluationResult InternalError(string reason, SandboxRunResult run)
+    {
+        var detail = $"{reason}\n--- stderr ---\n{run.Stderr}\n--- stdout ---\n{run.Stdout}";
+        return new EvaluationResult
+        {
+            Status = SubmissionStatus.InternalError,
+            Stderr = Truncate(detail, DbJsonCap),
         };
     }
 

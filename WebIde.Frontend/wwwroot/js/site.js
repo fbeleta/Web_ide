@@ -70,6 +70,46 @@ function initAjaxSearch(inputId, tbodyId, endpoint, rowRenderer) {
     });
 }
 
+/**
+ * initAjaxSearchHtml(inputId, tbodyId, endpoint)
+ *
+ * Like initAjaxSearch, but the endpoint returns server-rendered <tr> HTML that is
+ * injected directly. Use this when the rows must match a server-rendered table
+ * exactly (shared Razor partial) instead of being rebuilt in JS.
+ */
+function initAjaxSearchHtml(inputId, tbodyId, endpoint) {
+    var input = document.getElementById(inputId);
+    var tbody = document.getElementById(tbodyId);
+    if (!input || !tbody) return;
+
+    var timer;
+    input.addEventListener('keyup', function () {
+        clearTimeout(timer);
+        var q = this.value.trim();
+        timer = setTimeout(function () {
+            showSearchSkeleton(tbody);
+            fetch(endpoint + '?q=' + encodeURIComponent(q))
+                .then(function (r) { return r.text(); })
+                .then(function (html) {
+                    tbody.innerHTML = html;
+                    var newRows = tbody.querySelectorAll('tr');
+                    newRows.forEach(function (row, i) {
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateY(6px)';
+                        row.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+                        setTimeout(function () {
+                            row.style.opacity = '1';
+                            row.style.transform = 'translateY(0)';
+                        }, i * 40);
+                    });
+                })
+                .catch(function () {
+                    tbody.innerHTML = '<tr><td colspan="99" class="text-center py-4 text-error font-bold text-xs uppercase tracking-widest" style="font-family:\'Space Grotesk\',sans-serif;">SEARCH FAILED</td></tr>';
+                });
+        }, 300);
+    });
+}
+
 function showSearchSkeleton(tbody) {
     var skeletonRow = '<tr>' +
         Array(5).fill('<td><div class="h-4 bg-[#e0e0e0] animate-pulse w-full"></div></td>').join('') +

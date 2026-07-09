@@ -70,10 +70,22 @@ builder.Services.AddScoped<ExecutionResultRepository>();
 // AddAuthentication configures the default scheme (GitHub cookie).
 // We use AddIdentityCore (not AddDefaultIdentity) so Identity does NOT override
 // the DefaultScheme — that would break the existing GitHub OAuth flow.
-builder.Services.AddAuthentication(options =>
+// GitHub OAuth is registered only when credentials are present. Without them
+// (e.g. local dev) the handler's OAuthOptions.Validate() would throw on every
+// request, since the GitHub handler is an IAuthenticationRequestHandler that the
+// authentication middleware initializes on each request.
+var githubClientId     = config["GitHub:ClientId"];
+var githubClientSecret = config["GitHub:ClientSecret"];
+var githubEnabled      = !string.IsNullOrEmpty(githubClientId) && !string.IsNullOrEmpty(githubClientSecret);
+
+var authBuilder = builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme          = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GitHubAuthenticationDefaults.AuthenticationScheme;
+    // GitHub is the primary challenge scheme when configured; otherwise fall back
+    // to the Identity login so unauthenticated challenges have somewhere to go.
+    options.DefaultChallengeScheme = githubEnabled
+        ? GitHubAuthenticationDefaults.AuthenticationScheme
+        : IdentityConstants.ApplicationScheme;
 })
 .AddCookie(options =>
 {
@@ -86,34 +98,6 @@ builder.Services.AddAuthentication(options =>
     options.SlidingExpiration  = true;
     options.LoginPath          = "/auth/github/login";
     options.LogoutPath         = "/auth/logout";
-})
-.AddGitHub(options =>
-{
-    options.ClientId     = config["GitHub:ClientId"] ?? "";
-    options.ClientSecret = config["GitHub:ClientSecret"] ?? "";
-    options.CallbackPath = "/auth/github/callback";
-    options.Scope.Add("user:email");
-
-    options.Events.OnCreatingTicket = async ctx =>
-    {
-        var githubId    = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
-        var username    = ctx.Principal.FindFirstValue(ClaimTypes.Name) ?? githubId;
-        var displayName = ctx.Principal.FindFirstValue("urn:github:name")
-                       ?? ctx.Principal.FindFirstValue(ClaimTypes.Name)
-                       ?? username;
-        var email       = ctx.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
-        var avatarUrl   = ctx.Principal.FindFirstValue("urn:github:avatar_url") ?? "";
-
-        await using var scope   = ctx.HttpContext.RequestServices.CreateAsyncScope();
-        var userRepo            = scope.ServiceProvider.GetRequiredService<UserRepository>();
-        var user                = await userRepo.UpsertGitHubUserAsync(githubId, username, displayName, email, avatarUrl);
-
-        var identity = new ClaimsIdentity();
-        identity.AddClaim(new Claim("webide:userId",      user.Id.ToString()));
-        identity.AddClaim(new Claim("webide:avatarUrl",   user.AvatarUrl ?? ""));
-        identity.AddClaim(new Claim("webide:displayName", user.DisplayName));
-        ctx.Principal!.AddIdentity(identity);
-    };
 })
 // ── Identity cookies (ApplicationScheme, ExternalScheme, 2FA) ─────────────────
 // These three are required by SignInManager. They coexist with the GitHub
@@ -136,19 +120,41 @@ builder.Services.AddAuthentication(options =>
 .AddScheme<AuthenticationSchemeOptions, WebIde.Web.Auth.PersonalAccessTokenAuthenticationHandler>(
     WebIde.Web.Auth.PersonalAccessTokenAuthenticationHandler.SchemeName, _ => { });
 
-// ── Google OAuth — only registered if credentials are configured ─────────────
-var googleClientId     = config["Google:ClientId"];
-var googleClientSecret = config["Google:ClientSecret"];
-if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+// ── GitHub OAuth — only registered when credentials are configured ───────────
+if (githubEnabled)
 {
-    builder.Services.AddAuthentication().AddGoogle(options =>
+    authBuilder.AddGitHub(options =>
     {
-        options.ClientId     = googleClientId;
-        options.ClientSecret = googleClientSecret;
-        options.SignInScheme  = IdentityConstants.ExternalScheme;
+        options.ClientId     = githubClientId!;
+        options.ClientSecret = githubClientSecret!;
+        options.CallbackPath = "/auth/github/callback";
+        options.Scope.Add("user:email");
+
+        options.Events.OnCreatingTicket = async ctx =>
+        {
+            var githubId    = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+            var username    = ctx.Principal.FindFirstValue(ClaimTypes.Name) ?? githubId;
+            var displayName = ctx.Principal.FindFirstValue("urn:github:name")
+                           ?? ctx.Principal.FindFirstValue(ClaimTypes.Name)
+                           ?? username;
+            var email       = ctx.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
+            var avatarUrl   = ctx.Principal.FindFirstValue("urn:github:avatar_url") ?? "";
+
+            await using var scope   = ctx.HttpContext.RequestServices.CreateAsyncScope();
+            var userRepo            = scope.ServiceProvider.GetRequiredService<UserRepository>();
+            var user                = await userRepo.UpsertGitHubUserAsync(githubId, username, displayName, email, avatarUrl);
+
+            var identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim("webide:userId",      user.Id.ToString()));
+            identity.AddClaim(new Claim("webide:avatarUrl",   user.AvatarUrl ?? ""));
+            identity.AddClaim(new Claim("webide:displayName", user.DisplayName));
+            // Project the DB role onto ClaimTypes.Role so a GitHub user who is an
+            // Admin in DomainUsers is an admin in the app too (same mapping as PATs).
+            WebIde.Web.Auth.DomainRoleClaims.AddRoleClaim(identity, user.Role);
+            ctx.Principal!.AddIdentity(identity);
+        };
     });
 }
-
 
 // ── Identity — services only (no AddAuthentication override) ──────────────────
 builder.Services.AddIdentityCore<AppUser>(options =>

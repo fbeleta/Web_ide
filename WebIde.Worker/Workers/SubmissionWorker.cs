@@ -112,6 +112,11 @@ public class SubmissionWorker(
         var evaluator = scope.ServiceProvider.GetRequiredService<SubmissionEvaluator>();
         var result = evaluator.Evaluate(run, testCases);
 
+        if (result.Status == SubmissionStatus.InternalError)
+            logger.LogWarning(
+                "Submission {Id} evaluated as InternalError (sandbox exit {Exit}). Detail: {Detail}",
+                job.SubmissionId, run.ExitCode, result.Stderr);
+
         // Persist
         await PersistResultAsync(factory, job.SubmissionId, result, testCases);
 

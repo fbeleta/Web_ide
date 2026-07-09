@@ -103,8 +103,10 @@ services:
       - /tmp/webide-src:/tmp/webide-src
       - ./sandbox/seccomp-profile.json:/sandbox/seccomp-profile.json:ro
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - webide-net
     deploy:
