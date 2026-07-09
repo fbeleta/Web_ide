@@ -60,6 +60,13 @@ jobs:
             set -euo pipefail
             cd /opt/webide
 
+            # docker compose reads .env automatically, but the raw shell
+            # references below (${POSTGRES_DB} etc.) do not — export .env into
+            # the shell so they resolve under `set -u`.
+            set -a
+            . ./.env
+            set +a
+
             # Save current tag for rollback
             PREV_TAG=$(grep '^IMAGE_TAG=' .env | cut -d= -f2)
 
