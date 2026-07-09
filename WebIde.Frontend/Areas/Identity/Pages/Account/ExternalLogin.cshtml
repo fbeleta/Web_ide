@@ -4,38 +4,45 @@
     ViewData["Title"] = "Register with " + Model.ProviderDisplayName;
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-5">
-        <h1 class="mb-2">Register</h1>
-        <h4 class="mb-4 text-muted">Associate your @Model.ProviderDisplayName account</h4>
+<div class="flex justify-center px-4 pt-28 pb-12">
+    <div class="brutal-card hard-shadow-lg w-full max-w-md">
+        <h1 class="font-headline text-3xl font-black uppercase mb-2 tracking-tight">REGISTER_</h1>
+        <p class="font-body text-sm text-gray-500 mb-8">Associate your @Model.ProviderDisplayName account.</p>
 
         @if (!string.IsNullOrEmpty(Model.StatusMessage))
         {
-            <div class="alert alert-danger">@Model.StatusMessage</div>
+            <div class="border-2 border-black bg-red-100 text-red-700 font-bold text-sm px-3 py-2 mb-5">@Model.StatusMessage</div>
         }
 
-        <form method="post" asp-page-handler="Confirmation">
+        <form method="post" asp-page-handler="Confirmation" class="flex flex-col gap-5">
             <input type="hidden" asp-for="Input.Email" />
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm font-bold"></div>
 
-            <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label"></label>
-                <input asp-for="Input.Email" class="form-control" readonly />
+            <div>
+                <label asp-for="Input.Email" class="block font-bold mb-1"></label>
+                <input asp-for="Input.Email" readonly
+                       class="w-full border-2 border-black px-3 py-2 font-mono bg-gray-100 focus:outline-none" />
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.OIB" class="form-label"></label>
-                <input asp-for="Input.OIB" class="form-control" maxlength="11" />
-                <span asp-validation-for="Input.OIB" class="text-danger"></span>
+            <div>
+                <label asp-for="Input.OIB" class="block font-bold mb-1"></label>
+                <input asp-for="Input.OIB" maxlength="11"
+                       class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                <span asp-validation-for="Input.OIB" class="text-red-600 text-sm"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.JMBG" class="form-label"></label>
-                <input asp-for="Input.JMBG" class="form-control" maxlength="13" />
-                <span asp-validation-for="Input.JMBG" class="text-danger"></span>
+            <div>
+                <label asp-for="Input.JMBG" class="block font-bold mb-1"></label>
+                <input asp-for="Input.JMBG" maxlength="13"
+                       class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                <span asp-validation-for="Input.JMBG" class="text-red-600 text-sm"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Register</button>
+            <button type="submit"
+                    class="bg-[#2752c7] text-[#f1f2ff] font-headline font-black uppercase text-sm px-6 py-4
+                           hard-shadow hard-shadow-hover brutal-border tracking-widest w-full">
+                Register
+            </button>
         </form>
     </div>
 </div>

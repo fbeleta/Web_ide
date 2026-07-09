@@ -1,25 +1,24 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @{
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="flex justify-center px-4 pt-28 pb-12">
+    <div class="brutal-card hard-shadow-lg w-full max-w-lg">
+        <h1 class="font-headline text-4xl font-black uppercase mb-2 tracking-tight text-red-600">ERROR_</h1>
+        <p class="font-body text-sm text-gray-600 mb-6">An error occurred while processing your request.</p>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+        @if (Model.ShowRequestId)
+        {
+            <p class="font-mono text-xs mb-6">
+                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+            </p>
+        }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+        <a asp-controller="Home" asp-action="Index"
+           class="inline-block bg-[#2752c7] text-[#f1f2ff] font-headline font-black uppercase text-sm px-6 py-4
+                  hard-shadow hard-shadow-hover brutal-border tracking-widest no-underline">
+            Back to home
+        </a>
+    </div>
+</div>
