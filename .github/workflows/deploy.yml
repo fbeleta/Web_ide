@@ -62,10 +62,16 @@ jobs:
 
             # docker compose reads .env automatically, but the raw shell
             # references below (${POSTGRES_DB} etc.) do not — export .env into
-            # the shell so they resolve under `set -u`.
+            # the shell so they resolve under `set -u`. Preserve the values the
+            # SSH action injected (IMAGE_TAG, NAMESPACE) from being clobbered by
+            # the stale values in .env.
+            DEPLOY_IMAGE_TAG="$IMAGE_TAG"
+            DEPLOY_NAMESPACE="$NAMESPACE"
             set -a
             . ./.env
             set +a
+            IMAGE_TAG="$DEPLOY_IMAGE_TAG"
+            NAMESPACE="$DEPLOY_NAMESPACE"
 
             # Save current tag for rollback
             PREV_TAG=$(grep '^IMAGE_TAG=' .env | cut -d= -f2)
