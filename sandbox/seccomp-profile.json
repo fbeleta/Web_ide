@@ -73,6 +73,7 @@
         "ioctl",
         "kill",
         "lseek",
+        "lstat",
         "madvise",
         "membarrier",
         "memfd_create",

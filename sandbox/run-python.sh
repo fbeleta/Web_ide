@@ -138,7 +138,10 @@ while [ "$i" -lt "$CASE_COUNT" ]; do
 
   RESULTS=$(printf '%s' "$RESULTS" | jq --argjson c "$CASE_RESULT" '. + [$c]')
 
-  rm -f /tmp/_stdin_$$ /tmp/_stdout_$$ /tmp/_stderr_$$
+  # Cleanup must never abort the wrapper: /tmp is a per-container tmpfs that is
+  # discarded on removal, so a failed unlink is harmless — but under `set -e` it
+  # would kill the run before results.json is emitted (empty stdout => InternalError).
+  rm -f /tmp/_stdin_$$ /tmp/_stdout_$$ /tmp/_stderr_$$ 2>/dev/null || true
   i=$(( i + 1 ))
 done
 
