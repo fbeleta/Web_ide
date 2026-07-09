@@ -274,7 +274,14 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapHub<ExecutionHub>("/hubs/execution").RequireRateLimiting("hub");
-app.MapHealthChecks("/health");
+// Liveness: is the app process up and serving? Runs NO dependency checks, so a
+// temporarily-unhealthy worker/redis can't fail it. The deploy gate polls this —
+// gating the app rollout on the worker's health caused deploys to roll back.
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => false,
+});
+// Readiness: are all dependencies (postgres, redis, worker) healthy?
 app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
     Predicate = c => c.Tags.Contains("ready"),
