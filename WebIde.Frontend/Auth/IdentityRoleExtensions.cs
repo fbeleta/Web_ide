@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
@@ -46,5 +47,43 @@ public static class IdentityRoleExtensions
         var result = await http.IsIdentityInRoleAsync("Admin");
         http.Items[key] = result;
         return result;
+    }
+
+    /// <summary>
+    /// True when the request is authenticated by *either* auth world — the GitHub
+    /// default cookie or the Identity (username/password) ApplicationScheme. The
+    /// layout/sidebar must use this rather than <c>User.Identity.IsAuthenticated</c>
+    /// (which only sees the default GitHub cookie), otherwise Identity users are
+    /// wrongly rendered as guests.
+    /// </summary>
+    public static async Task<bool> IsAuthenticatedAsync(this HttpContext http)
+        => await http.GetEffectiveUserAsync() is not null;
+
+    /// <summary>
+    /// The principal that actually signed the user in: the GitHub default-cookie
+    /// principal when present, else the Identity ApplicationScheme principal, else
+    /// null. Cached per-request. Use it to read display name/avatar regardless of
+    /// which scheme authenticated the user.
+    /// </summary>
+    public static async Task<ClaimsPrincipal?> GetEffectiveUserAsync(this HttpContext http)
+    {
+        const string key = "webide:effectiveUser";
+        if (http.Items.TryGetValue(key, out var cached))
+            return cached as ClaimsPrincipal;
+
+        ClaimsPrincipal? principal = null;
+        if (http.User?.Identity?.IsAuthenticated == true)
+        {
+            principal = http.User;
+        }
+        else
+        {
+            var result = await http.AuthenticateAsync(IdentityConstants.ApplicationScheme);
+            if (result.Succeeded && result.Principal is not null)
+                principal = result.Principal;
+        }
+
+        http.Items[key] = principal;
+        return principal;
     }
 }

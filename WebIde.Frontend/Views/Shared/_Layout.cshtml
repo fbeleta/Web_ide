@@ -1,6 +1,10 @@
 @{
     // Admin surface lives behind the Identity login (see IdentityRoleExtensions).
     var isManager = await Context.IsIdentityManagerAsync();
+    // "Logged in" spans BOTH auth worlds (GitHub cookie + Identity username/password);
+    // User.Identity.IsAuthenticated alone only sees the GitHub cookie.
+    var loggedIn      = await Context.IsAuthenticatedAsync();
+    var effectiveUser = await Context.GetEffectiveUserAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +38,7 @@
         .flatpickr-weekdays { background: #000; }
     </style>
 </head>
-<body class="bg-background text-on-background @(User.Identity?.IsAuthenticated == true ? "logged-in" : "")" style="font-family: 'Inter', sans-serif;">
+<body class="bg-background text-on-background @(loggedIn ? "logged-in" : "")" style="font-family: 'Inter', sans-serif;">
 
     <!-- ── Top Navigation ──────────────────────────────────────────── -->
     <nav class="fixed top-0 left-0 z-50 flex justify-between items-center w-full px-6 h-20
@@ -65,10 +69,14 @@
             </div>
         </div>
         <div class="flex items-center gap-3">
-            @if (User.Identity?.IsAuthenticated == true)
+            @if (loggedIn)
             {
-                var avatarUrl   = User.FindFirst("webide:avatarUrl")?.Value ?? "";
-                var displayName = User.FindFirst("webide:displayName")?.Value ?? User.Identity.Name ?? "USER";
+                // Identity (username/password) users have no webide:* claims — fall back
+                // to their Identity name/email so they aren't rendered as an anonymous "USER".
+                var avatarUrl   = effectiveUser?.FindFirst("webide:avatarUrl")?.Value ?? "";
+                var displayName = effectiveUser?.FindFirst("webide:displayName")?.Value
+                               ?? effectiveUser?.Identity?.Name
+                               ?? "USER";
                 var initial     = displayName.Length > 0 ? displayName[0].ToString().ToUpper() : "?";
 
                 @if (!string.IsNullOrEmpty(avatarUrl))
