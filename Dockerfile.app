@@ -65,9 +65,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
 WORKDIR /app
 
-# Non-root user for defense-in-depth
-RUN adduser --disabled-password --gecos "" appuser
-USER appuser
+# Non-root user for defense-in-depth (app user is pre-created in the .NET base image)
+USER $APP_UID
 
 COPY --from=build /app/publish .
 COPY --from=migrations /app/efbundle /app/efbundle
