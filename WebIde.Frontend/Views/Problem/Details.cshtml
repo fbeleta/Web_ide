@@ -2,8 +2,14 @@
 @{
     ViewData["Title"] = Model.Title.ToUpper();
     var sampleCases = Model.TestCases.Where(tc => tc.IsSample).OrderBy(tc => tc.OrderIndex).ToList();
-    // Most recent submission for the console tab
-    var lastSub = Model.Submissions.OrderByDescending(s => s.SubmittedAt).FirstOrDefault();
+    // The submissions panel shows only the current user's own submissions.
+    var effectiveUser = await Context.GetEffectiveUserAsync();
+    var currentUserId = effectiveUser?.FindFirst("webide:userId")?.Value;
+    var mySubmissions = Model.Submissions
+        .Where(s => currentUserId != null && s.User.Id.ToString() == currentUserId)
+        .OrderByDescending(s => s.SubmittedAt)
+        .ToList();
+    var lastSub = mySubmissions.FirstOrDefault();
 }
 
 @await Html.PartialAsync("_Sidebar")
@@ -148,11 +154,7 @@
         <div class="h-2/5 min-h-[220px] bg-[#f6f6f6] border-t-4 border-black flex flex-col">
             <div class="h-10 bg-surface-container-highest border-b-2 border-black flex items-center px-4 gap-4 flex-shrink-0">
                 <span class="font-black text-[10px] uppercase text-primary border-b-2 border-primary h-full flex items-center"
-                      style="font-family: 'Space Grotesk', sans-serif;">CONSOLE</span>
-                <span class="font-black text-[10px] uppercase text-outline h-full flex items-center"
-                      style="font-family: 'Space Grotesk', sans-serif;">TEST_CASES (@Model.TestCases.Count)</span>
-                <span class="font-black text-[10px] uppercase text-outline h-full flex items-center"
-                      style="font-family: 'Space Grotesk', sans-serif;">SUBMISSIONS (@Model.Submissions.Count)</span>
+                      style="font-family: 'Space Grotesk', sans-serif;">MY_SUBMISSIONS (@mySubmissions.Count)</span>
             </div>
 
             <div class="flex-1 p-4 font-mono text-xs overflow-y-auto bg-white no-scrollbar">
@@ -182,8 +184,14 @@
 
                 <div class="mt-4 pt-4 border-t-2 border-black/10">
                     <p class="text-outline mb-2 text-[10px] uppercase font-bold"
-                       style="font-family: 'Space Grotesk', sans-serif;">ALL_SUBMISSIONS:</p>
-                    @foreach (var sub in Model.Submissions.OrderByDescending(s => s.SubmittedAt))
+                       style="font-family: 'Space Grotesk', sans-serif;">YOUR_SUBMISSIONS:</p>
+                    @if (mySubmissions.Count == 0)
+                    {
+                        <p class="text-outline text-[10px] font-bold" style="font-family: 'Space Grotesk', sans-serif;">
+                            &gt;&gt;&gt; NO_SUBMISSIONS_YET.
+                        </p>
+                    }
+                    @foreach (var sub in mySubmissions)
                     {
                         <div class="flex justify-between items-center py-1 border-b border-black/10">
                             <a asp-controller="User" asp-action="Details" asp-route-id="@sub.User.Id"
@@ -220,7 +228,7 @@
                    style="font-family: 'Space Grotesk', sans-serif;">← BACK</a>
                 <span class="text-[10px] font-bold text-outline uppercase"
                       style="font-family: 'Space Grotesk', sans-serif;">
-                    @Model.Submissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted) ACCEPTED
+                    @mySubmissions.Count(s => s.Status == WebIde.Model.Enums.SubmissionStatus.Accepted) ACCEPTED
                 </span>
             </div>
         </div>
