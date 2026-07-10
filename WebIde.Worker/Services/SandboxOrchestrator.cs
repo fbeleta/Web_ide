@@ -78,6 +78,14 @@ public class SandboxOrchestrator(
         // separate from /code so a running solution can't tamper with cases.json.
         var workDir = Path.Combine(srcDir, "work");
         Directory.CreateDirectory(workDir);
+        // The sandbox runs as nobody (uid 65534) but the worker created workDir as its own
+        // uid; make it world-writable so the compiler can write /work/a.out. We can't chown
+        // to 65534 (the worker is non-root). The dir is per-submission and destroyed after.
+        if (OperatingSystem.IsLinux())
+            File.SetUnixFileMode(workDir,
+                UnixFileMode.UserRead  | UnixFileMode.UserWrite  | UnixFileMode.UserExecute  |
+                UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.GroupExecute |
+                UnixFileMode.OtherRead | UnixFileMode.OtherWrite | UnixFileMode.OtherExecute);
         var (image, ext) = MapLanguage(job.Language, sandboxOpts.Value);
         File.WriteAllText(Path.Combine(srcDir, $"solution.{ext}"), job.SourceCode);
         File.WriteAllText(Path.Combine(srcDir, "cases.json"), BuildCasesJson(problem, testCases));
