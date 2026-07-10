@@ -130,6 +130,12 @@ if (githubEnabled)
         options.CallbackPath = "/auth/github/callback";
         options.Scope.Add("user:email");
 
+        // Force GitHub to show the account picker instead of silently reusing the
+        // still-logged-in github.com session. Without this, logging out of WebIde
+        // and clicking "GitHub" again re-authenticates the previous account with no
+        // chance to switch — our logout can't clear GitHub's own session.
+        options.AdditionalAuthorizationParameters["prompt"] = "select_account";
+
         options.Events.OnCreatingTicket = async ctx =>
         {
             var githubId    = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
