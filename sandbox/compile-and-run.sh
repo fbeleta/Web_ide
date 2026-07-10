@@ -35,7 +35,9 @@ case "$SOLUTION" in
   *) echo "Unknown extension: $SOLUTION" >&2; exit 1 ;;
 esac
 
-COMPILE_STDERR=$("$COMPILER" -O2 -o /tmp/a.out "$SOLUTION" 2>&1) || {
+# Compile to /work (a writable, exec-capable bind mount). /tmp is a noexec tmpfs, so a
+# binary there can't be executed — see SandboxOrchestrator mounts.
+COMPILE_STDERR=$("$COMPILER" -O2 -o /work/a.out "$SOLUTION" 2>&1) || {
   # Compile failed — exit 2 per spec
   echo "$COMPILE_STDERR" >&2
   exit 2
@@ -109,7 +111,7 @@ while [ "$i" -lt "$CASE_COUNT" ]; do
   printf '%s' "$STDIN_DATA" > /tmp/_stdin_$$
   T_START=$(cut -d' ' -f1 /proc/uptime)
   set +e
-  timeout "${TIMEOUT_SEC}s" /tmp/a.out </tmp/_stdin_$$ >/tmp/_stdout_$$ 2>/tmp/_stderr_$$
+  timeout "${TIMEOUT_SEC}s" /work/a.out </tmp/_stdin_$$ >/tmp/_stdout_$$ 2>/tmp/_stderr_$$
   RUN_EXIT=$?
   set -e
   T_END=$(cut -d' ' -f1 /proc/uptime)

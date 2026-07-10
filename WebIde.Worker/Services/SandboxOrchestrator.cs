@@ -72,6 +72,12 @@ public class SandboxOrchestrator(
         string srcDir, CancellationToken ct)
     {
         Directory.CreateDirectory(srcDir);
+        // Writable, exec-capable dir for the compiled binary. It must be a bind mount
+        // (host root fs is exec) because Docker.DotNet can't produce an exec tmpfs — the
+        // Tmpfs "exec" option is ignored via the API, so /tmp is always noexec. Kept
+        // separate from /code so a running solution can't tamper with cases.json.
+        var workDir = Path.Combine(srcDir, "work");
+        Directory.CreateDirectory(workDir);
         var (image, ext) = MapLanguage(job.Language, sandboxOpts.Value);
         File.WriteAllText(Path.Combine(srcDir, $"solution.{ext}"), job.SourceCode);
         File.WriteAllText(Path.Combine(srcDir, "cases.json"), BuildCasesJson(problem, testCases));
@@ -88,10 +94,10 @@ public class SandboxOrchestrator(
             {
                 NetworkMode    = "none",
                 ReadonlyRootfs = true,
-                // exec is required: the C/C++ wrapper compiles to /tmp/a.out and
-                // executes it. Docker mounts --tmpfs noexec by default, which would
-                // make every C/C++ submission fail with "Permission denied".
-                Tmpfs = new Dictionary<string, string> { ["/tmp"] = "size=64m,mode=1777,exec" },
+                // tmpfs for the wrapper's stdin/stdout/stderr temp files (write-only, no
+                // exec needed). The compiled binary runs from the /work bind mount below,
+                // because this tmpfs is always noexec (Docker.DotNet ignores the exec option).
+                Tmpfs = new Dictionary<string, string> { ["/tmp"] = "size=64m,mode=1777" },
                 Memory      = memBytes,
                 MemorySwap  = memBytes,
                 NanoCPUs    = (long)(workerOpts.Value.SandboxCpus * 1_000_000_000),
@@ -101,7 +107,8 @@ public class SandboxOrchestrator(
                 Ulimits     = new[] { new Ulimit { Name = "fsize", Soft = 67108864, Hard = 67108864 } },
                 Mounts      = new List<Mount>
                 {
-                    new() { Type = "bind", Source = srcDir, Target = "/code", ReadOnly = true }
+                    new() { Type = "bind", Source = srcDir,  Target = "/code", ReadOnly = true  },
+                    new() { Type = "bind", Source = workDir, Target = "/work", ReadOnly = false },
                 },
                 AutoRemove = false,
             },
