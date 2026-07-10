@@ -27,25 +27,31 @@ public class SandboxOrchestrator(
 
     private readonly ConcurrentDictionary<int, byte> _active = new();
 
-    // Built once: ["no-new-privileges", "seccomp=<json content>"] — the Docker
-    // Engine API requires the seccomp profile *content*, not a file path.
+    // Built once: ["no-new-privileges", "apparmor=unconfined", "seccomp=<json>"].
+    // The Docker Engine API requires the seccomp profile *content*, not a file path.
     private readonly string[] _securityOpts = BuildSecurityOpts(sandboxOpts.Value, logger);
 
     public IReadOnlyCollection<int> ActiveSubmissionIds => (IReadOnlyCollection<int>)_active.Keys;
 
     private static string[] BuildSecurityOpts(SandboxOptions opts, ILogger logger)
     {
+        // apparmor=unconfined: the host's docker-default AppArmor profile denies exec of the
+        // compiled binary on the /work bind mount (EACCES), which broke every C/C++ run and
+        // made Python/JS crash to InternalError when their helpers couldn't exec. The sandbox
+        // is still hard-isolated by seccomp + cap-drop ALL + read-only rootfs + network none +
+        // no-new-privileges + pids/memory limits, so dropping the redundant AppArmor layer is
+        // an acceptable trade to restore execution.
         var path = opts.SeccompProfilePath;
         if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
         {
             var json = File.ReadAllText(path);
-            return new[] { "no-new-privileges", $"seccomp={json}" };
+            return new[] { "no-new-privileges", "apparmor=unconfined", $"seccomp={json}" };
         }
 
         logger.LogWarning(
             "Seccomp profile not found at '{Path}'; falling back to Docker's default profile",
             path);
-        return new[] { "no-new-privileges" };
+        return new[] { "no-new-privileges", "apparmor=unconfined" };
     }
 
     public async Task<SandboxRunResult> RunAsync(SubmissionJob job, Problem problem, IList<TestCase> testCases, CancellationToken ct)
