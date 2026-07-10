@@ -81,11 +81,12 @@ var githubEnabled      = !string.IsNullOrEmpty(githubClientId) && !string.IsNull
 var authBuilder = builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme          = CookieAuthenticationDefaults.AuthenticationScheme;
-    // GitHub is the primary challenge scheme when configured; otherwise fall back
-    // to the Identity login so unauthenticated challenges have somewhere to go.
-    options.DefaultChallengeScheme = githubEnabled
-        ? GitHubAuthenticationDefaults.AuthenticationScheme
-        : IdentityConstants.ApplicationScheme;
+    // Unauthenticated challenges must land on the login PAGE (which offers both the
+    // local email/password form AND a GitHub button), NOT fire GitHub OAuth directly.
+    // Challenging the GitHub scheme here would bounce every anonymous visitor straight
+    // into GitHub with no chance to use a password account. So challenge the cookie
+    // scheme, whose LoginPath below points at /Identity/Account/Login.
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
 {
@@ -96,7 +97,9 @@ var authBuilder = builder.Services.AddAuthentication(options =>
     options.Cookie.SameSite    = SameSiteMode.Lax;
     options.ExpireTimeSpan     = TimeSpan.FromDays(14);
     options.SlidingExpiration  = true;
-    options.LoginPath          = "/auth/github/login";
+    // Send unauthenticated users to the login page (local form + GitHub button),
+    // not straight into the GitHub OAuth challenge.
+    options.LoginPath          = "/Identity/Account/Login";
     options.LogoutPath         = "/auth/logout";
 })
 // ── Identity cookies (ApplicationScheme, ExternalScheme, 2FA) ─────────────────
