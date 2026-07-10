@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,6 +8,10 @@ using WebIde.DAL;
 
 namespace WebIde.Web.Areas.Identity.Pages.Account;
 
+// Anonymous, or the global authenticated-by-default posture challenges this page
+// itself — and since the cookie LoginPath points here, that produces an infinite
+// /Identity/Account/Login?ReturnUrl=… redirect loop (nginx 502).
+[AllowAnonymous]
 public class LoginModel : PageModel
 {
     private readonly SignInManager<AppUser> _signInManager;

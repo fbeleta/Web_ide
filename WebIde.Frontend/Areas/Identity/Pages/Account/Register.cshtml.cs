@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -6,6 +7,8 @@ using WebIde.DAL;
 
 namespace WebIde.Web.Areas.Identity.Pages.Account;
 
+// Anonymous — new users are unauthenticated, and the app is authenticated-by-default.
+[AllowAnonymous]
 public class RegisterModel : PageModel
 {
     private readonly UserManager<AppUser> _userManager;
