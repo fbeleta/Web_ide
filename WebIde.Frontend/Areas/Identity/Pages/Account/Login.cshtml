@@ -9,8 +9,43 @@
         <h1 class="font-headline text-3xl font-black uppercase mb-2 tracking-tight">LOGIN_</h1>
         <p class="font-body text-sm text-gray-500 mb-8">Sign in to compete.</p>
 
+        <form method="post" class="flex flex-col gap-5">
+            <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm font-bold"></div>
+
+            <div>
+                <label asp-for="Input.Email" class="block font-bold mb-1"></label>
+                <input asp-for="Input.Email" autocomplete="username"
+                       class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                <span asp-validation-for="Input.Email" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.Password" class="block font-bold mb-1"></label>
+                <input asp-for="Input.Password" type="password" autocomplete="current-password"
+                       class="w-full border-2 border-black px-3 py-2 font-mono focus:outline-none" />
+                <span asp-validation-for="Input.Password" class="text-red-600 text-sm"></span>
+            </div>
+
+            <button type="submit"
+                    class="bg-black text-white font-headline font-black uppercase text-sm px-6 py-4
+                           hard-shadow hard-shadow-hover brutal-border tracking-widest w-full">
+                Log in
+            </button>
+        </form>
+
+        <p class="font-body text-sm mt-6">
+            Need an account?
+            <a asp-page="Register" class="font-bold underline">Register</a>
+        </p>
+
         @if (Model.ExternalProviders.Any())
         {
+            <div class="flex items-center gap-3 my-8">
+                <div class="flex-1 h-0.5 bg-black"></div>
+                <span class="font-headline font-black uppercase text-xs tracking-widest text-gray-500">or</span>
+                <div class="flex-1 h-0.5 bg-black"></div>
+            </div>
+
             <form method="post" asp-page-handler="ExternalLogin" class="flex flex-col gap-3">
                 @foreach (var provider in Model.ExternalProviders)
                 {
@@ -21,9 +56,9 @@
                 }
             </form>
         }
-        else
-        {
-            <p class="font-body text-sm text-red-600 font-bold">No login providers configured.</p>
-        }
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
