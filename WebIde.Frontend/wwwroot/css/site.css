@@ -15,11 +15,18 @@ body {
     background-color: #f6f6f6;
     color: #2f2f2f;
     margin: 0;
+    /* Safety net: long UPPER_CASE_UNDERSCORE tokens never widen the page on mobile. */
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6,
 .font-headline {
     font-family: 'Space Grotesk', sans-serif;
+    /* Titles are long underscore-joined tokens (e.g. SUM_OF_TWO_NUMBERS). CSS won't
+       break at underscores, so treat them as one word — allow breaking when they'd
+       otherwise overflow their container on narrow screens. */
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 a {
