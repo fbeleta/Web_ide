@@ -38,24 +38,19 @@
             <a asp-page="Register" class="font-bold underline">Register</a>
         </p>
 
-        @if (Model.ExternalProviders.Any())
-        {
-            <div class="flex items-center gap-3 my-8">
-                <div class="flex-1 h-0.5 bg-black"></div>
-                <span class="font-headline font-black uppercase text-xs tracking-widest text-gray-500">or</span>
-                <div class="flex-1 h-0.5 bg-black"></div>
-            </div>
+        <div class="flex items-center gap-3 my-8">
+            <div class="flex-1 h-0.5 bg-black"></div>
+            <span class="font-headline font-black uppercase text-xs tracking-widest text-gray-500">or</span>
+            <div class="flex-1 h-0.5 bg-black"></div>
+        </div>
 
-            <form method="post" asp-page-handler="ExternalLogin" class="flex flex-col gap-3">
-                @foreach (var provider in Model.ExternalProviders)
-                {
-                    <button type="submit" name="provider" value="@provider.Name"
-                            class="bg-[#2752c7] text-[#f1f2ff] font-headline font-black uppercase text-sm px-6 py-4 hard-shadow hard-shadow-hover brutal-border tracking-widest w-full">
-                        @provider.DisplayName Login
-                    </button>
-                }
-            </form>
-        }
+        @* GitHub uses this app's own OAuth flow (AuthController → /auth/github/login),
+           NOT Identity's ExternalLogin handler — the GitHub scheme has its own cookie
+           and user-upsert and is not wired as an Identity external provider. *@
+        <a asp-controller="Auth" asp-action="Login"
+           class="bg-[#2752c7] text-[#f1f2ff] font-headline font-black uppercase text-sm px-6 py-4 hard-shadow hard-shadow-hover brutal-border tracking-widest w-full block text-center no-underline">
+            GitHub Login
+        </a>
     </div>
 </div>
 
